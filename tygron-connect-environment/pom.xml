@@ -6,7 +6,7 @@
 	<packaging>jar</packaging>
 
 	<name>tygron-connect-environment</name>
-	<url>https://github.com/tygron-virtual-humans/tygron-connect</url>
+	<url>https://github.com/eishub/tygron</url>
 
 	<version>0.1.0</version>
 	<groupId>tygron-connect</groupId>
@@ -32,7 +32,6 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>1.7.12</version>
-			<scope>compile</scope>
 		</dependency>
 
 
@@ -40,7 +39,6 @@
 			<groupId>eishub</groupId>
 			<artifactId>eis</artifactId>
 			<version>0.5.0</version>
-			<scope>compile</scope>
 		</dependency>
 
 		<dependency>

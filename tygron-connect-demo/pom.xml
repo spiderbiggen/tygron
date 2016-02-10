@@ -6,7 +6,7 @@
 	<packaging>jar</packaging>
 
 	<name>tygron-connect-demo</name>
-	<url>https://github.com/tygron-virtual-humans/tygron-connect</url>
+	<url>https://github.com/eishub/tygron</url>
 
 	<groupId>tygron-connect</groupId>
 	<version>0.1.0</version>
