@@ -121,7 +121,7 @@ public class HttpConnection {
 			logger.debug("Response " + response);
 			return response;
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException("Request " + request + " failed", e);
 		}
 	}
 
