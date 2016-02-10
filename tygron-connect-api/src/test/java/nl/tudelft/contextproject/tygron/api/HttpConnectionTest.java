@@ -7,10 +7,6 @@ import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import nl.tudelft.contextproject.tygron.Settings;
-import nl.tudelft.contextproject.tygron.handlers.JsonObjectResultHandler;
-import nl.tudelft.contextproject.tygron.handlers.StringResultHandler;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -23,104 +19,107 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import nl.tudelft.contextproject.tygron.Settings;
+import nl.tudelft.contextproject.tygron.handlers.JsonObjectResultHandler;
+import nl.tudelft.contextproject.tygron.handlers.StringResultHandler;
+
 @RunWith(MockitoJUnitRunner.class)
 public class HttpConnectionTest {
-  @Mock
-  JSONArray parameters;
+	@Mock
+	JSONArray parameters;
 
-  @Mock
-  Settings settings;
+	@Mock
+	Settings settings;
 
-  @Mock
-  HttpUriRequest request;
+	@Mock
+	HttpUriRequest request;
 
-  @Mock
-  Session session;
+	@Mock
+	Session session;
 
-  @Mock
-  HttpClient client;
-  
-  @Mock
-  HttpConnectionData data;
+	@Mock
+	HttpClient client;
 
-  @Mock
-  HttpResponse response;
+	@Mock
+	HttpConnectionData data;
 
-  @Mock
-  BasicResponseHandler handler;
+	@Mock
+	HttpResponse response;
 
-  @Mock
-  BasicResponseHandler objHandler;
+	@Mock
+	BasicResponseHandler handler;
 
-  HttpConnection connection;
+	@Mock
+	BasicResponseHandler objHandler;
 
-  String responseString = "{\"responseResponse\": \"response\"}";
+	HttpConnection connection;
 
-  /**
-   * Sets up the tests.
-   * @throws Exception throws exception on failure
-   */
-  @Before
-  public void setupMock() throws Exception {
-    when(parameters.toString()).thenReturn("[]");
+	String responseString = "{\"responseResponse\": \"response\"}";
 
-    when(settings.getUserName()).thenReturn("username");
-    when(settings.getPassword()).thenReturn("password");
-    
-    when(data.getClientToken()).thenReturn("clientToken");
-    when(data.getServerToken()).thenReturn("serverToken");
+	/**
+	 * Sets up the tests.
+	 * 
+	 * @throws Exception
+	 *             throws exception on failure
+	 */
+	@Before
+	public void setupMock() throws Exception {
+		when(parameters.toString()).thenReturn("[]");
 
-    when(session.getId()).thenReturn(17);
+		when(settings.getUserName()).thenReturn("username");
+		when(settings.getPassword()).thenReturn("password");
 
-    HttpConnection.setSettings(settings);
-    HttpConnection.setData(data);
-    
-    connection = HttpConnection.getInstance();
+		when(data.getClientToken()).thenReturn("clientToken");
+		when(data.getServerToken()).thenReturn("serverToken");
 
-    when(handler.handleResponse(any(HttpResponse.class))).thenReturn(
-        responseString);
-    connection.handler = handler;
+		when(session.getId()).thenReturn(17);
 
-    when(client.execute(any(HttpUriRequest.class))).thenReturn(response);
-    connection.client = client;
-  }
+		HttpConnection.setSettings(settings);
+		HttpConnection.setData(data);
 
-  @Test
-  public void testAuthString() {
-    connection.getAuthString();
-    verify(settings).getUserName();
-    verify(settings).getPassword();
-  }
+		connection = HttpConnection.getInstance();
 
-  @Test
-  public void testDefaultHeaders() {
-    connection.addDefaultHeaders(request);
-    verify(request, atLeast(3)).setHeader(anyString(), anyString());
-  }
+		when(handler.handleResponse(any(HttpResponse.class))).thenReturn(responseString);
+		connection.handler = handler;
 
-  @Test
-  public void testApiUrl() {
-    String url = connection.getApiUrl("event", false);
-    assertEquals("https://server2.tygron.com:3022/api/event?f=JSON", url);
-  }
+		when(client.execute(any(HttpUriRequest.class))).thenReturn(response);
+		connection.client = client;
+	}
 
-  @Test
-  public void testApiExecute() {
-    String result = connection.execute(request);
-    assertEquals(responseString, result);
-  }
+	@Test
+	public void testAuthString() {
+		connection.getAuthString();
+		verify(settings).getUserName();
+		verify(settings).getPassword();
+	}
 
-  @Test
-  public void testApiExecuteParams() {
-    String result = connection.execute("event", CallType.GET,
-        new StringResultHandler());
-    assertEquals(responseString, result);
-  }
+	@Test
+	public void testDefaultHeaders() {
+		connection.addDefaultHeaders(request);
+		verify(request, atLeast(3)).setHeader(anyString(), anyString());
+	}
 
-  @Test
-  public void testUpdate() {
-    JSONObject obj = connection.getUpdate(new JsonObjectResultHandler(),
-        true, new JSONObject());
-    assertEquals("response", obj.getString("responseResponse"));
-  }
+	@Test
+	public void testApiUrl() {
+		String url = connection.getApiUrl("event", false);
+		assertEquals("https://preview.tygron.com/api/event?f=JSON", url);
+	}
+
+	@Test
+	public void testApiExecute() {
+		String result = connection.execute(request);
+		assertEquals(responseString, result);
+	}
+
+	@Test
+	public void testApiExecuteParams() {
+		String result = connection.execute("event", CallType.GET, new StringResultHandler());
+		assertEquals(responseString, result);
+	}
+
+	@Test
+	public void testUpdate() {
+		JSONObject obj = connection.getUpdate(new JsonObjectResultHandler(), true, new JSONObject());
+		assertEquals("response", obj.getString("responseResponse"));
+	}
 }

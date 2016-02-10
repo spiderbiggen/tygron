@@ -185,6 +185,7 @@ public class HttpConnection {
 	protected void addDefaultHeaders(HttpUriRequest request) {
 		request.setHeader("Accept", "application/json");
 		request.setHeader("Content-Type", "application/json");
+		// request.setHeader("Content-Type", "text/html");
 		request.setHeader("Authorization", "Basic " + getAuthString());
 
 		if (data != null && data.getServerToken() != null) {
