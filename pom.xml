@@ -4,7 +4,7 @@
 
 	<groupId>tygron-eis</groupId>
 	<packaging>pom</packaging>
-	<artifactId>notused</artifactId>
+	<artifactId>tygron</artifactId>
 	<version>0</version>
 
 	<name>tygron-connect</name>
