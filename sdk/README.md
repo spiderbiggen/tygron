@@ -1,8 +1,14 @@
+Tygron SDK Wrapper
+============
+
 This module is a wrapper around the tygron-sdk.zip file that we receive from Tygron.
 This wrapper creates a sdk-1.0.XX.jar file that contains the tygron sdk code, plus an associated sources.jar
 file that contains the javadoc and sources which is useful when developing code and debugging calls to the tygron sdk.
 
 The wrapper is completely built automatically from the sources provided by Tygron.
+
+#Usage
+
 After this has been built, other projects can use it with
 
 ```
@@ -19,6 +25,7 @@ The project that uses this also must have a README.txt file that contains the li
 (user name, account, version). You need this license as it comes with a password that you need to contact 
 the tygron server. 
 
+#Updating the project
 When Tygron provides a new zip file, the following steps are needed
 
  * unzip the zip file. 
