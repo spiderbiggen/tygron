@@ -9,7 +9,7 @@
 		<environmentname>tygron</environmentname>
 	</properties>
 
-	<groupId>tygron</groupId>
+	<groupId>nl.tygron</groupId>
 	<artifactId>sdk</artifactId>
 	<version>1.0.17</version>
 	<name>${environmentname}-sdk-install</name>

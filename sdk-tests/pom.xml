@@ -10,8 +10,8 @@
 	</properties>
 
 	<groupId>tygron</groupId>
-	<artifactId>sdk-tests</artifactId>
-	<version>2016.4.0-DEV-17</version>
+	<artifactId>sdk</artifactId>
+	<version>1.0.17</version>
 	<name>${environmentname}-tests</name>
 	<description>Tests for the Tytech SDK</description>
 	<url>http://www.github.com/eishub/${environmentname}</url>
@@ -98,9 +98,9 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>nl.tytech</groupId>
+			<groupId>nl.tygron</groupId>
 			<artifactId>sdk</artifactId>
-			<version>2016.4.0-DEV-17</version>
+			<version>1.0.17</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
