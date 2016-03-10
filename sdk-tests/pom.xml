@@ -12,7 +12,7 @@
 	<groupId>tygron</groupId>
 	<artifactId>sdk-tests</artifactId>
 	<version>2016.4.0-DEV-17</version>
-	<name>${environmentname}</name>
+	<name>${environmentname}-tests</name>
 	<description>Tests for the Tytech SDK</description>
 	<url>http://www.github.com/eishub/${environmentname}</url>
 
