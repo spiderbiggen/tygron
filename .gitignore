@@ -9,7 +9,6 @@ configuration.cfg
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.ear
 
