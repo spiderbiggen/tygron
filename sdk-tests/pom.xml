@@ -10,7 +10,7 @@
 	</properties>
 
 	<groupId>tygron</groupId>
-	<artifactId>sdk</artifactId>
+	<artifactId>sdk-tests</artifactId>
 	<version>1.0.17</version>
 	<name>${environmentname}-tests</name>
 	<description>Tests for the Tytech SDK</description>
