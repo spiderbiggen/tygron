@@ -14,6 +14,8 @@
 		<module>tygron-connect-api</module>
 		<module>tygron-connect-environment</module>
 		<module>tygron-connect-demo</module>
+		<module>sdk</module>
+		<module>sdk-tests</module>
 	</modules>
 
 

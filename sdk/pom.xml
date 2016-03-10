@@ -11,9 +11,9 @@
 
 	<groupId>tygron</groupId>
 	<artifactId>sdk</artifactId>
-	<version>test</version>
+	<version>-</version>
 	<name>${environmentname}</name>
-	<description>A building with elevators and people pressing elevator buttons. The entities are associated with elevators which are supposed to deliver people at the floors they request.</description>
+	<description>	Tytech sdk	</description>
 	<url>http://www.github.com/eishub/${environmentname}</url>
 
 	<licenses>
@@ -57,19 +57,6 @@
 		</repository>
 	</repositories>
 
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>nl.tytech</groupId>
-			<artifactId>sdk</artifactId>
-			<version>2016.4.0-DEV-17</version>
-		</dependency>
-	</dependencies>
 
 	<build>
 		<plugins>
@@ -113,7 +100,7 @@
 							<goal>install-file</goal>
 						</goals>
 						<!-- first phase of 'package' -->
-						<phase>validate</phase>
+						<phase>package</phase>
 					</execution>
 				</executions>
 			</plugin>
