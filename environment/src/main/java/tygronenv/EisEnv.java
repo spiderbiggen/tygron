@@ -1,7 +1,5 @@
 package tygronenv;
 
-import static org.junit.Assert.assertNull;
-
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -17,12 +15,6 @@ import eis.iilang.Action;
 import eis.iilang.EnvironmentState;
 import eis.iilang.Parameter;
 import eis.iilang.Percept;
-import nl.tytech.core.client.net.ServicesManager;
-import nl.tytech.core.net.Network;
-import nl.tytech.core.net.serializable.User;
-import nl.tytech.core.net.serializable.User.AccessLevel;
-import nl.tytech.core.util.SettingsManager;
-import tygronenv.settings.Settings;
 import tygronenv.translators.HashMap2J;
 import tygronenv.translators.ParamEnum2J;
 
@@ -33,6 +25,8 @@ import tygronenv.translators.ParamEnum2J;
  *
  */
 public class EisEnv extends EIDefaultImpl {
+
+	private ServerConnection serverConnection;
 
 	/**
 	 * General initialization: translators,
@@ -74,19 +68,20 @@ public class EisEnv extends EIDefaultImpl {
 	@Override
 	public void init(Map<String, Parameter> parameters) throws ManagementException {
 		super.init(parameters);
+		Configuration config;
 		try {
-			Configuration config = new Configuration(parameters);
+			config = new Configuration(parameters);
 		} catch (Exception e) {
 			throw new ManagementException("Problem with init parameters", e);
 		}
-		connectServer();
+		serverConnection = new ServerConnection(config);
 		setState(EnvironmentState.RUNNING);
 	}
 
 	@Override
 	public void kill() throws ManagementException {
 		super.kill();
-		disconnectServer();
+		serverConnection.disconnect();
 	};
 
 	@Override
@@ -111,41 +106,6 @@ public class EisEnv extends EIDefaultImpl {
 		for (Parameter2Java<?> translator : p2j) {
 			translatorfactory.registerParameter2JavaTranslator(translator);
 		}
-	}
-
-	/**
-	 * Connect with the server, using the {@link Settings}.
-	 * 
-	 * @throws ManagementException
-	 */
-	private void connectServer() throws ManagementException {
-		Settings credentials = new Settings();
-
-		// setup settings
-		SettingsManager.setup(SettingsManager.class, Network.AppType.EDITOR);
-		SettingsManager.setServerIP(credentials.getServerIp());
-
-		String result = ServicesManager.testServerConnection();
-		assertNull(result, result);
-
-		ServicesManager.setSessionLoginCredentials(credentials.getUserName(), credentials.getPassword());
-		User user = ServicesManager.getMyUserAccount();
-
-		if (user == null) {
-			throw new ManagementException("failed to attach user" + credentials.getUserName()
-					+ ". Wrong name/pass? Please check the configuration.cfg file");
-		}
-
-		if (user.getMaxAccessLevel().ordinal() < AccessLevel.EDITOR.ordinal()) {
-			throw new ManagementException("You need to have at least EDITOR access level");
-		}
-
-	}
-
-	private void disconnectServer() {
-		throw new IllegalStateException("NOT IMPLEMENTED");
-		// assertTrue(ServicesManager.fireServiceEvent(IOServiceEventType.DELETE_PROJECT,
-		// data.getFileName()));
 	}
 
 }
