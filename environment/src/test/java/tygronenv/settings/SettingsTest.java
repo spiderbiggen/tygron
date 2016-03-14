@@ -51,7 +51,7 @@ public class SettingsTest {
 
 	private static Integer stakeholderID = 0;
 
-	private Settings credentials;
+	private static Settings credentials;
 
 	@Test
 	public void test01Setup() throws Exception {
@@ -70,6 +70,9 @@ public class SettingsTest {
 
 		ServicesManager.setSessionLoginCredentials(credentials.getUserName(), credentials.getPassword());
 		User user = ServicesManager.getMyUserAccount();
+		// if null, you have w
+		assertNotNull("failed to attach user. Wrong name/pass? Please check the configuration.cfg file", user);
+
 		assertTrue("You need to be at least EDITOR to run these tests!",
 				user.getMaxAccessLevel().ordinal() >= AccessLevel.EDITOR.ordinal());
 	}

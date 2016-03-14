@@ -1,10 +1,10 @@
 package tygronenv.settings;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Logger;
+
+import nl.tytech.util.StringUtils;
 
 /**
  * Loads the user/password for the Tygron API from the configuration file.
@@ -28,18 +28,11 @@ public class SettingsLoader {
 	 *             when fails
 	 */
 	public SettingsLoader(String path) throws Exception {
-		File jarFile = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
-		if (jarFile.exists() && !jarFile.isDirectory()) {
-			File configFile = new File(jarFile.getParent(), path);
-			logger.info("Using config file " + configFile.getAbsolutePath());
-			readConfig(new FileInputStream(configFile));
-		} else {
-			File configFile = new File(path);
-			logger.info("Using config file " + configFile.getAbsolutePath());
-			FileInputStream stream = new FileInputStream(configFile);
-			readConfig(stream);
-			stream.close();
-		}
+		InputStream stream = StringUtils.class.getClassLoader().getResourceAsStream("configuration.cfg");
+
+		logger.info("Using config file " + stream);
+		readConfig(stream);
+		stream.close();
 	}
 
 	/**
