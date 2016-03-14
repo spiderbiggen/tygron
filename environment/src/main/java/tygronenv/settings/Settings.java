@@ -60,10 +60,6 @@ public class Settings {
 
 	}
 
-	protected SettingsLoader getSettingsLoader(String cfg) throws Exception {
-		return new SettingsLoader(cfg);
-	}
-
 	/**
 	 * Return the Tygron username.
 	 * 
