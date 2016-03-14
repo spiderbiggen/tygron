@@ -4,10 +4,8 @@ import static org.junit.Assert.assertNull;
 
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import eis.EIDefaultImpl;
-import eis.eis2java.exception.TranslationException;
 import eis.eis2java.translation.Java2Parameter;
 import eis.eis2java.translation.Parameter2Java;
 import eis.eis2java.translation.Translator;
@@ -17,9 +15,7 @@ import eis.exceptions.NoEnvironmentException;
 import eis.exceptions.PerceiveException;
 import eis.iilang.Action;
 import eis.iilang.EnvironmentState;
-import eis.iilang.Identifier;
 import eis.iilang.Parameter;
-import eis.iilang.ParameterList;
 import eis.iilang.Percept;
 import nl.tytech.core.client.net.ServicesManager;
 import nl.tytech.core.net.Network;
@@ -79,7 +75,11 @@ public class EisEnv extends EIDefaultImpl {
 	@Override
 	public void init(Map<String, Parameter> parameters) throws ManagementException {
 		super.init(parameters);
-		Configuration config = makeConfiguration(parameters);
+		try {
+			Configuration config = new Configuration(parameters);
+		} catch (Exception e) {
+			throw new ManagementException("Problem with init parameters", e);
+		}
 		connectServer();
 		setState(EnvironmentState.RUNNING);
 	}
@@ -98,8 +98,7 @@ public class EisEnv extends EIDefaultImpl {
 	/************************* SUPPORT FUNCTIONS ****************************/
 
 	Java2Parameter<?>[] j2p = new Java2Parameter<?>[] {};
-	Parameter2Java<?>[] p2j = new Parameter2Java<?>[] { new Configuration2J(), new ParamEnum2J(),
-			new HashMap2J() };
+	Parameter2Java<?>[] p2j = new Parameter2Java<?>[] { new Configuration2J(), new ParamEnum2J(), new HashMap2J() };
 
 	/**
 	 * Installs the required EIS2Java translators
@@ -148,27 +147,6 @@ public class EisEnv extends EIDefaultImpl {
 		throw new IllegalStateException("NOT IMPLEMENTED");
 		// assertTrue(ServicesManager.fireServiceEvent(IOServiceEventType.DELETE_PROJECT,
 		// data.getFileName()));
-	}
-
-	/**
-	 * @param parameters
-	 *            the EIS init params
-	 * @return {@link Configuration}
-	 * @throws ManagementException
-	 */
-	private Configuration makeConfiguration(Map<String, Parameter> parameters) throws ManagementException {
-		Configuration configuration;
-		try {
-			// Wrapper pending fix to environment init.
-			ParameterList parameterMap = new ParameterList();
-			for (Entry<String, Parameter> entry : parameters.entrySet()) {
-				parameterMap.add(new ParameterList(new Identifier(entry.getKey()), entry.getValue()));
-			}
-			configuration = Translator.getInstance().translate2Java(parameterMap, Configuration.class);
-		} catch (TranslationException e) {
-			throw new ManagementException("Invalid parameters", e);
-		}
-		return configuration;
 	}
 
 }
