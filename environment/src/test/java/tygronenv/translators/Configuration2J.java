@@ -16,9 +16,9 @@ import tygronenv.ParamEnum;
  * Translates the init parameters into a {@link Configuration}.
  *
  */
-public class ConfigurationTranslator implements Parameter2Java<Configuration> {
+public class Configuration2J implements Parameter2Java<Configuration> {
 
-	public ConfigurationTranslator() {
+	public Configuration2J() {
 		// used for testing
 	}
 

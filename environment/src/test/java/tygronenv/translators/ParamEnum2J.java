@@ -6,9 +6,9 @@ import eis.iilang.Identifier;
 import eis.iilang.Parameter;
 import tygronenv.ParamEnum;
 
-public class ParamEnumTranslator implements Parameter2Java<ParamEnum> {
+public class ParamEnum2J implements Parameter2Java<ParamEnum> {
 
-	public ParamEnumTranslator() {
+	public ParamEnum2J() {
 		// Used for testing
 	}
 

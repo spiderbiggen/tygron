@@ -9,9 +9,9 @@ import eis.iilang.Parameter;
 import eis.iilang.ParameterList;
 
 @SuppressWarnings("rawtypes")
-public class HashMapTranslator implements Parameter2Java<HashMap> {
+public class HashMap2J implements Parameter2Java<HashMap> {
 
-	public HashMapTranslator() {
+	public HashMap2J() {
 		// Used for testing
 	}
 
