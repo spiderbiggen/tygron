@@ -4,8 +4,10 @@ import static org.junit.Assert.assertNull;
 
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import eis.EIDefaultImpl;
+import eis.eis2java.exception.TranslationException;
 import eis.eis2java.translation.Java2Parameter;
 import eis.eis2java.translation.Parameter2Java;
 import eis.eis2java.translation.Translator;
@@ -15,7 +17,9 @@ import eis.exceptions.NoEnvironmentException;
 import eis.exceptions.PerceiveException;
 import eis.iilang.Action;
 import eis.iilang.EnvironmentState;
+import eis.iilang.Identifier;
 import eis.iilang.Parameter;
+import eis.iilang.ParameterList;
 import eis.iilang.Percept;
 import nl.tytech.core.client.net.ServicesManager;
 import nl.tytech.core.net.Network;
@@ -23,6 +27,9 @@ import nl.tytech.core.net.serializable.User;
 import nl.tytech.core.net.serializable.User.AccessLevel;
 import nl.tytech.core.util.SettingsManager;
 import tygronenv.settings.Settings;
+import tygronenv.translators.ConfigurationTranslator;
+import tygronenv.translators.HashMapTranslator;
+import tygronenv.translators.ParamEnumTranslator;
 
 /**
  * Implements the Tygron EIS adapter
@@ -72,9 +79,16 @@ public class EisEnv extends EIDefaultImpl {
 	@Override
 	public void init(Map<String, Parameter> parameters) throws ManagementException {
 		super.init(parameters);
-		connectWithServer();
+		Configuration config = makeConfiguration(parameters);
+		connectServer();
 		setState(EnvironmentState.RUNNING);
 	}
+
+	@Override
+	public void kill() throws ManagementException {
+		super.kill();
+		disconnectServer();
+	};
 
 	@Override
 	public boolean isStateTransitionValid(EnvironmentState oldState, EnvironmentState newState) {
@@ -82,10 +96,10 @@ public class EisEnv extends EIDefaultImpl {
 	}
 
 	/************************* SUPPORT FUNCTIONS ****************************/
-	private int[] aa = new int[] { 1, 2, 3 };
 
 	Java2Parameter<?>[] j2p = new Java2Parameter<?>[] {};
-	Parameter2Java<?>[] p2j = new Parameter2Java<?>[] {};
+	Parameter2Java<?>[] p2j = new Parameter2Java<?>[] { new ConfigurationTranslator(), new ParamEnumTranslator(),
+			new HashMapTranslator() };
 
 	/**
 	 * Installs the required EIS2Java translators
@@ -106,7 +120,7 @@ public class EisEnv extends EIDefaultImpl {
 	 * 
 	 * @throws ManagementException
 	 */
-	private void connectWithServer() throws ManagementException {
+	private void connectServer() throws ManagementException {
 		Settings credentials = new Settings();
 
 		// setup settings
@@ -128,6 +142,33 @@ public class EisEnv extends EIDefaultImpl {
 			throw new ManagementException("You need to have at least EDITOR access level");
 		}
 
+	}
+
+	private void disconnectServer() {
+		throw new IllegalStateException("NOT IMPLEMENTED");
+		// assertTrue(ServicesManager.fireServiceEvent(IOServiceEventType.DELETE_PROJECT,
+		// data.getFileName()));
+	}
+
+	/**
+	 * @param parameters
+	 *            the EIS init params
+	 * @return {@link Configuration}
+	 * @throws ManagementException
+	 */
+	private Configuration makeConfiguration(Map<String, Parameter> parameters) throws ManagementException {
+		Configuration configuration;
+		try {
+			// Wrapper pending fix to environment init.
+			ParameterList parameterMap = new ParameterList();
+			for (Entry<String, Parameter> entry : parameters.entrySet()) {
+				parameterMap.add(new ParameterList(new Identifier(entry.getKey()), entry.getValue()));
+			}
+			configuration = Translator.getInstance().translate2Java(parameterMap, Configuration.class);
+		} catch (TranslationException e) {
+			throw new ManagementException("Invalid parameters", e);
+		}
+		return configuration;
 	}
 
 }
