@@ -23,7 +23,6 @@ import nl.tytech.core.net.serializable.User;
 import nl.tytech.core.net.serializable.User.AccessLevel;
 import nl.tytech.core.util.SettingsManager;
 import tygronenv.settings.Settings;
-import tygronenv.translators.Configuration2J;
 import tygronenv.translators.HashMap2J;
 import tygronenv.translators.ParamEnum2J;
 
@@ -98,7 +97,7 @@ public class EisEnv extends EIDefaultImpl {
 	/************************* SUPPORT FUNCTIONS ****************************/
 
 	Java2Parameter<?>[] j2p = new Java2Parameter<?>[] {};
-	Parameter2Java<?>[] p2j = new Parameter2Java<?>[] { new Configuration2J(), new ParamEnum2J(), new HashMap2J() };
+	Parameter2Java<?>[] p2j = new Parameter2Java<?>[] { new ParamEnum2J(), new HashMap2J() };
 
 	/**
 	 * Installs the required EIS2Java translators
