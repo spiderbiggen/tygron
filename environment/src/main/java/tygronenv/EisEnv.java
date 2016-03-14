@@ -76,6 +76,11 @@ public class EisEnv extends EIDefaultImpl {
 		setState(EnvironmentState.RUNNING);
 	}
 
+	@Override
+	public boolean isStateTransitionValid(EnvironmentState oldState, EnvironmentState newState) {
+		return true;
+	}
+
 	/************************* SUPPORT FUNCTIONS ****************************/
 	private int[] aa = new int[] { 1, 2, 3 };
 
@@ -119,7 +124,7 @@ public class EisEnv extends EIDefaultImpl {
 					+ ". Wrong name/pass? Please check the configuration.cfg file");
 		}
 
-		if (user.getMaxAccessLevel().ordinal() >= AccessLevel.EDITOR.ordinal()) {
+		if (user.getMaxAccessLevel().ordinal() < AccessLevel.EDITOR.ordinal()) {
 			throw new ManagementException("You need to have at least EDITOR access level");
 		}
 
