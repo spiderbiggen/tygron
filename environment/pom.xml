@@ -62,8 +62,15 @@
 			<artifactId>sdk</artifactId>
 			<version>1.0.17</version>
 		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
-	
+
 	<build>
 		<plugins>
 			<!-- running tygron sdk code (for the tests) requires java 1.8 -->

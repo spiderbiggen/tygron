@@ -11,6 +11,7 @@ public class Settings {
   private String username;
   private String password;
 
+
   /**
    * Set the username and password.
    */
