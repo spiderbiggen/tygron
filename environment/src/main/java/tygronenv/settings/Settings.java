@@ -8,7 +8,8 @@ import java.util.logging.Logger;
 import nl.tytech.util.StringUtils;
 
 /**
- * Contains a user's username and Password.
+ * Contains a user's username and Password that are loaded from
+ * configuration.cfg file .
  */
 public class Settings {
 	private static final Logger logger = Logger.getLogger(Settings.class.getName());

@@ -56,12 +56,17 @@
 	</repositories>
 
 	<dependencies>
-
 		<dependency>
 			<groupId>nl.tygron</groupId>
 			<artifactId>sdk</artifactId>
 			<version>1.0.17</version>
 		</dependency>
+		<dependency>
+			<groupId>eishub</groupId>
+			<artifactId>eis</artifactId>
+			<version>0.5.0</version>
+		</dependency>
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

@@ -70,7 +70,7 @@ public class SettingsTest {
 
 		ServicesManager.setSessionLoginCredentials(credentials.getUserName(), credentials.getPassword());
 		User user = ServicesManager.getMyUserAccount();
-		// if null, you have w
+		// if null, you have no good name/pass
 		assertNotNull("failed to attach user. Wrong name/pass? Please check the configuration.cfg file", user);
 
 		assertTrue("You need to be at least EDITOR to run these tests!",
