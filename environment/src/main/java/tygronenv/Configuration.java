@@ -6,10 +6,8 @@ import java.util.Map.Entry;
 import eis.eis2java.exception.NoTranslatorException;
 import eis.eis2java.exception.TranslationException;
 import eis.eis2java.translation.Translator;
-import eis.exceptions.ManagementException;
 import eis.iilang.Identifier;
 import eis.iilang.Parameter;
-import eis.iilang.ParameterList;
 
 /**
  * The configuration as specified in the MAS init param
@@ -30,6 +28,19 @@ public class Configuration {
 	 * @throws TranslationException
 	 */
 	public Configuration(Map<String, Parameter> parameters) throws NoTranslatorException, TranslationException {
+		parseParameters(parameters);
+		checkSanity();
+	}
+
+	/**
+	 * Parse the parameters and put them in our fields
+	 * 
+	 * @param parameters
+	 *            the init parameters
+	 * @throws TranslationException
+	 * @throws NoTranslatorException
+	 */
+	private void parseParameters(Map<String, Parameter> parameters) throws TranslationException, NoTranslatorException {
 		Translator translator = Translator.getInstance();
 		for (Entry<String, Parameter> entry : parameters.entrySet()) {
 			ParamEnum param = translator.translate2Java(new Identifier(entry.getKey()), ParamEnum.class);
@@ -47,35 +58,17 @@ public class Configuration {
 				break;
 			}
 		}
-		checkSanity();
 	}
 
 	private void checkSanity() {
 		if (map == null)
-			throw new IllegalStateException("map is not provided");
+			throw new IllegalStateException("map must be provided");
 		if (stakeholder == null)
-			throw new IllegalStateException("stakeholder is not provided");
+			throw new IllegalStateException("stakeholder must be provided");
+		// test valid values for stakeholder. USE ENUM??
+		if (slot < 0)
+			throw new IllegalArgumentException("slot must be >0 or not provided at all.");
 
-	}
-
-	/**
-	 * @param parameters
-	 *            the EIS init params
-	 * @return {@link Configuration}
-	 * @throws ManagementException
-	 */
-	public Configuration makeConfiguration(Map<String, Parameter> parameters) throws ManagementException {
-		Configuration configuration;
-		try {
-			ParameterList parameterMap = new ParameterList();
-			for (Entry<String, Parameter> entry : parameters.entrySet()) {
-				parameterMap.add(new ParameterList(new Identifier(entry.getKey()), entry.getValue()));
-			}
-			configuration = Translator.getInstance().translate2Java(parameterMap, Configuration.class);
-		} catch (TranslationException e) {
-			throw new ManagementException("Invalid parameters", e);
-		}
-		return configuration;
 	}
 
 	public void setStakeholder(int stakeholderParametersList) {
