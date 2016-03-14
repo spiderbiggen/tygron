@@ -16,14 +16,9 @@ import eis.iilang.ParameterList;
  *
  */
 public class Configuration {
-	private int stakeholder;
-	private String map;
-	private int slot;
-
-	public Configuration() {
-		slot = -1;
-		stakeholder = -1;
-	}
+	private Integer stakeholder = null;
+	private String map = null;
+	private Integer slot = null;
 
 	/**
 	 * Construct configuration directly from set of Parameters as in the MAS
@@ -52,6 +47,15 @@ public class Configuration {
 				break;
 			}
 		}
+		checkSanity();
+	}
+
+	private void checkSanity() {
+		if (map == null)
+			throw new IllegalStateException("map is not provided");
+		if (stakeholder == null)
+			throw new IllegalStateException("stakeholder is not provided");
+
 	}
 
 	/**
