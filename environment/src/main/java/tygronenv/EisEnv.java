@@ -15,6 +15,8 @@ import eis.iilang.Action;
 import eis.iilang.EnvironmentState;
 import eis.iilang.Parameter;
 import eis.iilang.Percept;
+import tygronenv.configuration.Configuration;
+import tygronenv.connection.ServerConnection;
 import tygronenv.translators.HashMap2J;
 import tygronenv.translators.ParamEnum2J;
 

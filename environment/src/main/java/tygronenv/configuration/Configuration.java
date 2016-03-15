@@ -1,4 +1,4 @@
-package tygronenv;
+package tygronenv.configuration;
 
 import java.util.Map;
 import java.util.Map.Entry;

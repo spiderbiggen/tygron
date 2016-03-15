@@ -1,4 +1,4 @@
-package tygronenv;
+package tygronenv.connection;
 
 import java.util.Collection;
 
@@ -17,6 +17,7 @@ import nl.tytech.core.util.SettingsManager;
 import nl.tytech.data.engine.item.Setting;
 import nl.tytech.data.engine.item.Stakeholder;
 import nl.tytech.util.logger.TLogger;
+import tygronenv.configuration.Configuration;
 import tygronenv.settings.Settings;
 
 /**

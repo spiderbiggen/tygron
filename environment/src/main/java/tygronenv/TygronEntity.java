@@ -1,6 +1,8 @@
 package tygronenv;
 
 import nl.tytech.core.net.serializable.ProjectData;
+import tygronenv.configuration.Configuration;
+import tygronenv.connection.Session;
 
 /**
  * the 'participant' , but close to the EIS level.

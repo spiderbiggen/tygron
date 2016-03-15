@@ -1,4 +1,4 @@
-package tygronenv;
+package tygronenv.connection;
 
 import java.util.logging.Logger;
 
@@ -12,6 +12,7 @@ import nl.tytech.core.net.serializable.ProjectData;
 import nl.tytech.core.net.serializable.SlotInfo;
 import nl.tytech.core.util.SettingsManager;
 import nl.tytech.locale.TLanguage;
+import tygronenv.configuration.Configuration;
 
 /**
  * Creates a session according to the requested config. A session is a

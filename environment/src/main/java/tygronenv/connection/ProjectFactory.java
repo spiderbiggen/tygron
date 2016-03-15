@@ -1,4 +1,4 @@
-package tygronenv;
+package tygronenv.connection;
 
 import eis.exceptions.ManagementException;
 import nl.tytech.core.client.net.ServicesManager;

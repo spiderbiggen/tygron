@@ -4,7 +4,7 @@ import eis.eis2java.exception.TranslationException;
 import eis.eis2java.translation.Parameter2Java;
 import eis.iilang.Identifier;
 import eis.iilang.Parameter;
-import tygronenv.ParamEnum;
+import tygronenv.configuration.ParamEnum;
 
 public class ParamEnum2J implements Parameter2Java<ParamEnum> {
 

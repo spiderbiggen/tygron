@@ -1,4 +1,4 @@
-package tygronenv;
+package tygronenv.configuration;
 
 /**
  * Translates a init parameter type into a ParamEnum
