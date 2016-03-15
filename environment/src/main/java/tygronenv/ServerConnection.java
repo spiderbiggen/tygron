@@ -28,7 +28,6 @@ import tygronenv.settings.Settings;
  */
 public class ServerConnection {
 
-	private Session session;
 	/**
 	 * True if project is created by us. False if someone else created the
 	 * project.
@@ -75,7 +74,6 @@ public class ServerConnection {
 			createdProject = true;
 		}
 
-		session = new Session(config, project);
 	}
 
 	/**
@@ -93,10 +91,6 @@ public class ServerConnection {
 	 * @throws ManagementException
 	 */
 	public void disconnect() throws ManagementException {
-		if (session != null) {
-			session.close();
-			session = null;
-		}
 		if (createdProject) {
 			factory.deleteProject(project);
 			project = null;

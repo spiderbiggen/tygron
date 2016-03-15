@@ -15,7 +15,8 @@ import nl.tytech.locale.TLanguage;
 
 /**
  * Creates a session according to the requested config. A session is a
- * connection of a participant with the server.
+ * connection of a participant with the server. A session runs on an open
+ * project, see {@link ServerConnection#getProject()}.
  */
 public class Session {
 	private static final Logger logger = Logger.getLogger(Session.class.getName());

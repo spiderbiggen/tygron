@@ -27,6 +27,7 @@ import tygronenv.translators.ParamEnum2J;
 public class EisEnv extends EIDefaultImpl {
 
 	private ServerConnection serverConnection;
+	private Session entity;
 
 	/**
 	 * General initialization: translators,
@@ -76,11 +77,18 @@ public class EisEnv extends EIDefaultImpl {
 		}
 		serverConnection = new ServerConnection(config);
 		setState(EnvironmentState.RUNNING);
+
+		// temporary.
+		entity = new Session(config, serverConnection.getProject());
 	}
 
 	@Override
 	public void kill() throws ManagementException {
 		super.kill();
+		if (entity != null) {
+			entity.close();
+			entity = null;
+		}
 		serverConnection.disconnect();
 	};
 
