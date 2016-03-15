@@ -36,6 +36,10 @@ public class ServerConnection {
 	private boolean createdProject = false;
 	private ProjectData project;
 
+	/**
+	 * Session can be used by all team members.
+	 */
+	private Session session = null;
 	private ProjectFactory factory = new ProjectFactory();
 
 	/**
@@ -75,14 +79,8 @@ public class ServerConnection {
 			createdProject = true;
 		}
 
-	}
+		session = new Session(config, project);
 
-	/**
-	 * @return the project that this connection is supporting
-	 * 
-	 */
-	public ProjectData getProject() {
-		return project;
 	}
 
 	/**
@@ -92,6 +90,10 @@ public class ServerConnection {
 	 * @throws ManagementException
 	 */
 	public void disconnect() throws ManagementException {
+		if (session != null) {
+			session.close();
+			session = null;
+		}
 		if (createdProject) {
 			factory.deleteProject(project);
 			project = null;
@@ -99,6 +101,14 @@ public class ServerConnection {
 		}
 
 		ServicesManager.removeLoginCredentials();
+	}
+
+	/**
+	 * @return the session that we are working on. All team members can use this
+	 *         session
+	 */
+	public Session getSession() {
+		return session;
 	}
 }
 

@@ -8,13 +8,14 @@ import eis.eis2java.exception.TranslationException;
 import eis.eis2java.translation.Translator;
 import eis.iilang.Identifier;
 import eis.iilang.Parameter;
+import nl.tytech.data.engine.item.Stakeholder;
 
 /**
  * The environment configuration as specified in the init param
  *
  */
 public class Configuration {
-	private Integer stakeholder = null;
+	private Stakeholder stakeholder = null;
 	private String map = null;
 	private Integer slot = null;
 
@@ -46,7 +47,7 @@ public class Configuration {
 			ParamEnum param = translator.translate2Java(new Identifier(entry.getKey()), ParamEnum.class);
 			switch (param) {
 			case STAKEHOLDER:
-				setStakeholder(translator.translate2Java(entry.getValue(), Integer.class));
+				setStakeholder(translator.translate2Java(entry.getValue(), Stakeholder.class));
 				break;
 			case MAP:
 				setMap(translator.translate2Java(entry.getValue(), String.class));
@@ -66,13 +67,13 @@ public class Configuration {
 		}
 	}
 
-	public void setStakeholder(int stakeholderParametersList) {
-		if (stakeholder == null)
+	public void setStakeholder(Stakeholder holder) {
+		if (holder == null)
 			throw new IllegalStateException("stakeholder must be provided");
-		stakeholder = stakeholderParametersList;
+		stakeholder = holder;
 	}
 
-	public Integer getStakeholder() {
+	public Stakeholder getStakeholder() {
 		return stakeholder;
 	}
 

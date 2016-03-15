@@ -3,29 +3,25 @@ package tygronenv.connection;
 import java.util.logging.Logger;
 
 import nl.tytech.core.client.net.ServicesManager;
-import nl.tytech.core.client.net.SlotConnection;
-import nl.tytech.core.net.Network.AppType;
 import nl.tytech.core.net.Network.SessionType;
 import nl.tytech.core.net.event.IOServiceEventType;
-import nl.tytech.core.net.serializable.JoinReply;
 import nl.tytech.core.net.serializable.ProjectData;
 import nl.tytech.core.net.serializable.SlotInfo;
-import nl.tytech.core.util.SettingsManager;
 import nl.tytech.locale.TLanguage;
 import tygronenv.configuration.Configuration;
 
 /**
  * Creates a session according to the requested config. A session is a
- * connection of a participant with the server. A session runs on an open
- * project, see {@link ServerConnection#getProject()}.
+ * connection of a team (multiple participants) with the server. A session runs
+ * on an open project, see {@link ServerConnection#getProject()}.
  */
 public class Session {
 	private static final Logger logger = Logger.getLogger(Session.class.getName());
-	private SlotConnection slotConnection;
+	private Integer slotID;
 
 	public Session(Configuration config, ProjectData project) {
 
-		Integer slotID = config.getSlot();
+		slotID = config.getSlot();
 		if (config.getSlot() == null) {
 			slotID = ServicesManager.fireServiceEvent(IOServiceEventType.START_NEW_SESSION, SessionType.MULTI,
 					project.getFileName(), TLanguage.EN);
@@ -41,24 +37,14 @@ public class Session {
 			}
 			slotID = slot.id;
 		}
+	}
 
-		JoinReply reply = ServicesManager.fireServiceEvent(IOServiceEventType.JOIN_SESSION, slotID,
-				AppType.PARTICIPANT);
-		if (reply == null) {
-			throw new IllegalStateException("Failed to join session " + slotID + " as participant");
-		}
-
-		slotConnection = new SlotConnection();
-		slotConnection.initSettings(AppType.PARTICIPANT, SettingsManager.getServerIP(), slotID, reply.serverToken,
-				reply.client.getClientToken());
-
-		if (!slotConnection.connect()) {
-			throw new IllegalStateException("Failed to connect slotConnection");
-		}
-
-		// FIXME add event handler to the slot
-		// add event handler to receive updates on
-		// eventHandler = new ExampleEventHandler();
+	/**
+	 * 
+	 * @return the team's slot on the server.
+	 */
+	public Integer getTeamSlot() {
+		return slotID;
 	}
 
 	/**
@@ -99,7 +85,5 @@ public class Session {
 	 * Close the session and clean up.
 	 */
 	public void close() {
-		slotConnection.disconnect(false);
-		slotConnection = null;
 	}
 }

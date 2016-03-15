@@ -8,6 +8,7 @@ import eis.eis2java.translation.Java2Parameter;
 import eis.eis2java.translation.Parameter2Java;
 import eis.eis2java.translation.Translator;
 import eis.exceptions.ActException;
+import eis.exceptions.EntityException;
 import eis.exceptions.ManagementException;
 import eis.exceptions.NoEnvironmentException;
 import eis.exceptions.PerceiveException;
@@ -65,7 +66,7 @@ public class EisEnv extends EIDefaultImpl {
 
 	@Override
 	protected Percept performEntityAction(String entity, Action action) throws ActException {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 
@@ -81,7 +82,12 @@ public class EisEnv extends EIDefaultImpl {
 		serverConnection = new ServerConnection(config);
 		setState(EnvironmentState.RUNNING);
 
-		entity = new TygronEntity(config, serverConnection.getProject());
+		entity = new TygronEntity(config.getStakeholder(), serverConnection.getSession().getTeamSlot());
+		try {
+			notifyNewEntity("entity");
+		} catch (EntityException e) {
+			throw new ManagementException("failed to register entity", e);
+		}
 	}
 
 	@Override
