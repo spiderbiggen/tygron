@@ -26,6 +26,7 @@ public class TygronEntity {
 	 * the confirmation from the server that we joined.
 	 */
 	private JoinReply joinedConfirm;
+	private EntityEventHandler eventHandler;
 
 	/**
 	 * 
@@ -92,15 +93,15 @@ public class TygronEntity {
 			throw new IllegalStateException("Failed to connect slotConnection");
 		}
 
-		// FIXME add event handler to the slot
-		// add event handler to receive updates on
-		// eventHandler = new ExampleEventHandler();
+		eventHandler = new EntityEventHandler();
 	}
 
 	/**
 	 * Close server connection.
 	 */
 	public void close() {
+		eventHandler.stop();
+		eventHandler = null;
 		slotConnection.disconnect(false);
 		slotConnection = null;
 	}
