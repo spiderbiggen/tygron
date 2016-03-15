@@ -43,18 +43,23 @@ public class EntityEventHandler implements EventListenerInterface, EventIDListen
 		EventManager.removeIDListener(this);
 	}
 
-	private boolean hasStakeholder() {
+	/**
+	 * @return true if cache is ready for use (currently it must have
+	 *         STAKEHOLDERS).
+	 */
+	private boolean isReady() {
 		ItemMap<Item> map = EventManager.getItemMap(MapLink.STAKEHOLDERS);
 		return map != null && map.size() > 0;
 	}
 
 	/**
-	 * Wait till critical elements are available: STAKEHOLDERS
+	 * Wait till critical elements are available: see {@link #isReady()}. But
+	 * wait at most 10 seconds.
 	 */
 	public void waitForReady() {
 		int WAITTIME = 100;
 		int totaltime = 10000; // milliseconds.
-		while (!hasStakeholder()) {
+		while (!isReady()) {
 			totaltime -= WAITTIME;
 			if (totaltime < 0) {
 				throw new IllegalStateException("EventManager initialization timed out.");
