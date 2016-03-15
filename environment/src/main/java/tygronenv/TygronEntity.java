@@ -14,7 +14,8 @@ import nl.tytech.data.engine.item.Stakeholder;
 import nl.tytech.util.logger.TLogger;
 
 /**
- * the 'participant' , but close to the EIS level.
+ * the 'participant' - a single stakeholder connection. Handles events coming in
+ * for this stakeholder
  * 
  * @author W.Pasman
  *
@@ -22,7 +23,10 @@ import nl.tytech.util.logger.TLogger;
 public class TygronEntity {
 
 	private SlotConnection slotConnection = null;
-	private JoinReply joinedConfirm; // the confirmation from the server that we joined.
+	/**
+	 * the confirmation from the server that we joined.
+	 */
+	private JoinReply joinedConfirm;
 
 	/**
 	 * 
@@ -30,12 +34,18 @@ public class TygronEntity {
 	 * @param slotID
 	 *            the slot ID of the team.
 	 */
-	public TygronEntity(Stakeholder stakeholder, Integer slotID) {
+	public TygronEntity(Stakeholder.Type stakeholder, Integer slotID) {
 		getSlotConnection(slotID);
 		selectStakeholder(stakeholder);
 	}
 
-	private void selectStakeholder(Stakeholder intendedStakeHolder) {
+	/**
+	 * Select given stakeholder.
+	 * 
+	 * @param intendedStakeHolder
+	 *            the stakeholder to use.
+	 */
+	private void selectStakeholder(Stakeholder.Type intendedStakeHolder) {
 
 		int stakeholderID = 0;
 		ItemMap<Stakeholder> stakeholders = EventManager.getItemMap(MapLink.STAKEHOLDERS);
@@ -48,6 +58,12 @@ public class TygronEntity {
 				joinedConfirm.client.getClientToken());
 	}
 
+	/**
+	 * Join the existing session on the given slot.
+	 * 
+	 * @param slotID
+	 *            the slot where our team is on.
+	 */
 	private void getSlotConnection(Integer slotID) {
 		joinedConfirm = ServicesManager.fireServiceEvent(IOServiceEventType.JOIN_SESSION, slotID, AppType.PARTICIPANT);
 		if (joinedConfirm == null) {
@@ -55,8 +71,8 @@ public class TygronEntity {
 		}
 
 		slotConnection = new SlotConnection();
-		slotConnection.initSettings(AppType.PARTICIPANT, SettingsManager.getServerIP(), slotID, joinedConfirm.serverToken,
-				joinedConfirm.client.getClientToken());
+		slotConnection.initSettings(AppType.PARTICIPANT, SettingsManager.getServerIP(), slotID,
+				joinedConfirm.serverToken, joinedConfirm.client.getClientToken());
 
 		if (!slotConnection.connect()) {
 			throw new IllegalStateException("Failed to connect slotConnection");
