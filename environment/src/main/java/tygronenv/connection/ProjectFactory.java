@@ -56,8 +56,9 @@ public class ProjectFactory {
 	}
 
 	/**
-	 * There is no existing project with given name. Create one and initialize
-	 * it. Bit hacky, it does not do much for the map, it probably stays empty.
+	 * Assumes that there is no existing project with given name (eg
+	 * {@link #getProject(String)} returned null). Create one and initialize it.
+	 * Bit hacky, it does not do much for the map, it probably stays empty.
 	 * 
 	 * @throws ManagementException
 	 */
@@ -78,15 +79,14 @@ public class ProjectFactory {
 			throw new ManagementException("Failed to save new project" + result);
 		}
 
-		/**
-		 * Disconnect from slot
-		 */
 		editSlot.disconnect(false);
 
 		return proj;
 	}
 
 	/**
+	 * open an editor slot
+	 * 
 	 * @param proj
 	 *            the project to open an edit slot for
 	 * @return a {@link SlotConnection} that can be used for editing the
@@ -118,7 +118,6 @@ public class ProjectFactory {
 	 * @throws ManagementException
 	 */
 	private void addCivilianMap(SlotConnection slotConnection) throws ManagementException {
-		// add event handler to receive updates on
 		EditorEventHandler eventHandler = new EditorEventHandler();
 		int mapSizeM = 500;
 		slotConnection.fireServerEvent(true, EditorEventType.SET_INITIAL_MAP_SIZE, mapSizeM);
@@ -130,18 +129,7 @@ public class ProjectFactory {
 		slotConnection.fireServerEvent(true, EditorStakeholderEventType.ADD_WITH_TYPE_AND_PLAYABLE,
 				Stakeholder.Type.CIVILIAN, true);
 
-		// wait on first updates (seperate thread)
-		boolean updated = false;
-		for (int i = 0; i < 15; i++) {
-			if (eventHandler.isMapUpdated() && eventHandler.isStakeholderUpdated()) {
-				updated = true;
-				break;
-			}
-			ThreadUtils.sleepInterruptible(1000);
-		}
-		if (!updated) {
-			throw new ManagementException("Server is not responding on request to update the map");
-		}
+		eventHandler.waitCompletion();
 	}
 
 	/**
@@ -175,12 +163,26 @@ class EditorEventHandler implements EventListenerInterface, EventIDListenerInter
 		EventManager.addEnumListener(this, MapLink.SETTINGS, Setting.Type.MAP_WIDTH_METERS);
 	}
 
-	public boolean isMapUpdated() {
-		return mapUpdate;
-	}
+	/**
+	 * Wait till map and stakeholder have been updated.
+	 * 
+	 * @throws ManagementException
+	 *             if it takes too long (15 seconds)
+	 */
+	public void waitCompletion() throws ManagementException {
+		// wait on first updates (seperate thread)
+		boolean updated = false;
+		for (int i = 0; i < 15; i++) {
+			if (stakeholderUpdate && mapUpdate) {
+				updated = true;
+				break;
+			}
+			ThreadUtils.sleepInterruptible(1000);
+		}
+		if (!updated) {
+			throw new ManagementException("Server is not responding on request to update the map");
+		}
 
-	public boolean isStakeholderUpdated() {
-		return stakeholderUpdate;
 	}
 
 	@Override
