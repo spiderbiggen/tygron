@@ -35,16 +35,20 @@ public class TygronEntity {
 	 *            the slot ID of the team.
 	 */
 	public TygronEntity(Stakeholder.Type stakeholdertype, Integer slotID) {
-		eventHandler = new EntityEventHandler();
-
-		getSlotConnection(slotID);
-		eventHandler.waitForReady();
-		Stakeholder stakeholder = getStakeholder(stakeholdertype);
-		if (stakeholder == null) {
-			throw new IllegalArgumentException("Stakeholder of type " + stakeholdertype + " is not available");
+		try {
+			eventHandler = new EntityEventHandler();
+			getSlotConnection(slotID);
+			eventHandler.waitForReady();
+			Stakeholder stakeholder = getStakeholder(stakeholdertype);
+			if (stakeholder == null) {
+				throw new IllegalArgumentException("Stakeholder of type " + stakeholdertype + " is not available");
+			}
+			slotConnection.fireServerEvent(true, ParticipantEventType.STAKEHOLDER_SELECT, stakeholder.getID(),
+					joinedConfirm.client.getClientToken());
+		} catch (Exception e) {
+			close(); // constructor fails, close down properly
+			throw e;
 		}
-		slotConnection.fireServerEvent(true, ParticipantEventType.STAKEHOLDER_SELECT, stakeholder.getID(),
-				joinedConfirm.client.getClientToken());
 	}
 
 	/**
@@ -99,7 +103,9 @@ public class TygronEntity {
 	public void close() {
 		eventHandler.stop();
 		eventHandler = null;
-		slotConnection.disconnect(false);
-		slotConnection = null;
+		if (slotConnection != null) {
+			slotConnection.disconnect(false);
+			slotConnection = null;
+		}
 	}
 }

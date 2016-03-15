@@ -18,7 +18,7 @@ import nl.tytech.data.engine.item.Setting;
 public class EntityEventHandler implements EventListenerInterface, EventIDListenerInterface {
 
 	public EntityEventHandler() {
-		EventManager.addListener(this, MapLink.STAKEHOLDERS);
+		EventManager.addListener(this, MapLink.STAKEHOLDERS);// MapLink.FUNCTIONS
 		EventManager.addEnumListener(this, MapLink.SETTINGS, Setting.Type.MAP_WIDTH_METERS);
 	}
 
@@ -34,13 +34,11 @@ public class EntityEventHandler implements EventListenerInterface, EventIDListen
 
 	@Override
 	public void notifyListener(Event event) {
-		System.out.println("EVENT:" + event);
-
+		System.out.println("1EVENT:" + event);
 	}
 
 	public void stop() {
-		EventManager.removeListener(this);
-		EventManager.removeIDListener(this);
+		EventManager.removeAllListeners(this);
 	}
 
 	/**
