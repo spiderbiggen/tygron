@@ -34,9 +34,9 @@ public class TygronEntity {
 	 * @param slotID
 	 *            the slot ID of the team.
 	 */
-	public TygronEntity(Stakeholder.Type stakeholdertype, Integer slotID) {
+	public TygronEntity(Stakeholder.Type stakeholdertype, Integer slotID, PerceptPipe perceptPipe) {
 		try {
-			eventHandler = new EntityEventHandler();
+			eventHandler = new EntityEventHandler(perceptPipe);
 			getSlotConnection(slotID);
 			eventHandler.waitForReady();
 			Stakeholder stakeholder = getStakeholder(stakeholdertype);

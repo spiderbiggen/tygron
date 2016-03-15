@@ -1,10 +1,15 @@
 package tygronenv;
 
+import eis.eis2java.exception.TranslationException;
+import eis.eis2java.translation.Translator;
+import eis.iilang.Parameter;
+import eis.iilang.Percept;
 import nl.tytech.core.client.event.EventIDListenerInterface;
 import nl.tytech.core.client.event.EventManager;
 import nl.tytech.core.event.Event;
 import nl.tytech.core.event.EventListenerInterface;
 import nl.tytech.core.net.serializable.MapLink;
+import nl.tytech.core.structure.ClientItemMap;
 import nl.tytech.core.structure.ItemMap;
 import nl.tytech.data.core.item.Item;
 import nl.tytech.data.engine.item.Setting;
@@ -17,7 +22,11 @@ import nl.tytech.data.engine.item.Setting;
  */
 public class EntityEventHandler implements EventListenerInterface, EventIDListenerInterface {
 
-	public EntityEventHandler() {
+	private PerceptPipe pipe;
+	private Translator translator = Translator.getInstance();
+
+	public EntityEventHandler(PerceptPipe perceptPipe) {
+		pipe = perceptPipe;
 		EventManager.addListener(this, MapLink.STAKEHOLDERS);// MapLink.FUNCTIONS
 		EventManager.addEnumListener(this, MapLink.SETTINGS, Setting.Type.MAP_WIDTH_METERS);
 	}
@@ -34,7 +43,21 @@ public class EntityEventHandler implements EventListenerInterface, EventIDListen
 
 	@Override
 	public void notifyListener(Event event) {
-		System.out.println("1EVENT:" + event);
+		if (event.getContent() instanceof ClientItemMap) {
+			System.out.println("yes");
+		}
+		Parameter[] parameter = null;
+		try {
+			// CHECK: event can have multiple contents?
+			parameter = translator.translate2Parameter(event.getContent());
+		} catch (TranslationException e) {
+			e.printStackTrace();
+		}
+		if (parameter != null) {
+			Percept percept = new Percept("percept", parameter);
+			pipe.push(percept);
+		}
+
 	}
 
 	public void stop() {

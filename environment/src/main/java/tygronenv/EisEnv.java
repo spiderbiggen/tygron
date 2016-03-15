@@ -18,6 +18,8 @@ import eis.iilang.Percept;
 import tygronenv.configuration.Configuration;
 import tygronenv.connection.ServerConnection;
 import tygronenv.translators.HashMap2J;
+import tygronenv.translators.J2ClientItemMap;
+import tygronenv.translators.J2Stakeholder;
 import tygronenv.translators.ParamEnum2J;
 import tygronenv.translators.Stakeholder2J;
 
@@ -66,7 +68,6 @@ public class EisEnv extends EIDefaultImpl {
 
 	@Override
 	protected Percept performEntityAction(String entity, Action action) throws ActException {
-
 		return null;
 	}
 
@@ -79,7 +80,14 @@ public class EisEnv extends EIDefaultImpl {
 			serverConnection = new ServerConnection(config);
 			setState(EnvironmentState.RUNNING);
 
-			entity = new TygronEntity(config.getStakeholder(), serverConnection.getSession().getTeamSlot());
+			PerceptPipe pipe = new PerceptPipe() {
+				@Override
+				public void push(Percept percept) {
+					System.out.println("percept:" + percept);
+				}
+			};
+
+			entity = new TygronEntity(config.getStakeholder(), serverConnection.getSession().getTeamSlot(), pipe);
 
 			notifyNewEntity("entity");
 		} catch (Exception e) {
@@ -104,7 +112,7 @@ public class EisEnv extends EIDefaultImpl {
 
 	/************************* SUPPORT FUNCTIONS ****************************/
 
-	Java2Parameter<?>[] j2p = new Java2Parameter<?>[] {};
+	Java2Parameter<?>[] j2p = new Java2Parameter<?>[] { new J2ClientItemMap(), new J2Stakeholder() };
 	Parameter2Java<?>[] p2j = new Parameter2Java<?>[] { new ParamEnum2J(), new HashMap2J(), new Stakeholder2J() };
 
 	/**
