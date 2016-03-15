@@ -1,20 +1,29 @@
 package tygronenv.connection;
 
+import java.util.Collection;
+
 import eis.exceptions.ManagementException;
+import nl.tytech.core.client.event.EventIDListenerInterface;
+import nl.tytech.core.client.event.EventManager;
 import nl.tytech.core.client.net.ServicesManager;
 import nl.tytech.core.client.net.SlotConnection;
+import nl.tytech.core.event.Event;
+import nl.tytech.core.event.EventListenerInterface;
 import nl.tytech.core.net.Network.AppType;
 import nl.tytech.core.net.Network.SessionType;
 import nl.tytech.core.net.event.IOServiceEventType;
 import nl.tytech.core.net.serializable.JoinReply;
+import nl.tytech.core.net.serializable.MapLink;
 import nl.tytech.core.net.serializable.ProjectData;
 import nl.tytech.core.util.SettingsManager;
 import nl.tytech.data.editor.event.EditorEventType;
 import nl.tytech.data.editor.event.EditorSettingsEventType;
 import nl.tytech.data.editor.event.EditorStakeholderEventType;
+import nl.tytech.data.engine.item.Setting;
 import nl.tytech.data.engine.item.Stakeholder;
 import nl.tytech.locale.TLanguage;
 import nl.tytech.util.ThreadUtils;
+import nl.tytech.util.logger.TLogger;
 
 /**
  * Factory to fetch existing and create new projects
@@ -147,6 +156,55 @@ public class ProjectFactory {
 			throw new ManagementException("failed to delete project " + project.getFileName() + " on the server");
 		}
 
+	}
+
+}
+
+/**
+ * Event handler that listens to the editor. Just internal, to hear when the
+ * server is ready
+ *
+ */
+class EditorEventHandler implements EventListenerInterface, EventIDListenerInterface {
+
+	private boolean stakeholderUpdate = false, mapUpdate = false;
+
+	public EditorEventHandler() {
+		EventManager.addListener(this, MapLink.STAKEHOLDERS);
+		EventManager.addEnumListener(this, MapLink.SETTINGS, Setting.Type.MAP_WIDTH_METERS);
+	}
+
+	public boolean isMapUpdated() {
+		return mapUpdate;
+	}
+
+	public boolean isStakeholderUpdated() {
+		return stakeholderUpdate;
+	}
+
+	@Override
+	public void notifyEnumListener(Event event, Enum<?> enhum) {
+
+		if (enhum == Setting.Type.MAP_WIDTH_METERS) {
+			Setting setting = EventManager.getItem(MapLink.SETTINGS, Setting.Type.MAP_WIDTH_METERS);
+			TLogger.info("Map Width is set to: " + setting.getIntValue());
+			mapUpdate = true;
+		}
+	}
+
+	@Override
+	public void notifyIDListener(Event arg0, Integer arg1) {
+
+	}
+
+	@Override
+	public void notifyListener(Event event) {
+
+		if (event.getType() == MapLink.STAKEHOLDERS) {
+			Collection<Stakeholder> updates = event.getContent(MapLink.UPDATED_COLLECTION);
+			TLogger.info("Updated stakeholders: " + updates);
+			stakeholderUpdate = true;
+		}
 	}
 
 }

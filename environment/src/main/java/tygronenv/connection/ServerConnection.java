@@ -1,22 +1,12 @@
 package tygronenv.connection;
 
-import java.util.Collection;
-
 import eis.exceptions.ManagementException;
-import nl.tytech.core.client.event.EventIDListenerInterface;
-import nl.tytech.core.client.event.EventManager;
 import nl.tytech.core.client.net.ServicesManager;
-import nl.tytech.core.event.Event;
-import nl.tytech.core.event.EventListenerInterface;
 import nl.tytech.core.net.Network;
-import nl.tytech.core.net.serializable.MapLink;
 import nl.tytech.core.net.serializable.ProjectData;
 import nl.tytech.core.net.serializable.User;
 import nl.tytech.core.net.serializable.User.AccessLevel;
 import nl.tytech.core.util.SettingsManager;
-import nl.tytech.data.engine.item.Setting;
-import nl.tytech.data.engine.item.Stakeholder;
-import nl.tytech.util.logger.TLogger;
 import tygronenv.configuration.Configuration;
 import tygronenv.settings.Settings;
 
@@ -110,53 +100,4 @@ public class ServerConnection {
 	public Session getSession() {
 		return session;
 	}
-}
-
-/**
- * Event handler that listens to the editor. Just internal, to hear when the
- * server is ready
- *
- */
-class EditorEventHandler implements EventListenerInterface, EventIDListenerInterface {
-
-	private boolean stakeholderUpdate = false, mapUpdate = false;
-
-	public EditorEventHandler() {
-		EventManager.addListener(this, MapLink.STAKEHOLDERS);
-		EventManager.addEnumListener(this, MapLink.SETTINGS, Setting.Type.MAP_WIDTH_METERS);
-	}
-
-	public boolean isMapUpdated() {
-		return mapUpdate;
-	}
-
-	public boolean isStakeholderUpdated() {
-		return stakeholderUpdate;
-	}
-
-	@Override
-	public void notifyEnumListener(Event event, Enum<?> enhum) {
-
-		if (enhum == Setting.Type.MAP_WIDTH_METERS) {
-			Setting setting = EventManager.getItem(MapLink.SETTINGS, Setting.Type.MAP_WIDTH_METERS);
-			TLogger.info("Map Width is set to: " + setting.getIntValue());
-			mapUpdate = true;
-		}
-	}
-
-	@Override
-	public void notifyIDListener(Event arg0, Integer arg1) {
-
-	}
-
-	@Override
-	public void notifyListener(Event event) {
-
-		if (event.getType() == MapLink.STAKEHOLDERS) {
-			Collection<Stakeholder> updates = event.getContent(MapLink.UPDATED_COLLECTION);
-			TLogger.info("Updated stakeholders: " + updates);
-			stakeholderUpdate = true;
-		}
-	}
-
 }
