@@ -35,7 +35,10 @@ public class TygronEntity {
 	 *            the slot ID of the team.
 	 */
 	public TygronEntity(Stakeholder.Type stakeholdertype, Integer slotID) {
+		eventHandler = new EntityEventHandler();
+
 		getSlotConnection(slotID);
+		eventHandler.waitForReady();
 		Stakeholder stakeholder = getStakeholder(stakeholdertype);
 		if (stakeholder == null) {
 			throw new IllegalArgumentException("Stakeholder of type " + stakeholdertype + " is not available");
@@ -52,14 +55,9 @@ public class TygronEntity {
 	 * @return stakeholder, or null if requested type is not available.
 	 */
 	private Stakeholder getStakeholder(Stakeholder.Type intendedStakeHolder) {
-		try {
-			Thread.sleep(1000);// HACK wait till cache updated.
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
 		ItemMap<Stakeholder> stakeholders = EventManager.getItemMap(MapLink.STAKEHOLDERS);
+
 		if (intendedStakeHolder == null) {
 			// pick the first
 			return stakeholders.toList(0).get(0);
@@ -93,7 +91,6 @@ public class TygronEntity {
 			throw new IllegalStateException("Failed to connect slotConnection");
 		}
 
-		eventHandler = new EntityEventHandler();
 	}
 
 	/**
