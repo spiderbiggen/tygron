@@ -21,7 +21,7 @@ import tygronenv.settings.Settings;
 
 /**
  * The top level connection with the server. Creates connection, checks
- * credentials.
+ * credentials, creates new project (if requested name is not yet available).
  * 
  * @author W.Pasman
  *
@@ -87,6 +87,7 @@ public class ServerConnection {
 	public void disconnect() throws ManagementException {
 		if (session != null) {
 			session.close();
+			session = null;
 		}
 		if (createdProject) {
 			factory.deleteProject(project);

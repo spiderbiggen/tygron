@@ -34,4 +34,10 @@ public class TestEnvironment {
 		init();
 	}
 
+	@Test
+	public void testConnectAndKill() throws ManagementException {
+		init();
+		env.kill();
+	}
+
 }

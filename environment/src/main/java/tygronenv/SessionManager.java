@@ -14,7 +14,8 @@ import nl.tytech.core.util.SettingsManager;
 import nl.tytech.locale.TLanguage;
 
 /**
- * SessionManager creates a session according to the requested config.
+ * SessionManager creates a session according to the requested config. A session
+ * is a connection of a participant with the server.
  */
 public class SessionManager {
 	private static final Logger logger = Logger.getLogger(SessionManager.class.getName());
@@ -24,7 +25,7 @@ public class SessionManager {
 
 		Integer slotID = config.getSlot();
 		if (config.getSlot() == null) {
-			slotID = ServicesManager.fireServiceEvent(IOServiceEventType.START_NEW_SESSION, SessionType.SINGLE,
+			slotID = ServicesManager.fireServiceEvent(IOServiceEventType.START_NEW_SESSION, SessionType.MULTI,
 					project.getFileName(), TLanguage.EN);
 			if (slotID == null || slotID < 0) {
 				throw new IllegalStateException("Failed to create new session slot: received slot ID =" + slotID);
@@ -92,8 +93,11 @@ public class SessionManager {
 		return null;
 	}
 
+	/**
+	 * Close the session and clean up.
+	 */
 	public void close() {
-		// TODO Auto-generated method stub
-		throw new IllegalStateException("NOT IMPLEMENTED");
+		slotConnection.disconnect(false);
+		slotConnection = null;
 	}
 }

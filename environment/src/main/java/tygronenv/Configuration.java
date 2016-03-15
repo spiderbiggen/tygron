@@ -10,7 +10,7 @@ import eis.iilang.Identifier;
 import eis.iilang.Parameter;
 
 /**
- * The configuration as specified in the init param
+ * The environment configuration as specified in the init param
  *
  */
 public class Configuration {

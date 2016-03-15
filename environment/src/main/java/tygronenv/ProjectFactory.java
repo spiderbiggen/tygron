@@ -48,7 +48,7 @@ public class ProjectFactory {
 
 	/**
 	 * There is no existing project with given name. Create one and initialize
-	 * it. Bit hacky, it does not do much for the map, I assume it stays empty.
+	 * it. Bit hacky, it does not do much for the map, it probably stays empty.
 	 * 
 	 * @throws ManagementException
 	 */
