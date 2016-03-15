@@ -13,6 +13,7 @@ import eis.iilang.Parameter;
 public class TestEnvironment {
 
 	private EisEnv env;
+	private static Identifier MAP = new Identifier("testmap");
 
 	@Before
 	public void before() {
@@ -22,7 +23,7 @@ public class TestEnvironment {
 	@Test
 	public void testBasicConnect() throws ManagementException {
 		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
-		parameters.put("map", new Identifier("givemesomemap"));
+		parameters.put("map", MAP);
 		// any stakeholder so not specified.
 		// any slot so not specified.
 		env.init(parameters);
@@ -31,7 +32,7 @@ public class TestEnvironment {
 	@Test
 	public void testConnectAndKill() throws ManagementException {
 		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
-		parameters.put("map", new Identifier("givemesomemap"));
+		parameters.put("map", MAP);
 		// any stakeholder so not specified.
 		// any slot so not specified.
 		env.init(parameters);
@@ -41,7 +42,7 @@ public class TestEnvironment {
 	@Test
 	public void testGetStakeHolder() throws ManagementException {
 		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
-		parameters.put("map", new Identifier("givemesomemap"));
+		parameters.put("map", MAP);
 		parameters.put("stakeholder", new Identifier("MUNICIPALITY"));
 		// any slot so not specified.
 		env.init(parameters);
@@ -51,8 +52,18 @@ public class TestEnvironment {
 	@Test(expected = ManagementException.class)
 	public void testGetWrongStakeHolder() throws ManagementException {
 		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
-		parameters.put("map", new Identifier("givemesomemap"));
+		parameters.put("map", MAP);
 		parameters.put("stakeholder", new Identifier("BADSTAKEHOLDER"));
+		// any slot so not specified.
+		env.init(parameters);
+		env.kill();
+	}
+
+	@Test(expected = ManagementException.class)
+	public void testGetUnavailableStakeHolder() throws ManagementException {
+		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
+		parameters.put("map", MAP);
+		parameters.put("stakeholder", new Identifier("FARMER"));
 		// any slot so not specified.
 		env.init(parameters);
 		env.kill();

@@ -36,6 +36,9 @@ public class TygronEntity {
 	public TygronEntity(Stakeholder.Type stakeholdertype, Integer slotID) {
 		getSlotConnection(slotID);
 		Stakeholder stakeholder = getStakeholder(stakeholdertype);
+		if (stakeholder == null) {
+			throw new IllegalArgumentException("Stakeholder of type " + stakeholdertype + " is not available");
+		}
 		slotConnection.fireServerEvent(true, ParticipantEventType.STAKEHOLDER_SELECT, stakeholder.getID(),
 				joinedConfirm.client.getClientToken());
 	}

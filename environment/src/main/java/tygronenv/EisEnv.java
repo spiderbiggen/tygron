@@ -8,7 +8,6 @@ import eis.eis2java.translation.Java2Parameter;
 import eis.eis2java.translation.Parameter2Java;
 import eis.eis2java.translation.Translator;
 import eis.exceptions.ActException;
-import eis.exceptions.EntityException;
 import eis.exceptions.ManagementException;
 import eis.exceptions.NoEnvironmentException;
 import eis.exceptions.PerceiveException;
@@ -77,17 +76,14 @@ public class EisEnv extends EIDefaultImpl {
 		Configuration config;
 		try {
 			config = new Configuration(parameters);
-		} catch (Exception e) {
-			throw new ManagementException("Problem with init parameters", e);
-		}
-		serverConnection = new ServerConnection(config);
-		setState(EnvironmentState.RUNNING);
+			serverConnection = new ServerConnection(config);
+			setState(EnvironmentState.RUNNING);
 
-		entity = new TygronEntity(config.getStakeholder(), serverConnection.getSession().getTeamSlot());
-		try {
+			entity = new TygronEntity(config.getStakeholder(), serverConnection.getSession().getTeamSlot());
+
 			notifyNewEntity("entity");
-		} catch (EntityException e) {
-			throw new ManagementException("failed to register entity", e);
+		} catch (Exception e) {
+			throw new ManagementException("Problem with initialization of environment", e);
 		}
 	}
 
