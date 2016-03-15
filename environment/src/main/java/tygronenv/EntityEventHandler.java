@@ -3,6 +3,7 @@ package tygronenv;
 import eis.eis2java.exception.TranslationException;
 import eis.eis2java.translation.Translator;
 import eis.iilang.Parameter;
+import eis.iilang.ParameterList;
 import eis.iilang.Percept;
 import nl.tytech.core.client.event.EventIDListenerInterface;
 import nl.tytech.core.client.event.EventManager;
@@ -44,20 +45,21 @@ public class EntityEventHandler implements EventListenerInterface, EventIDListen
 	@Override
 	public void notifyListener(Event event) {
 		if (event.getContent() instanceof ClientItemMap) {
-			System.out.println("yes");
+			Parameter[] parameters = null;
+			try {
+				// CHECK: event can have multiple contents?
+				if (event.getContents().length != 2) {
+					System.out.println("WARNING! EntityEventHandler: >2 content in a ClientItemMap");
+				}
+				parameters = translator.translate2Parameter(event.getContent());
+			} catch (TranslationException e) {
+				e.printStackTrace();
+			}
+			if (parameters != null) {
+				Percept percept = new Percept(event.getType().name().toLowerCase(), new ParameterList(parameters));
+				pipe.push(percept);
+			}
 		}
-		Parameter[] parameter = null;
-		try {
-			// CHECK: event can have multiple contents?
-			parameter = translator.translate2Parameter(event.getContent());
-		} catch (TranslationException e) {
-			e.printStackTrace();
-		}
-		if (parameter != null) {
-			Percept percept = new Percept("percept", parameter);
-			pipe.push(percept);
-		}
-
 	}
 
 	public void stop() {
