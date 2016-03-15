@@ -23,8 +23,8 @@ public class SessionManager {
 	public SessionManager(Configuration config, ProjectData project) {
 
 		Integer slotID = config.getSlot();
-		if (config.getSlot() < 0) {
-			slotID = ServicesManager.fireServiceEvent(IOServiceEventType.START_NEW_SESSION, SessionType.MULTI,
+		if (config.getSlot() == null) {
+			slotID = ServicesManager.fireServiceEvent(IOServiceEventType.START_NEW_SESSION, SessionType.SINGLE,
 					project.getFileName(), TLanguage.EN);
 			if (slotID == null || slotID < 0) {
 				throw new IllegalStateException("Failed to create new session slot: received slot ID =" + slotID);

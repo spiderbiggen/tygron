@@ -72,7 +72,7 @@ public class Configuration {
 		stakeholder = stakeholderParametersList;
 	}
 
-	public int getStakeholder() {
+	public Integer getStakeholder() {
 		return stakeholder;
 	}
 
@@ -92,7 +92,7 @@ public class Configuration {
 		this.slot = slot;
 	}
 
-	public int getSlot() {
+	public Integer getSlot() {
 		return slot;
 	}
 
