@@ -162,7 +162,8 @@ public class ProjectFactory {
 
 /**
  * Event handler that listens to the editor. Just internal, to hear when the
- * server is ready
+ * server is ready (the map was properly uploaded). This is important so that we
+ * do not proceed using the map before we uploaded it.
  *
  */
 class EditorEventHandler implements EventListenerInterface, EventIDListenerInterface {
