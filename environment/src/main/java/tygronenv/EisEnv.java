@@ -89,7 +89,7 @@ public class EisEnv extends EIDefaultImpl {
 
 			entity = new TygronEntity(config.getStakeholder(), serverConnection.getSession().getTeamSlot(), pipe);
 
-			notifyNewEntity("entity");
+			addEntity("entity");
 		} catch (Exception e) {
 			throw new ManagementException("Problem with initialization of environment", e);
 		}

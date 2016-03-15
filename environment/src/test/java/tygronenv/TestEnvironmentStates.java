@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import eis.AgentListener;
 import eis.EnvironmentListener;
+import eis.exceptions.AgentException;
 import eis.exceptions.ManagementException;
 import eis.exceptions.RelationException;
 import eis.iilang.Identifier;
@@ -32,7 +33,7 @@ public class TestEnvironmentStates {
 	private final String ENTITY = "entity";
 
 	@Test
-	public void testStateChange() throws ManagementException, RelationException {
+	public void testStateChange() throws ManagementException, RelationException, AgentException {
 
 		EnvironmentListener envlistener = mock(EnvironmentListener.class);
 		AgentListener agentlistener = mock(AgentListener.class);
@@ -44,8 +45,11 @@ public class TestEnvironmentStates {
 		// any slot so not specified.
 		env.init(parameters);
 
+		// after the init, a new entity should appear that we can connect to.
 		verify(envlistener).handleNewEntity(ENTITY);
 
+		// try to connect
+		env.registerAgent(AGENT);
 		env.associateEntity(AGENT, ENTITY);
 		env.attachAgentListener(AGENT, agentlistener);
 
