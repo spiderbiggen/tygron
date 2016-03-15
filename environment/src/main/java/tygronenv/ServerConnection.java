@@ -28,7 +28,7 @@ import tygronenv.settings.Settings;
  */
 public class ServerConnection {
 
-	private SessionManager session;
+	private Session session;
 	/**
 	 * True if project is created by us. False if someone else created the
 	 * project.
@@ -75,7 +75,15 @@ public class ServerConnection {
 			createdProject = true;
 		}
 
-		session = new SessionManager(config, project);
+		session = new Session(config, project);
+	}
+
+	/**
+	 * @return the project that this connection is supporting
+	 * 
+	 */
+	public ProjectData getProject() {
+		return project;
 	}
 
 	/**
@@ -100,7 +108,8 @@ public class ServerConnection {
 }
 
 /**
- * Event handler that listens to the editor
+ * Event handler that listens to the editor. Just internal, to hear when the
+ * server is ready
  *
  */
 class EditorEventHandler implements EventListenerInterface, EventIDListenerInterface {

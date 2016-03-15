@@ -14,14 +14,14 @@ import nl.tytech.core.util.SettingsManager;
 import nl.tytech.locale.TLanguage;
 
 /**
- * SessionManager creates a session according to the requested config. A session
- * is a connection of a participant with the server.
+ * Creates a session according to the requested config. A session is a
+ * connection of a participant with the server.
  */
-public class SessionManager {
-	private static final Logger logger = Logger.getLogger(SessionManager.class.getName());
+public class Session {
+	private static final Logger logger = Logger.getLogger(Session.class.getName());
 	private SlotConnection slotConnection;
 
-	public SessionManager(Configuration config, ProjectData project) {
+	public Session(Configuration config, ProjectData project) {
 
 		Integer slotID = config.getSlot();
 		if (config.getSlot() == null) {
