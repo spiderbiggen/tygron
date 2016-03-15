@@ -1,7 +1,5 @@
 package tygronenv;
 
-import static org.junit.Assert.assertNull;
-
 import eis.exceptions.ManagementException;
 import nl.tytech.core.client.net.ServicesManager;
 import nl.tytech.core.net.Network;
@@ -45,7 +43,9 @@ public class ServerConnection {
 		SettingsManager.setServerIP(credentials.getServerIp());
 
 		String result = ServicesManager.testServerConnection();
-		assertNull(result, result);
+		if (result != null) {
+			throw new ManagementException("Server is actively refusing to connect:" + result);
+		}
 
 		ServicesManager.setSessionLoginCredentials(credentials.getUserName(), credentials.getPassword());
 		User user = ServicesManager.getMyUserAccount();

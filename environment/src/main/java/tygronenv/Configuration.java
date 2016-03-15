@@ -10,7 +10,7 @@ import eis.iilang.Identifier;
 import eis.iilang.Parameter;
 
 /**
- * The configuration as specified in the MAS init param
+ * The configuration as specified in the init param
  *
  */
 public class Configuration {
@@ -61,17 +61,14 @@ public class Configuration {
 	}
 
 	private void checkSanity() {
-		if (map == null)
-			throw new IllegalStateException("map must be provided");
-		if (stakeholder == null)
-			throw new IllegalStateException("stakeholder must be provided");
-		// test valid values for stakeholder. USE ENUM??
-		if (slot < 0)
-			throw new IllegalArgumentException("slot must be >0 or not provided at all.");
-
+		if (map == null) {
+			throw new IllegalStateException("Invalid configuration: map is mandatory");
+		}
 	}
 
 	public void setStakeholder(int stakeholderParametersList) {
+		if (stakeholder == null)
+			throw new IllegalStateException("stakeholder must be provided");
 		stakeholder = stakeholderParametersList;
 	}
 
@@ -80,6 +77,8 @@ public class Configuration {
 	}
 
 	public void setMap(String map) {
+		if (map == null)
+			throw new IllegalStateException("map must be provided");
 		this.map = map;
 	}
 
@@ -88,6 +87,8 @@ public class Configuration {
 	}
 
 	public void setSlot(int slot) {
+		if (slot < 0)
+			throw new IllegalArgumentException("slot must be >0 or not provided at all.");
 		this.slot = slot;
 	}
 
