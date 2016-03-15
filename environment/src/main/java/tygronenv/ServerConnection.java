@@ -71,10 +71,10 @@ public class ServerConnection {
 	 * @return project with given name
 	 */
 	private ProjectData getProject(String name) {
-		String[] projects = ServicesManager.fireServiceEvent(IOServiceEventType.GET_PROJECT_NAMES);
+		ProjectData[] projects = ServicesManager.fireServiceEvent(IOServiceEventType.GET_MY_STARTABLE_PROJECTS);
 		if (projects != null) {
-			for (String existing : projects) {
-				if (existing.equals(name)) {
+			for (ProjectData existing : projects) {
+				if (existing.getFileName().equals(name)) {
 					return ServicesManager.fireServiceEvent(IOServiceEventType.GET_PROJECT_DATA, name);
 				}
 			}
