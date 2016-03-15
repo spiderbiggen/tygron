@@ -24,10 +24,11 @@ import tygronenv.translators.ParamEnum2J;
  * @author W.Pasman
  *
  */
+@SuppressWarnings("serial")
 public class EisEnv extends EIDefaultImpl {
 
 	private ServerConnection serverConnection;
-	private Session entity;
+	private TygronEntity entity;
 
 	/**
 	 * General initialization: translators,
@@ -78,8 +79,7 @@ public class EisEnv extends EIDefaultImpl {
 		serverConnection = new ServerConnection(config);
 		setState(EnvironmentState.RUNNING);
 
-		// temporary.
-		entity = new Session(config, serverConnection.getProject());
+		entity = new TygronEntity(config, serverConnection.getProject());
 	}
 
 	@Override
