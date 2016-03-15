@@ -11,7 +11,6 @@ import nl.tytech.core.structure.ItemMap;
 import nl.tytech.core.util.SettingsManager;
 import nl.tytech.data.engine.event.ParticipantEventType;
 import nl.tytech.data.engine.item.Stakeholder;
-import nl.tytech.util.logger.TLogger;
 
 /**
  * the 'participant' - a single stakeholder connection. Handles events coming in
@@ -34,28 +33,40 @@ public class TygronEntity {
 	 * @param slotID
 	 *            the slot ID of the team.
 	 */
-	public TygronEntity(Stakeholder.Type stakeholder, Integer slotID) {
+	public TygronEntity(Stakeholder.Type stakeholdertype, Integer slotID) {
 		getSlotConnection(slotID);
-		selectStakeholder(stakeholder);
+		Stakeholder stakeholder = getStakeholder(stakeholdertype);
+		slotConnection.fireServerEvent(true, ParticipantEventType.STAKEHOLDER_SELECT, stakeholder.getID(),
+				joinedConfirm.client.getClientToken());
 	}
 
 	/**
 	 * Select given stakeholder.
 	 * 
 	 * @param intendedStakeHolder
-	 *            the stakeholder to use.
+	 *            the stakeholder to use. Or null if any stakeholder is ok.
+	 * @return stakeholder, or null if requested type is not available.
 	 */
-	private void selectStakeholder(Stakeholder.Type intendedStakeHolder) {
-
-		int stakeholderID = 0;
-		ItemMap<Stakeholder> stakeholders = EventManager.getItemMap(MapLink.STAKEHOLDERS);
-		for (Stakeholder stakeholder : stakeholders) {
-			stakeholderID = stakeholder.getID();
-			TLogger.info("Selecting first stakeholder: " + stakeholder.getName() + " to play!");
-			break;
+	private Stakeholder getStakeholder(Stakeholder.Type intendedStakeHolder) {
+		try {
+			Thread.sleep(1000);// HACK wait till cache updated.
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		slotConnection.fireServerEvent(true, ParticipantEventType.STAKEHOLDER_SELECT, stakeholderID,
-				joinedConfirm.client.getClientToken());
+
+		ItemMap<Stakeholder> stakeholders = EventManager.getItemMap(MapLink.STAKEHOLDERS);
+		if (intendedStakeHolder == null) {
+			// pick the first
+			return stakeholders.toList(0).get(0);
+		}
+
+		for (Stakeholder holder : stakeholders) {
+			if (holder.getType().equals(intendedStakeHolder)) {
+				return holder;
+			}
+		}
+		return null;
 	}
 
 	/**
