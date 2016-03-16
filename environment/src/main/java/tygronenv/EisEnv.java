@@ -19,6 +19,7 @@ import tygronenv.configuration.Configuration;
 import tygronenv.connection.ServerConnection;
 import tygronenv.translators.HashMap2J;
 import tygronenv.translators.J2ClientItemMap;
+import tygronenv.translators.J2Setting;
 import tygronenv.translators.J2Stakeholder;
 import tygronenv.translators.ParamEnum2J;
 import tygronenv.translators.Stakeholder2J;
@@ -112,7 +113,7 @@ public class EisEnv extends EIDefaultImpl {
 
 	/************************* SUPPORT FUNCTIONS ****************************/
 
-	Java2Parameter<?>[] j2p = new Java2Parameter<?>[] { new J2ClientItemMap(), new J2Stakeholder() };
+	Java2Parameter<?>[] j2p = new Java2Parameter<?>[] { new J2ClientItemMap(), new J2Stakeholder(), new J2Setting() };
 	Parameter2Java<?>[] p2j = new Parameter2Java<?>[] { new ParamEnum2J(), new HashMap2J(), new Stakeholder2J() };
 
 	/**
