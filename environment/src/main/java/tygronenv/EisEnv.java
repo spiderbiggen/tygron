@@ -19,6 +19,7 @@ import tygronenv.configuration.Configuration;
 import tygronenv.connection.ServerConnection;
 import tygronenv.translators.HashMap2J;
 import tygronenv.translators.J2BaseFunction;
+import tygronenv.translators.J2Category;
 import tygronenv.translators.J2ClientItemMap;
 import tygronenv.translators.J2Setting;
 import tygronenv.translators.J2Stakeholder;
@@ -34,6 +35,7 @@ import tygronenv.translators.Stakeholder2J;
 @SuppressWarnings("serial")
 public class EisEnv extends EIDefaultImpl {
 
+	private static final String ENTITY = "entity";
 	private ServerConnection serverConnection;
 	private TygronEntity entity;
 
@@ -86,12 +88,23 @@ public class EisEnv extends EIDefaultImpl {
 				@Override
 				public void push(Percept percept) {
 					System.out.println("percept:" + percept);
+					try {
+						notifyAgentsViaEntity(percept, ENTITY);
+					} catch (Throwable e) {
+						// catch any bug in the agent.
+						System.out.println("Agent percept handler throws a bug into the environment!");
+						e.printStackTrace();
+					}
 				}
 			};
 
+			// construct the entity first, as the constructor TygronEntity will
+			// start writing to the pipe. Notice that we are ready to handle
+			// getAllPercepts since that returns empty list anyway.
+			addEntity(ENTITY);
+
 			entity = new TygronEntity(config.getStakeholder(), serverConnection.getSession().getTeamSlot(), pipe);
 
-			addEntity("entity");
 		} catch (Exception e) {
 			throw new ManagementException("Problem with initialization of environment", e);
 		}
@@ -107,6 +120,8 @@ public class EisEnv extends EIDefaultImpl {
 		serverConnection.disconnect();
 	};
 
+	// FIXME reset #3844
+
 	@Override
 	public boolean isStateTransitionValid(EnvironmentState oldState, EnvironmentState newState) {
 		return true;
@@ -115,7 +130,7 @@ public class EisEnv extends EIDefaultImpl {
 	/************************* SUPPORT FUNCTIONS ****************************/
 
 	Java2Parameter<?>[] j2p = new Java2Parameter<?>[] { new J2ClientItemMap(), new J2Stakeholder(), new J2Setting(),
-			new J2BaseFunction() };
+			new J2BaseFunction(), new J2Category() };
 	Parameter2Java<?>[] p2j = new Parameter2Java<?>[] { new ParamEnum2J(), new HashMap2J(), new Stakeholder2J() };
 
 	/**

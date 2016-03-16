@@ -53,6 +53,13 @@ public class TestEnvironmentStates {
 		env.associateEntity(AGENT, ENTITY);
 		env.attachAgentListener(AGENT, agentlistener);
 
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		// check that agent listener receives initial percepts.
 		Percept expectedPercept = new Percept("stakeholders",
 				new ParameterList(new Parameter[] { new Identifier("Municipality"), new Identifier("Inhabitants") }));
