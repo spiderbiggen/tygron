@@ -36,8 +36,8 @@ import tygronenv.translators.Stakeholder2J;
 public class EisEnv extends EIDefaultImpl {
 
 	private static final String ENTITY = "entity";
-	private ServerConnection serverConnection;
-	private TygronEntity entity;
+	private ServerConnection serverConnection = null;
+	private TygronEntity entity = null;
 
 	/**
 	 * General initialization: translators,
@@ -117,7 +117,10 @@ public class EisEnv extends EIDefaultImpl {
 			entity.close();
 			entity = null;
 		}
-		serverConnection.disconnect();
+		if (serverConnection != null) {
+			serverConnection.disconnect();
+			serverConnection = null;
+		}
 	};
 
 	// FIXME reset #3844
