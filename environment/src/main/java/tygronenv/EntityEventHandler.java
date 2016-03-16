@@ -36,7 +36,6 @@ public class EntityEventHandler implements EventListenerInterface, EventIDListen
 
 	@Override
 	public void notifyEnumListener(Event event, Enum<?> enhum) {
-		System.out.println("ENUM EVENT:" + event);
 		EventTypeEnum type = event.getType();
 		Object[] contents = event.getContents();
 		List<Percept> percepts = null;
