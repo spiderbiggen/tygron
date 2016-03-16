@@ -3,6 +3,7 @@ use "tygronenv-1.0.0-jar-with-dependencies.jar" as environment
 
 define tygron as agent {
 	use tygron as main module.
+	use tygronEvents as event module.
 }
 
 launchpolicy {

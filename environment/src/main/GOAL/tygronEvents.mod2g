@@ -1,0 +1,7 @@
+use dummy as knowledge.
+
+module elevatorEvents {
+	%%%%% Percept Processing %%%%%
+		
+	forall  percept(stakeholders(X))  do insert( stakeHolders(X) ).
+}

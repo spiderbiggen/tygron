@@ -1,1 +1,1 @@
- 
+:- dynamic stakeHolders/1.

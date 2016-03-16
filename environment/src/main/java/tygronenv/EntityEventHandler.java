@@ -25,11 +25,9 @@ import nl.tytech.data.engine.item.Setting;
  */
 public class EntityEventHandler implements EventListenerInterface, EventIDListenerInterface {
 
-	private PerceptPipe pipe;
 	private Translator translator = Translator.getInstance();
 
-	public EntityEventHandler(PerceptPipe perceptPipe) {
-		pipe = perceptPipe;
+	public EntityEventHandler() {
 		EventManager.addListener(this, MapLink.STAKEHOLDERS, MapLink.FUNCTIONS);
 		EventManager.addEnumListener(this, MapLink.SETTINGS, Setting.Type.MAP_WIDTH_METERS);
 	}
@@ -48,7 +46,6 @@ public class EntityEventHandler implements EventListenerInterface, EventIDListen
 			return;
 
 		}
-		pushAll(percepts);
 
 	}
 
@@ -74,27 +71,6 @@ public class EntityEventHandler implements EventListenerInterface, EventIDListen
 			System.out.println("WARNING. EntityEventHandler received unknown event:" + event);
 			return;
 
-		}
-
-		pushAll(percepts);
-
-	}
-
-	/**
-	 * Push all percepts into the percepts pipe.
-	 * 
-	 * @param percepts
-	 *            list of percepts. Ignored if null.
-	 */
-	void pushAll(List<Percept> percepts) {
-		if (percepts == null)
-			return;
-		for (Percept percept : percepts) {
-			try {
-				pipe.push(percept);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
 		}
 	}
 

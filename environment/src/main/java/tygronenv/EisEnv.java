@@ -49,7 +49,7 @@ public class EisEnv extends EIDefaultImpl {
 	@Override
 	protected LinkedList<Percept> getAllPerceptsFromEntity(String entity)
 			throws PerceiveException, NoEnvironmentException {
-		return null;
+		return new LinkedList<Percept>();
 	}
 
 	@Override
@@ -84,26 +84,12 @@ public class EisEnv extends EIDefaultImpl {
 			serverConnection = new ServerConnection(config);
 			setState(EnvironmentState.RUNNING);
 
-			PerceptPipe pipe = new PerceptPipe() {
-				@Override
-				public void push(Percept percept) {
-					System.out.println("percept:" + percept);
-					try {
-						notifyAgentsViaEntity(percept, ENTITY);
-					} catch (Throwable e) {
-						// catch any bug in the agent.
-						System.out.println("Agent percept handler throws a bug into the environment!");
-						e.printStackTrace();
-					}
-				}
-			};
-
 			// construct the entity first, as the constructor TygronEntity will
 			// start writing to the pipe. Notice that we are ready to handle
 			// getAllPercepts since that returns empty list anyway.
 			addEntity(ENTITY);
 
-			entity = new TygronEntity(config.getStakeholder(), serverConnection.getSession().getTeamSlot(), pipe);
+			entity = new TygronEntity(config.getStakeholder(), serverConnection.getSession().getTeamSlot());
 
 		} catch (Exception e) {
 			throw new ManagementException("Problem with initialization of environment", e);
