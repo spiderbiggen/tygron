@@ -2,6 +2,9 @@ use dummy as knowledge.
 
 module elevatorEvents {
 	%%%%% Percept Processing %%%%%
-		
-	forall  percept(stakeholders(X))  do insert( stakeHolders(X) ).
+	
+	
+	if  percept(stakeholders(X))  then insert( stakeholders(X) ).
+	if percept(settings(X)) then insert(settings(X)).
+	if percept(functions(X)) then insert(functions(X)).
 }

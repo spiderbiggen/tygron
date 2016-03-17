@@ -1,1 +1,3 @@
-:- dynamic stakeHolders/1.
+settings([]).
+functions([]).
+stakeholders([]).
