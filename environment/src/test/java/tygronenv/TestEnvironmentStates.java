@@ -20,6 +20,7 @@ import eis.exceptions.NoEnvironmentException;
 import eis.exceptions.PerceiveException;
 import eis.exceptions.RelationException;
 import eis.iilang.Identifier;
+import eis.iilang.Numeral;
 import eis.iilang.Parameter;
 import eis.iilang.ParameterList;
 import eis.iilang.Percept;
@@ -101,15 +102,35 @@ public class TestEnvironmentStates {
 		 * functions([['Vacant Lot',0,[OTHER]],['Mid-Century affordable
 		 * housing',1,[SOCIAL]],...])	 </code>
 		 */
+		Parameter roadfunction = null;
 		Parameter functions = function.getParameters().get(0);
 		assertEquals(ParameterList.class, functions.getClass());
 		for (Parameter f : (ParameterList) functions) {
 			System.out.println(f);
 			// f is something like ['Vacant Lot',0,[OTHER]]
 			assertEquals(ParameterList.class, f.getClass());
+			ParameterList flist = (ParameterList) f;
+			assertEquals(Identifier.class, flist.get(0).getClass());
+			assertEquals(Numeral.class, flist.get(1).getClass());
+			assertEquals(ParameterList.class, flist.get(2).getClass());
+
+			// check the Categories part in detail.
 			Parameter categories = ((ParameterList) f).get(2);
 			assertEquals(ParameterList.class, categories.getClass());
+
+			// Check that all contents of the category are Identifiers.
+			for (Parameter category : (ParameterList) categories) {
+				assertEquals(Identifier.class, category.getClass());
+
+				// while we're at it, check if we can find a road build func
+				if (roadfunction == null && "ROAD".equals(((Identifier) category).getValue())) {
+					roadfunction = f;
+				}
+
+			}
 		}
+
+		assertNotNull("There is no road function in the provided functions list", roadfunction);
 
 		env.kill();
 	}
