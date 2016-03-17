@@ -1,7 +1,9 @@
 package tygronenv;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import eis.eis2java.exception.TranslationException;
 import eis.eis2java.translation.Translator;
@@ -18,7 +20,8 @@ import nl.tytech.data.core.item.Item;
 import nl.tytech.data.engine.item.Setting;
 
 /**
- * Listen to entity events and forward into EIS
+ * Listen to entity events and store them till they are needed. Thread safe
+ * because callbacks and calls from GOAL will be asynchronous.
  * 
  * @author W.Pasman
  *
@@ -26,6 +29,13 @@ import nl.tytech.data.engine.item.Setting;
 public class EntityEventHandler implements EventListenerInterface, EventIDListenerInterface {
 
 	private Translator translator = Translator.getInstance();
+	/**
+	 * The collected percepts. Access this always through
+	 * {@link #addPercepts(EventTypeEnum, List)} and {@link #getPercepts()}.
+	 * 
+	 * FIXME collect Events and evaluate the percept lazy.
+	 */
+	private Map<EventTypeEnum, List<Percept>> collectedPercepts = new HashMap<>();
 
 	public EntityEventHandler() {
 		EventManager.addListener(this, MapLink.STAKEHOLDERS, MapLink.FUNCTIONS);
@@ -36,17 +46,36 @@ public class EntityEventHandler implements EventListenerInterface, EventIDListen
 	public void notifyEnumListener(Event event, Enum<?> enhum) {
 		EventTypeEnum type = event.getType();
 		Object[] contents = event.getContents();
-		List<Percept> percepts = null;
 		switch (type.name()) {
 		case "SETTINGS":
-			percepts = createPercepts((List<?>) contents[1], type);
+			createPercepts((List<?>) contents[1], type);
 			break;
 		default:
 			System.out.println("WARNING. EntityEventHandler ENUM received unknown event:" + event);
 			return;
 
 		}
+	}
 
+	/**
+	 * Add new percept to the collection.
+	 * 
+	 * @param type
+	 * @param percepts
+	 */
+	private synchronized void addPercepts(EventTypeEnum type, List<Percept> percepts) {
+		collectedPercepts.put(type, percepts);
+	}
+
+	/**
+	 * Get the percepts and clean our {@link #collectedPercepts}.
+	 * 
+	 * @return percepts collected since last call to this
+	 */
+	public synchronized Map<EventTypeEnum, List<Percept>> getPercepts() {
+		Map<EventTypeEnum, List<Percept>> copy = collectedPercepts;
+		collectedPercepts = new HashMap<>();
+		return copy;
 	}
 
 	@Override
@@ -58,14 +87,13 @@ public class EntityEventHandler implements EventListenerInterface, EventIDListen
 	public void notifyListener(Event event) {
 		EventTypeEnum type = event.getType();
 		Object[] contents = event.getContents();
-		List<Percept> percepts;
 
 		switch (type.name()) {
 		case "STAKEHOLDERS":
-			percepts = createPercepts((List<?>) contents[1], type);
+			createPercepts((List<?>) contents[1], type);
 			break;
 		case "FUNCTIONS":
-			percepts = createPercepts((List<?>) contents[1], type);
+			createPercepts((List<?>) contents[1], type);
 			break;
 		default:
 			System.out.println("WARNING. EntityEventHandler received unknown event:" + event);
@@ -75,14 +103,15 @@ public class EntityEventHandler implements EventListenerInterface, EventIDListen
 	}
 
 	/**
-	 * Create percepts contained in a ClientItemMap array
+	 * Create percepts contained in a ClientItemMap array and add them to the
+	 * {@link #collectedPercepts}.
 	 * 
 	 * @param map
 	 *            list of ClientItemMap elements.
 	 * @param type
 	 *            the type of elements in the map.
 	 */
-	private List<Percept> createPercepts(List<?> list, EventTypeEnum type) {
+	private void createPercepts(List<?> list, EventTypeEnum type) {
 		List<Percept> percepts = new ArrayList<Percept>();
 		Parameter[] parameters = null;
 		try {
@@ -93,7 +122,7 @@ public class EntityEventHandler implements EventListenerInterface, EventIDListen
 		if (parameters != null) {
 			percepts.add(new Percept(type.name().toLowerCase(), parameters));
 		}
-		return percepts;
+		addPercepts(type, percepts);
 	}
 
 	public void stop() {

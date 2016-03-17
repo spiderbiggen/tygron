@@ -1,5 +1,9 @@
 package tygronenv;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import eis.iilang.Percept;
 import nl.tytech.core.client.event.EventManager;
 import nl.tytech.core.client.net.ServicesManager;
 import nl.tytech.core.client.net.SlotConnection;
@@ -107,5 +111,13 @@ public class TygronEntity {
 			slotConnection.disconnect(false);
 			slotConnection = null;
 		}
+	}
+
+	public LinkedList<Percept> getPercepts() {
+		LinkedList<Percept> allPercepts = new LinkedList<Percept>();
+		for (List<Percept> percepts : eventHandler.getPercepts().values()) {
+			allPercepts.addAll(percepts);
+		}
+		return allPercepts;
 	}
 }
