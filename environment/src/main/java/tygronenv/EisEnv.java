@@ -70,8 +70,8 @@ public class EisEnv extends EIDefaultImpl {
 	}
 
 	@Override
-	protected Percept performEntityAction(String entity, Action action) throws ActException {
-		return null;
+	protected Percept performEntityAction(String e, Action action) throws ActException {
+		return entity.performAction(action);
 	}
 
 	@Override

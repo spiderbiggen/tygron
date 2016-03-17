@@ -14,16 +14,19 @@ import org.junit.Before;
 import org.junit.Test;
 
 import eis.EnvironmentListener;
+import eis.eis2java.translation.Translator;
 import eis.exceptions.AgentException;
 import eis.exceptions.ManagementException;
 import eis.exceptions.NoEnvironmentException;
 import eis.exceptions.PerceiveException;
 import eis.exceptions.RelationException;
+import eis.iilang.Function;
 import eis.iilang.Identifier;
 import eis.iilang.Numeral;
 import eis.iilang.Parameter;
 import eis.iilang.ParameterList;
 import eis.iilang.Percept;
+import tygronenv.translators.MultiPolygon2J;
 
 public class TestEnvironmentStates {
 
@@ -36,16 +39,6 @@ public class TestEnvironmentStates {
 	}
 
 	private final String ENTITY = "entity";
-
-	private void joinAsMunicipality() throws ManagementException, InterruptedException {
-		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
-		parameters.put("map", MAP);
-		parameters.put("stakeholder", new Identifier("MUNICIPALITY"));
-		// any slot so not specified.
-		env.init(parameters);
-
-		Thread.sleep(1500); // HACK wait some, to receive expected percepts.
-	}
 
 	@Test
 	public void testEntityAppears() throws ManagementException, RelationException, AgentException {
@@ -80,11 +73,65 @@ public class TestEnvironmentStates {
 	}
 
 	@Test
-	public void testFindMakeRoadFunction() throws ManagementException, RelationException, AgentException,
+	public void testFunctionPercept() throws ManagementException, RelationException, AgentException,
 			InterruptedException, PerceiveException, NoEnvironmentException {
 
 		joinAsMunicipality();
 
+		findRoadFunction();
+
+		env.kill();
+	}
+
+	@Test
+	public void testPolygonTranslator() {
+
+	}
+
+	@Test
+	public void testBuildRoad() throws ManagementException, RelationException, AgentException, InterruptedException,
+			PerceiveException, NoEnvironmentException {
+
+		joinAsMunicipality();
+
+		// should give us [Cemetery,17,[[OTHER]]],[Highway A13,33,[ROAD]]
+		Parameter buildroadfunction = findRoadFunction();
+		assertNotNull("There is no road function in the provided functions list", buildroadfunction);
+
+		Translator translatorfactory = Translator.getInstance();
+		translatorfactory.registerParameter2JavaTranslator(new MultiPolygon2J());
+		Function parameter = new Function("square", new Numeral(1.0), new Numeral(2.0), new Numeral(3.0),
+				new Numeral(4.0));
+
+		env.kill();
+	}
+
+	/********************** UTIL FUNCTIONS **************************/
+	/**
+	 * Init env and ask for municipality as stakeholder.
+	 * 
+	 * @throws ManagementException
+	 * @throws InterruptedException
+	 */
+	private void joinAsMunicipality() throws ManagementException, InterruptedException {
+		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
+		parameters.put("map", MAP);
+		parameters.put("stakeholder", new Identifier("MUNICIPALITY"));
+		// any slot so not specified.
+		env.init(parameters);
+
+		Thread.sleep(1500); // HACK wait some, to receive expected percepts.
+	}
+
+	/**
+	 * Search for a road function in the percepts. This runs through all
+	 * elements of the function and checks their type
+	 * 
+	 * @return a function in the percepts that is for building roads.
+	 * 
+	 * @throws PerceiveException
+	 */
+	private Parameter findRoadFunction() throws PerceiveException {
 		LinkedList<Percept> percepts = env.getAllPerceptsFromEntity(ENTITY);
 
 		// find the FUNCTIONS percept
@@ -106,7 +153,6 @@ public class TestEnvironmentStates {
 		Parameter functions = function.getParameters().get(0);
 		assertEquals(ParameterList.class, functions.getClass());
 		for (Parameter f : (ParameterList) functions) {
-			System.out.println(f);
 			// f is something like ['Vacant Lot',0,[OTHER]]
 			assertEquals(ParameterList.class, f.getClass());
 			ParameterList flist = (ParameterList) f;
@@ -130,9 +176,7 @@ public class TestEnvironmentStates {
 			}
 		}
 
-		assertNotNull("There is no road function in the provided functions list", roadfunction);
-
-		env.kill();
+		return roadfunction;
 	}
 
 }
