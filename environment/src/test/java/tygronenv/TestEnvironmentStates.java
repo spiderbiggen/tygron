@@ -14,7 +14,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import eis.EnvironmentListener;
-import eis.eis2java.translation.Translator;
 import eis.exceptions.ActException;
 import eis.exceptions.AgentException;
 import eis.exceptions.ManagementException;
@@ -28,7 +27,6 @@ import eis.iilang.Numeral;
 import eis.iilang.Parameter;
 import eis.iilang.ParameterList;
 import eis.iilang.Percept;
-import tygronenv.translators.MultiPolygon2J;
 
 public class TestEnvironmentStates {
 
@@ -96,11 +94,6 @@ public class TestEnvironmentStates {
 		ParameterList buildroadfunction = findRoadFunction();
 		assertNotNull("There is no road function in the provided functions list", buildroadfunction);
 
-		Translator translatorfactory = Translator.getInstance();
-		translatorfactory.registerParameter2JavaTranslator(new MultiPolygon2J());
-		Function parameter = new Function("square", new Numeral(1.0), new Numeral(2.0), new Numeral(3.0),
-				new Numeral(4.0));
-
 		/**
 		 * Check the javadoc for the tygron SDK for ParticipantEventType. You
 		 * will see
@@ -131,11 +124,6 @@ public class TestEnvironmentStates {
 		// where arg 1 is the function ID.
 		ParameterList buildroadfunction = findRoadFunction();
 		assertNotNull("There is no road function in the provided functions list", buildroadfunction);
-
-		Translator translatorfactory = Translator.getInstance();
-		translatorfactory.registerParameter2JavaTranslator(new MultiPolygon2J());
-		Function parameter = new Function("square", new Numeral(1.0), new Numeral(2.0), new Numeral(3.0),
-				new Numeral(4.0));
 
 		/**
 		 * Check the javadoc for the tygron SDK for ParticipantEventType. You

@@ -24,6 +24,7 @@ import tygronenv.translators.J2Category;
 import tygronenv.translators.J2ClientItemMap;
 import tygronenv.translators.J2Setting;
 import tygronenv.translators.J2Stakeholder;
+import tygronenv.translators.MultiPolygon2J;
 import tygronenv.translators.ParamEnum2J;
 import tygronenv.translators.Stakeholder2J;
 
@@ -125,7 +126,8 @@ public class EisEnv extends EIDefaultImpl {
 
 	Java2Parameter<?>[] j2p = new Java2Parameter<?>[] { new J2ClientItemMap(), new J2Stakeholder(), new J2Setting(),
 			new J2BaseFunction(), new J2Category() };
-	Parameter2Java<?>[] p2j = new Parameter2Java<?>[] { new ParamEnum2J(), new HashMap2J(), new Stakeholder2J() };
+	Parameter2Java<?>[] p2j = new Parameter2Java<?>[] { new ParamEnum2J(), new HashMap2J(), new Stakeholder2J(),
+			new MultiPolygon2J() };
 
 	/**
 	 * Installs the required EIS2Java translators
