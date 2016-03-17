@@ -11,6 +11,7 @@ import eis.eis2java.exception.NoTranslatorException;
 import eis.eis2java.exception.TranslationException;
 import eis.eis2java.translation.Translator;
 import eis.iilang.Function;
+import eis.iilang.Identifier;
 import eis.iilang.Numeral;
 
 public class TranslatorsTest {
@@ -29,4 +30,32 @@ public class TranslatorsTest {
 		assertEquals(1.0, c.getOrdinate(0), 0.0001);
 		assertEquals(2.0, c.getOrdinate(1), 0.0001);
 	}
+
+	@Test(expected = TranslationException.class)
+	public void MultiPolygon2JTestMissingNumber() throws NoTranslatorException, TranslationException {
+		translatorfactory.registerParameter2JavaTranslator(new MultiPolygon2J());
+
+		Function parameter = new Function("square", new Numeral(1.0), new Numeral(3.0), new Numeral(4.0));
+
+		MultiPolygon polygon = translatorfactory.translate2Java(parameter, MultiPolygon.class);
+		// check first coordinate, should be the (1,2)
+		Coordinate c = polygon.getCoordinate();
+		assertEquals(1.0, c.getOrdinate(0), 0.0001);
+		assertEquals(2.0, c.getOrdinate(1), 0.0001);
+	}
+
+	@Test(expected = TranslationException.class)
+	public void MultiPolygon2JTestWrongArgType() throws NoTranslatorException, TranslationException {
+		translatorfactory.registerParameter2JavaTranslator(new MultiPolygon2J());
+
+		Function parameter = new Function("square", new Numeral(1.0), new Identifier("2.0"), new Numeral(3.0),
+				new Numeral(4.0));
+
+		MultiPolygon polygon = translatorfactory.translate2Java(parameter, MultiPolygon.class);
+		// check first coordinate, should be the (1,2)
+		Coordinate c = polygon.getCoordinate();
+		assertEquals(1.0, c.getOrdinate(0), 0.0001);
+		assertEquals(2.0, c.getOrdinate(1), 0.0001);
+	}
+
 }
