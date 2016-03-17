@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import eis.EIDefaultImpl;
+import eis.eis2java.exception.TranslationException;
 import eis.eis2java.translation.Java2Parameter;
 import eis.eis2java.translation.Parameter2Java;
 import eis.eis2java.translation.Translator;
@@ -71,7 +72,12 @@ public class EisEnv extends EIDefaultImpl {
 
 	@Override
 	protected Percept performEntityAction(String e, Action action) throws ActException {
-		return entity.performAction(action);
+		try {
+			entity.performAction(action);
+		} catch (TranslationException | IllegalArgumentException e1) {
+			throw new ActException("Failed to execute action " + action, e1);
+		}
+		return null;
 	}
 
 	@Override
