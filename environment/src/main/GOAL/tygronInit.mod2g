@@ -1,4 +1,4 @@
-use dummy as knowledge.
+use dummy as beliefs.
 
 module tygronInit {
 		if  true then insert(settings([])).

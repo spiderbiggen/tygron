@@ -1,8 +1,7 @@
 use dummy as knowledge.
-use tygronEvents as actionspec.
+use tygron as actionspec.
 
 module helloWorld {
-	if true then print("Hello, world!").
 	% find a function to build a road (always 1 floor)
 	if bel(functions(FS), member([Name,Id,L],FS), member('ROAD',L)) then 
 	building_plan_construction(Id, 1, square(10,10,200,10)).
