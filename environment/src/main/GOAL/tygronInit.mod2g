@@ -1,0 +1,7 @@
+use dummy as knowledge.
+
+module tygronInit {
+		if  true then insert(settings([])).
+		if  true then insert(functions([])).
+		if  true then insert(stakeholders([])).
+}
