@@ -3,7 +3,6 @@ package tygronenv;
 import java.util.LinkedList;
 import java.util.List;
 
-import eis.eis2java.exception.NoTranslatorException;
 import eis.eis2java.exception.TranslationException;
 import eis.eis2java.translation.Translator;
 import eis.iilang.Action;
@@ -141,12 +140,6 @@ public class TygronEntity {
 	 *            2.
 	 * @throws TranslationException
 	 *             if a parameter can not be translated.
-	 * @throws NoTranslatorException
-	 *             if a parameter can not be translated.
-	 * @throws IllegalArgumentException
-	 *             if the specified action is not ok.
-	 * @throws {@link
-	 *             TranslationException}, {@link TranslationException}
 	 */
 	public void performAction(Action action) throws TranslationException {
 		/**
@@ -157,28 +150,63 @@ public class TygronEntity {
 				stakeholderID, functionID, floors, roadMultiPolygon);
 				</code>
 		 */
-		// find the action type. Throws if not known action.
-		ParticipantEventType type = ParticipantEventType.valueOf(action.getName());
+
+		ParticipantEventType type = getActionType(action.getName());
+		if (type == null) {
+			throw new TranslationException("unknown action " + action.getName());
+		}
+
+		Object[] arguments = translateParameters(action, stakeholder.getID());
+
+		// call. We ignore the return value.
+		slotConnection.fireServerEvent(true, type, arguments);
+	}
+
+	/**
+	 * Translate parameters into object[] for tygron call.
+	 * 
+	 * @param action
+	 *            the action to translate.
+	 * @return the translated object[], ready to use for the call to
+	 *         {@link SlotConnection#fireServerEvent(boolean, nl.tytech.core.event.Event.EventTypeEnum, Object...)}
+	 * @throws TranslationException
+	 *             if there is something wrong with action type or parameters.
+	 */
+	public static Object[] translateParameters(Action action, int stakeholderID) throws TranslationException {
+		ParticipantEventType type = getActionType(action.getName());
+
 		LinkedList<Parameter> parameters = action.getParameters();
 
 		// convert the arguments to the required type
 		List<Class<?>> argtypes = type.getClasses();
 		if (argtypes.size() - 1 != parameters.size()) {
-			throw new IllegalArgumentException("Action " + type + " takes " + (argtypes.size() - 1)
+			throw new TranslationException("Action " + type + " takes " + (argtypes.size() - 1)
 					+ " parameters but received " + parameters.size());
 		}
 
 		Object[] arguments = new Object[argtypes.size()];
 
 		// the first arg is always stakeholder ID.
-		arguments[0] = stakeholder.getID();
+		arguments[0] = stakeholderID;
 		// the rest needs conversion
 		for (int n = 0; n < parameters.size(); n++) {
 			arguments[n + 1] = translator.translate2Java(parameters.get(n), argtypes.get(n + 1));
 		}
+		return arguments;
+	}
 
-		// call. We ignore the return value.
-		slotConnection.fireServerEvent(true, type, arguments);
-
+	/**
+	 * Find the action associated with given name.
+	 * 
+	 * @param actionName
+	 *            the action as string
+	 * @return the {@link ParticipantEventType} action.
+	 */
+	public static ParticipantEventType getActionType(String actionName) throws TranslationException {
+		try {
+			return ParticipantEventType.valueOf(actionName);
+		} catch (IllegalArgumentException e) {
+			throw new TranslationException("unknown action " + actionName);
+		}
 	}
 }

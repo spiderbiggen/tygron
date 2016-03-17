@@ -55,20 +55,24 @@ public class EisEnv extends EIDefaultImpl {
 
 	@Override
 	protected boolean isSupportedByEnvironment(Action action) {
-		// TODO Auto-generated method stub
-		return false;
+		try {
+			TygronEntity.getActionType(action.getName());
+			TygronEntity.translateParameters(action, 0);
+		} catch (TranslationException e) {
+			return false;
+		}
+
+		return true;
 	}
 
 	@Override
 	protected boolean isSupportedByType(Action action, String type) {
-		// TODO Auto-generated method stub
-		return false;
+		return isSupportedByEnvironment(action); // ignore type.
 	}
 
 	@Override
 	protected boolean isSupportedByEntity(Action action, String entity) {
-		// TODO Auto-generated method stub
-		return false;
+		return isSupportedByEnvironment(action); // ignore entity.
 	}
 
 	@Override
