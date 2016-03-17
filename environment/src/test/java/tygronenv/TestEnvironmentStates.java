@@ -103,7 +103,7 @@ public class TestEnvironmentStates {
 		 * 
 		 * Leave out the Stakeholder.
 		 */
-		Action action = new Action("BUILDING_PLAN_CONSTRUCTION", buildroadfunction.get(1), new Numeral(1),
+		Action action = new Action("BUILDING_PLAN_CONSTRUCTION".toLowerCase(), buildroadfunction.get(1), new Numeral(1),
 				new Function("square", new Numeral(10), new Numeral(10), new Numeral(200), new Numeral(10)));
 
 		env.performEntityAction(ENTITY, action);
@@ -134,7 +134,7 @@ public class TestEnvironmentStates {
 		 * 
 		 * Leave out the Stakeholder.
 		 */
-		Action action = new Action("BUILDING_PLAN_CONSTRUCTION", buildroadfunction.get(1), new Numeral(1),
+		Action action = new Action("BUILDING_PLAN_CONSTRUCTION".toLowerCase(), buildroadfunction.get(1), new Numeral(1),
 				new Identifier("circle"));
 
 		env.performEntityAction(ENTITY, action);

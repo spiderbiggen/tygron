@@ -22,7 +22,7 @@ public class J2BaseFunction implements Java2Parameter<BaseFunction> {
 
 	@Override
 	public Parameter[] translate(BaseFunction bf) throws TranslationException {
-		return new Parameter[] { new Identifier(bf.getName()), new Numeral(bf.getID()),
+		return new Parameter[] { new Identifier(bf.getName().toLowerCase()), new Numeral(bf.getID()),
 				translator.translate2Parameter(bf.getCategories())[0] };
 	}
 

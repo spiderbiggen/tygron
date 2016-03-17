@@ -204,7 +204,7 @@ public class TygronEntity {
 	 */
 	public static ParticipantEventType getActionType(String actionName) throws TranslationException {
 		try {
-			return ParticipantEventType.valueOf(actionName);
+			return ParticipantEventType.valueOf(actionName.toUpperCase());
 		} catch (IllegalArgumentException e) {
 			throw new TranslationException("unknown action " + actionName);
 		}
