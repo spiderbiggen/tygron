@@ -15,11 +15,13 @@ import org.junit.Test;
 
 import eis.EnvironmentListener;
 import eis.eis2java.translation.Translator;
+import eis.exceptions.ActException;
 import eis.exceptions.AgentException;
 import eis.exceptions.ManagementException;
 import eis.exceptions.NoEnvironmentException;
 import eis.exceptions.PerceiveException;
 import eis.exceptions.RelationException;
+import eis.iilang.Action;
 import eis.iilang.Function;
 import eis.iilang.Identifier;
 import eis.iilang.Numeral;
@@ -89,19 +91,33 @@ public class TestEnvironmentStates {
 	}
 
 	@Test
-	public void testBuildRoad() throws ManagementException, RelationException, AgentException, InterruptedException,
-			PerceiveException, NoEnvironmentException {
+	public void testBuildRoadWrongArgs() throws ManagementException, RelationException, AgentException,
+			InterruptedException, PerceiveException, NoEnvironmentException, ActException {
 
 		joinAsMunicipality();
 
 		// should give us [Cemetery,17,[[OTHER]]],[Highway A13,33,[ROAD]]
-		Parameter buildroadfunction = findRoadFunction();
+		// where arg 1 is the function ID.
+		ParameterList buildroadfunction = findRoadFunction();
 		assertNotNull("There is no road function in the provided functions list", buildroadfunction);
 
 		Translator translatorfactory = Translator.getInstance();
 		translatorfactory.registerParameter2JavaTranslator(new MultiPolygon2J());
 		Function parameter = new Function("square", new Numeral(1.0), new Numeral(2.0), new Numeral(3.0),
 				new Numeral(4.0));
+
+		/**
+		 * Check the javadoc for the tygron SDK for ParticipantEventType. You
+		 * will see
+		 * 
+		 * params = { "Stakeholder ID", "Function ID", "Amount of floors",
+		 * "MultiPolygon describing the build contour" })
+		 * 
+		 * Leave out the Stakeholder.
+		 */
+		Action action = new Action("BUILDING_PLAN_CONSTRUCTION", buildroadfunction.get(1));
+
+		env.performEntityAction(ENTITY, action);
 
 		env.kill();
 	}
@@ -131,7 +147,7 @@ public class TestEnvironmentStates {
 	 * 
 	 * @throws PerceiveException
 	 */
-	private Parameter findRoadFunction() throws PerceiveException {
+	private ParameterList findRoadFunction() throws PerceiveException {
 		LinkedList<Percept> percepts = env.getAllPerceptsFromEntity(ENTITY);
 
 		// find the FUNCTIONS percept
@@ -145,11 +161,13 @@ public class TestEnvironmentStates {
 		assertEquals(1, function.getParameters().size());
 
 		/**
-		 * We should have received something like <code>
+		 * By checking J2BaseFunction you can see that
+		 * 
+		 * we should have received something like <code>
 		 * functions([['Vacant Lot',0,[OTHER]],['Mid-Century affordable
 		 * housing',1,[SOCIAL]],...])	 </code>
 		 */
-		Parameter roadfunction = null;
+		ParameterList roadfunction = null;
 		Parameter functions = function.getParameters().get(0);
 		assertEquals(ParameterList.class, functions.getClass());
 		for (Parameter f : (ParameterList) functions) {
@@ -170,7 +188,7 @@ public class TestEnvironmentStates {
 
 				// while we're at it, check if we can find a road build func
 				if (roadfunction == null && "ROAD".equals(((Identifier) category).getValue())) {
-					roadfunction = f;
+					roadfunction = flist;
 				}
 
 			}

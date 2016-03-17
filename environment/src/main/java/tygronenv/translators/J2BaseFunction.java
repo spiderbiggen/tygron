@@ -6,10 +6,12 @@ import eis.eis2java.translation.Translator;
 import eis.iilang.Identifier;
 import eis.iilang.Numeral;
 import eis.iilang.Parameter;
+import eis.iilang.ParameterList;
 import nl.tytech.data.engine.item.BaseFunction;
 
 /**
- * Translates BaseFunction into the <name, ID, categorylist>
+ * Translates BaseFunction into the {@link ParameterList} with (name of function
+ * , item ID, categorylist)
  * 
  * @author W.Pasman
  *
