@@ -5,7 +5,7 @@ This connector puts an EIS layer on top of the Tygron SDK.
 
 
 Usage  of GOAL example
-==
+---
 
  * Download the latest release of this connector
  * Place it in src/main/GOAL
