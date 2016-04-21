@@ -4,8 +4,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
+
+import org.junit.Test;
+
+import com.vividsolutions.jts.geom.MultiPolygon;
+
 import nl.tytech.core.client.event.EventManager;
 import nl.tytech.core.client.net.ServicesManager;
 import nl.tytech.core.client.net.SlotConnection;
@@ -32,194 +38,196 @@ import nl.tytech.util.JTSUtils;
 import nl.tytech.util.SDKReadmeConfig;
 import nl.tytech.util.ThreadUtils;
 import nl.tytech.util.logger.TLogger;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
-import com.vividsolutions.jts.geom.MultiPolygon;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ExampleTest {
 
-    public final static String USER = SDKReadmeConfig.loadUser();
+	public final static String USER = SDKReadmeConfig.loadUser();
 
-    public final static String SERVER = SDKReadmeConfig.loadServer();
+	public final static String SERVER = SDKReadmeConfig.loadServer();
 
-    private static Integer slotID;
+	private static Integer slotID;
 
-    private static JoinReply reply;
+	private static JoinReply reply;
 
-    private static ProjectData data;
+	private static ProjectData data;
 
-    private static SlotConnection slotConnection;
+	private static SlotConnection slotConnection;
 
-    private static ExampleEventHandler eventHandler;
+	private static ExampleEventHandler eventHandler;
 
-    private static Integer stakeholderID = 0;
+	private static Integer stakeholderID = 0;
 
-    @Test
-    public void test01Setup() throws Exception {
-        // setup settings
-        SettingsManager.setup(SettingsManager.class, Network.AppType.EDITOR);
-        SettingsManager.setServerIP(SERVER);
-    }
+	@Test
+	public void test() throws Exception {
+		test01Setup();
+		test02Connect();
+		test03CreateNewProject();
+		test04StartEditSessionAsEditor();
+		test05doEditSession();
+		test06closeEditSession();
+		test07startRegularSessionAsParticipant();
+		test08selectStakeholderToPlay();
+		test09planBuilding();
+		test10closeRegularSession();
+		test11deleteProject();
+	}
 
-    @Test
-    public void test02Connect() throws Exception {
+	public void test01Setup() throws Exception {
+		// setup settings
+		SettingsManager.setup(SettingsManager.class, Network.AppType.EDITOR);
+		SettingsManager.setServerIP(SERVER);
+	}
 
-        String result = ServicesManager.testServerConnection();
-        assertNull(result, result);
+	public void test02Connect() throws Exception {
 
-        /**
-         * Enter user password
-         */
-        JPasswordField pwd = new JPasswordField(20);
-        JOptionPane.showConfirmDialog(null, pwd, "Enter Password for user: " + USER, JOptionPane.OK_CANCEL_OPTION);
+		String result = ServicesManager.testServerConnection();
+		assertNull(result, result);
 
-        ServicesManager.setSessionLoginCredentials(USER, new String(pwd.getPassword()));
-        User user = ServicesManager.getMyUserAccount();
+		/**
+		 * Enter user password
+		 */
+		JPasswordField pwd = new JPasswordField(20);
+		JOptionPane.showConfirmDialog(null, pwd, "Enter Password for user: " + USER, JOptionPane.OK_CANCEL_OPTION);
 
-        assertNotNull(user);
-        assertEquals(user.getUserName(), USER);
+		ServicesManager.setSessionLoginCredentials(USER, new String(pwd.getPassword()));
+		User user = ServicesManager.getMyUserAccount();
 
-        assertTrue("You need to be at least EDITOR to run these tests!", user.getMaxAccessLevel().ordinal() >= AccessLevel.EDITOR.ordinal());
-    }
+		assertNotNull(user);
+		assertEquals(user.getUserName(), USER);
 
-    @Test
-    public void test03CreateNewProject() throws Exception {
+		assertTrue("You need to be at least EDITOR to run these tests!",
+				user.getMaxAccessLevel().ordinal() >= AccessLevel.EDITOR.ordinal());
+	}
 
-        String projectName = "test" + System.currentTimeMillis();
-        data = ServicesManager.fireServiceEvent(IOServiceEventType.CREATE_NEW_PROJECT, projectName, TLanguage.EN);
-        assertNotNull(data);
-    }
+	public void test03CreateNewProject() throws Exception {
 
-    @Test
-    public void test04StartEditSessionAsEditor() throws Exception {
+		String projectName = "test" + System.currentTimeMillis();
+		data = ServicesManager.fireServiceEvent(IOServiceEventType.CREATE_NEW_PROJECT, projectName, TLanguage.EN);
+		assertNotNull(data);
+	}
 
-        slotID = ServicesManager.fireServiceEvent(IOServiceEventType.START_NEW_SESSION, SessionType.EDITOR, data.getFileName(),
-                TLanguage.EN);
-        assertTrue(slotID != null && slotID >= 0);
+	public void test04StartEditSessionAsEditor() throws Exception {
 
-        reply = ServicesManager.fireServiceEvent(IOServiceEventType.JOIN_SESSION, slotID, AppType.EDITOR);
-        assertNotNull(reply);
+		slotID = ServicesManager.fireServiceEvent(IOServiceEventType.START_NEW_SESSION, SessionType.EDITOR,
+				data.getFileName(), TLanguage.EN);
+		assertTrue(slotID != null && slotID >= 0);
 
-        slotConnection = new SlotConnection();
-        slotConnection
-                .initSettings(AppType.EDITOR, SettingsManager.getServerIP(), slotID, reply.serverToken, reply.client.getClientToken());
+		reply = ServicesManager.fireServiceEvent(IOServiceEventType.JOIN_SESSION, slotID, AppType.EDITOR);
+		assertNotNull(reply);
 
-        assertTrue(slotConnection.connect());
+		slotConnection = new SlotConnection();
+		slotConnection.initSettings(AppType.EDITOR, SettingsManager.getServerIP(), slotID, reply.serverToken,
+				reply.client.getClientToken());
 
-        // add event handler to receive updates on
-        eventHandler = new ExampleEventHandler();
-    }
+		assertTrue(slotConnection.connect());
 
-    @Test
-    public void test05doEditSession() throws Exception {
+		// add event handler to receive updates on
+		eventHandler = new ExampleEventHandler();
+	}
 
-        int mapSizeM = 500;
-        slotConnection.fireServerEvent(true, EditorEventType.SET_INITIAL_MAP_SIZE, mapSizeM);
-        slotConnection.fireServerEvent(true, EditorSettingsEventType.WIZARD_FINISHED);
+	public void test05doEditSession() throws Exception {
 
-        /**
-         * Add a civilian stakeholder
-         */
-        slotConnection.fireServerEvent(true, EditorStakeholderEventType.ADD_WITH_TYPE_AND_PLAYABLE, Stakeholder.Type.CIVILIAN, true);
+		int mapSizeM = 500;
+		slotConnection.fireServerEvent(true, EditorEventType.SET_INITIAL_MAP_SIZE, mapSizeM);
+		slotConnection.fireServerEvent(true, EditorSettingsEventType.WIZARD_FINISHED);
 
-        // wait on first updates (seperate thread)
-        boolean updated = false;
-        for (int i = 0; i < 60; i++) {
-            if (eventHandler.isMapUpdated() && eventHandler.isStakeholderUpdated()) {
-                updated = true;
-                break;
-            }
-            ThreadUtils.sleepInterruptible(1000);
-        }
-        assertTrue(updated);
-    }
+		/**
+		 * Add a civilian stakeholder
+		 */
+		slotConnection.fireServerEvent(true, EditorStakeholderEventType.ADD_WITH_TYPE_AND_PLAYABLE,
+				Stakeholder.Type.CIVILIAN, true);
 
-    @Test
-    public void test06closeEditSession() throws Exception {
+		// wait on first updates (seperate thread)
+		boolean updated = false;
+		for (int i = 0; i < 60; i++) {
+			if (eventHandler.isMapUpdated() && eventHandler.isStakeholderUpdated()) {
+				updated = true;
+				break;
+			}
+			ThreadUtils.sleepInterruptible(1000);
+		}
+		assertTrue(updated);
+	}
 
-        /**
-         * Save project in our slotID
-         */
-        String result = ServicesManager.fireServiceEvent(IOServiceEventType.SAVE_PROJECT_INIT, slotID);
-        assertNull(result, result);
+	public void test06closeEditSession() throws Exception {
 
-        /**
-         * Disconnect from slot
-         */
-        slotConnection.disconnect(false);
-    }
+		/**
+		 * Save project in our slotID
+		 */
+		String result = ServicesManager.fireServiceEvent(IOServiceEventType.SAVE_PROJECT_INIT, slotID);
+		assertNull(result, result);
 
-    @Test
-    public void test07startRegularSessionAsParticipant() throws Exception {
+		/**
+		 * Disconnect from slot
+		 */
+		slotConnection.disconnect(false);
+	}
 
-        slotID = ServicesManager.fireServiceEvent(IOServiceEventType.START_NEW_SESSION, SessionType.SINGLE, data.getFileName(),
-                TLanguage.EN);
-        assertTrue(slotID != null && slotID >= 0);
+	public void test07startRegularSessionAsParticipant() throws Exception {
 
-        reply = ServicesManager.fireServiceEvent(IOServiceEventType.JOIN_SESSION, slotID, AppType.PARTICIPANT);
-        assertNotNull(reply);
+		slotID = ServicesManager.fireServiceEvent(IOServiceEventType.START_NEW_SESSION, SessionType.SINGLE,
+				data.getFileName(), TLanguage.EN);
+		assertTrue(slotID != null && slotID >= 0);
 
-        slotConnection = new SlotConnection();
-        slotConnection.initSettings(AppType.PARTICIPANT, SettingsManager.getServerIP(), slotID, reply.serverToken,
-                reply.client.getClientToken());
+		reply = ServicesManager.fireServiceEvent(IOServiceEventType.JOIN_SESSION, slotID, AppType.PARTICIPANT);
+		assertNotNull(reply);
 
-        assertTrue(slotConnection.connect());
+		slotConnection = new SlotConnection();
+		slotConnection.initSettings(AppType.PARTICIPANT, SettingsManager.getServerIP(), slotID, reply.serverToken,
+				reply.client.getClientToken());
 
-        // add event handler to receive updates on
-        eventHandler = new ExampleEventHandler();
-    }
+		assertTrue(slotConnection.connect());
 
-    @Test
-    public void test08selectStakeholderToPlay() throws Exception {
+		// add event handler to receive updates on
+		eventHandler = new ExampleEventHandler();
+	}
 
-        stakeholderID = 0;
-        ItemMap<Stakeholder> stakeholders = EventManager.getItemMap(MapLink.STAKEHOLDERS);
-        for (Stakeholder stakeholder : stakeholders) {
-            stakeholderID = stakeholder.getID();
-            TLogger.info("Selecting first stakeholder: " + stakeholder.getName() + " to play!");
-            break;
-        }
-        slotConnection.fireServerEvent(true, ParticipantEventType.STAKEHOLDER_SELECT, stakeholderID, reply.client.getClientToken());
-    }
+	public void test08selectStakeholderToPlay() throws Exception {
 
-    @Test
-    public void test09planBuilding() throws Exception {
+		stakeholderID = 0;
+		ItemMap<Stakeholder> stakeholders = EventManager.getItemMap(MapLink.STAKEHOLDERS);
+		for (Stakeholder stakeholder : stakeholders) {
+			stakeholderID = stakeholder.getID();
+			TLogger.info("Selecting first stakeholder: " + stakeholder.getName() + " to play!");
+			break;
+		}
+		slotConnection.fireServerEvent(true, ParticipantEventType.STAKEHOLDER_SELECT, stakeholderID,
+				reply.client.getClientToken());
+	}
 
-        /**
-         * Plan an new ROAD construction
-         */
-        Integer functionID = 0;
-        int floors = 1;
-        ItemMap<Function> functions = EventManager.getItemMap(MapLink.FUNCTIONS);
-        for (Function function : functions) {
-            if (function.getCategories().contains(Category.ROAD)) {
-                functionID = function.getID();
-                TLogger.info("Selecting first road function: " + function.getName() + " to build!");
-                break;
-            }
-        }
+	public void test09planBuilding() throws Exception {
 
-        /**
-         * Shape of my new road
-         */
-        MultiPolygon roadMultiPolygon = JTSUtils.createSquare(10, 10, 200, 10);
+		/**
+		 * Plan an new ROAD construction
+		 */
+		Integer functionID = 0;
+		int floors = 1;
+		ItemMap<Function> functions = EventManager.getItemMap(MapLink.FUNCTIONS);
+		for (Function function : functions) {
+			if (function.getCategories().contains(Category.ROAD)) {
+				functionID = function.getID();
+				TLogger.info("Selecting first road function: " + function.getName() + " to build!");
+				break;
+			}
+		}
 
-        Integer newBuildingID = slotConnection.fireServerEvent(true, ParticipantEventType.BUILDING_PLAN_CONSTRUCTION, stakeholderID,
-                functionID, floors, roadMultiPolygon);
+		/**
+		 * Shape of my new road
+		 */
+		MultiPolygon roadMultiPolygon = JTSUtils.createSquare(10, 10, 200, 10);
 
-        assertTrue(newBuildingID.intValue() >= 0);
+		Integer newBuildingID = slotConnection.fireServerEvent(true, ParticipantEventType.BUILDING_PLAN_CONSTRUCTION,
+				stakeholderID, functionID, floors, roadMultiPolygon);
 
-    }
+		assertTrue(newBuildingID.intValue() >= 0);
 
-    @Test
-    public void test10closeRegularSession() throws Exception {
-        slotConnection.disconnect(false);
-    }
+	}
 
-    @Test
-    public void test11deleteProject() throws Exception {
-        assertTrue(ServicesManager.fireServiceEvent(IOServiceEventType.DELETE_PROJECT, data.getFileName()));
-    }
+	public void test10closeRegularSession() throws Exception {
+		slotConnection.disconnect(false);
+	}
+
+	public void test11deleteProject() throws Exception {
+		assertTrue(ServicesManager.fireServiceEvent(IOServiceEventType.DELETE_PROJECT, data.getFileName()));
+	}
 }
