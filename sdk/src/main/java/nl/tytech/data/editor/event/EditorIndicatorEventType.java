@@ -46,7 +46,7 @@ public enum EditorIndicatorEventType implements EventTypeEnum {
     @EventIDField(links = { "LEVELS", "INDICATORS" }, params = { 0, 1 })
     SET_TARGET(Integer.class, Integer.class, Integer.class, Double.class),
 
-    RESET_INDICATORS,
+    RESET_INDICATORS(Boolean.class),
 
     @EventIDField(links = { "INDICATORS" }, params = { 0 })
     SET_DESCRIPTION(Integer.class, String.class),
@@ -59,6 +59,9 @@ public enum EditorIndicatorEventType implements EventTypeEnum {
 
     @EventIDField(links = { "INDICATORS" }, params = { 0 })
     SET_ACTIVE(Integer.class, Boolean.class),
+
+    @EventIDField(links = { "INDICATORS" }, params = { 0 })
+    SET_ABSOLUTE(Integer.class, Boolean.class),
 
     @EventIDField(links = { "INDICATORS" }, params = { 0 })
     SET_COLOR(Integer.class, TColor.class),
@@ -77,6 +80,9 @@ public enum EditorIndicatorEventType implements EventTypeEnum {
 
     @EventIDField(links = { "INDICATORS" }, params = { 0 })
     SET_EXCEL_NAME(Integer.class, String.class),
+
+    @EventIDField(links = { "INDICATORS" }, params = { 0 })
+    EXPORT_EXCEL_FILE(Integer.class, Boolean.class);
 
     ;
 
@@ -104,6 +110,9 @@ public enum EditorIndicatorEventType implements EventTypeEnum {
         }
         if (SET_EXCEL_NAME == this) {
             return String.class;
+        }
+        if (this == EXPORT_EXCEL_FILE) {
+            return byte[].class;
         }
 
         return (this == ADD_PERSONAL_INDICATOR || this == ADD_GLOBAL_INDICATOR || this == ADD_CUSTOM_INDICATOR) ? Integer.class : null;

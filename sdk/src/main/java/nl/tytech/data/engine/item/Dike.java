@@ -49,6 +49,9 @@ public class Dike extends UniqueNamedItem implements Action {
     @XMLValue
     private String imageName = DEFAULT_DIKE_IMAGE;
 
+    // local value used to check if asset was updated in editor
+    private int imageVersion = 0;
+
     public Dike() {
 
     }
@@ -110,6 +113,10 @@ public class Dike extends UniqueNamedItem implements Action {
         return imageName;
     }
 
+    public int getImageVersion() {
+        return imageVersion;
+    }
+
     @Override
     public MapLink getMapLink() {
         return MapLink.DIKES;
@@ -163,6 +170,7 @@ public class Dike extends UniqueNamedItem implements Action {
 
     public void setImageName(String imageName) {
         this.imageName = imageName;
+        this.imageVersion++;
     }
 
     public void setSideFunctionID(Integer sideFunctionID) {

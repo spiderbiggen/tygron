@@ -16,6 +16,7 @@ import nl.tytech.core.net.serializable.PolygonItem;
 import nl.tytech.core.structure.ItemMap;
 import nl.tytech.data.engine.item.Building.GroundLayerType;
 import nl.tytech.data.engine.item.Function.PlacementType;
+import nl.tytech.data.engine.item.Global.ReadOnly;
 import nl.tytech.data.engine.serializable.MapType;
 import nl.tytech.data.engine.serializable.MeasureEditType;
 import nl.tytech.data.engine.serializable.MeasureSpatial;
@@ -337,13 +338,16 @@ public class MapMeasure extends Measure implements PolygonItem {
     public final double getOpenWaterStorage() {
         double result = 0;
         if (isWaterMeasure()) {
-            Setting allowedIncrease = this.getItem(MapLink.SETTINGS, Setting.Type.ALLOWED_WATER_LEVEL_INCREASE);
+            Global global = this.<Global> getItem(MapLink.GLOBALS, ReadOnly.WATER_STORAGE_ALLOWED_WATER_LEVEL_INCREASE.name());
+            double allowedWaterIncrease = global == null ? ReadOnly.WATER_STORAGE_ALLOWED_WATER_LEVEL_INCREASE.getDefaultValue() : global
+                    .getActualValue();
+
             // TODO: (Frank) for now outer ring, until something better has been found
             double totalArea = 0;
             for (MeasureSpatial measureSpatial : getSpatialsForEditType(MeasureEditType.WATER)) {
                 totalArea += measureSpatial.getOuterMultiPolygon().getArea();
             }
-            result = totalArea * allowedIncrease.getDoubleValue();
+            result = totalArea * allowedWaterIncrease;
         }
         return result;
     }

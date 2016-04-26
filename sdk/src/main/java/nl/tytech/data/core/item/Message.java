@@ -71,7 +71,7 @@ public class Message extends Item {
     protected String contents = "No Contents";
 
     @XMLValue
-    private String subject = "0_No Subject";
+    private String subject = "No Subject";
 
     @XMLValue
     private Long triggerDate;
@@ -153,7 +153,6 @@ public class Message extends Item {
      * @return the answerID
      */
     public final Integer getAnswerID() {
-
         return this.answerID;
     }
 
@@ -168,7 +167,6 @@ public class Message extends Item {
      * @return the answerID
      */
     public final String getAnswerString() {
-
         return this.answer;
     }
 
@@ -241,9 +239,8 @@ public class Message extends Item {
      * @param <A>
      * @return
      */
-    @SuppressWarnings("unchecked")
     public <A extends CoreStakeholder> A getReceiver() {
-        return (A) this.getItem(MapLink.STAKEHOLDERS, getReceiverID());
+        return this.<A> getItem(MapLink.STAKEHOLDERS, getReceiverID());
     }
 
     public Integer getReceiverID() {
@@ -257,9 +254,8 @@ public class Message extends Item {
      * @param <A>
      * @return
      */
-    @SuppressWarnings("unchecked")
     public <A extends CoreStakeholder> A getSender() {
-        return (A) this.getItem(MapLink.STAKEHOLDERS, getSenderID());
+        return this.<A> getItem(MapLink.STAKEHOLDERS, getSenderID());
     }
 
     public Integer getSenderID() {
@@ -282,10 +278,6 @@ public class Message extends Item {
     }
 
     public Type getType() {
-
-        /*
-         * if (popup != null) { return Type.POPUP; }
-         */
         return type;
     }
 
@@ -308,20 +300,17 @@ public class Message extends Item {
     }
 
     public void init(final Integer senderID, final Integer receiverID, final Long triggerDate, final String subject, final String message) {
-
         this.senderID = senderID;
         this.receiverID = receiverID;
         this.triggerDate = triggerDate;
         this.contents = message;
         this.subject = subject;
-
     }
 
     /**
      * @return the active
      */
     public final boolean isActive() {
-
         return this.active;
     }
 
@@ -367,18 +356,16 @@ public class Message extends Item {
     }
 
     private void resetMessage() {
-        if (isAnswered()) {
-            setAnswered(Item.NONE);
-        }
+        setAnswered(Item.NONE);
         setSentDate(null);
         setTriggerDate(null);
+        setAnswered(StringUtils.EMPTY);
     }
 
     /**
      * @param active the active to set
      */
     public final void setActive(boolean active) {
-
         this.active = active;
     }
 
@@ -391,7 +378,6 @@ public class Message extends Item {
 
     public final void setAnswered(final String answer) {
         this.answer = answer;
-
     }
 
     public void setClientEvents(List<CodedEvent> clientEvents) {
@@ -429,7 +415,6 @@ public class Message extends Item {
 
     public void setSenderID(Integer senderID) {
         this.senderID = senderID;
-
     }
 
     public void setSentDate(Long sentDate) {
@@ -461,7 +446,6 @@ public class Message extends Item {
 
     @Override
     public String toString() {
-
         if (StringUtils.containsData(subject)) {
             return subject;
         }

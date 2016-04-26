@@ -123,7 +123,7 @@ public enum PanelEnum {
 
     FULLSCREEN_PANEL("FullscreenPanelController"),
 
-    PREDICTION_PANEL("PredictionPanelController"),
+    ACTION_LOG_PANEL("ActionLogPanelController"),
 
     HEAT_PANEL("HeatPanelController"),
 

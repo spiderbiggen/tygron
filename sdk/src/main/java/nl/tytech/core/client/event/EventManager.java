@@ -32,6 +32,7 @@ import nl.tytech.core.util.SettingsManager.RunMode;
 import nl.tytech.data.core.item.CodedEvent;
 import nl.tytech.data.core.item.EnumOrderedItem;
 import nl.tytech.data.core.item.Item;
+import nl.tytech.data.core.item.UniqueNamedItem;
 import nl.tytech.util.StringUtils;
 import nl.tytech.util.concurrent.LocalThreadList;
 import nl.tytech.util.logger.TLogger;
@@ -184,6 +185,10 @@ public class EventManager {
     }
 
     public static <I extends Item> I getItem(MapLink mapLink, Integer id) {
+        return SingletonHolder.INSTANCE._getItem(mapLink, id);
+    }
+
+    public static <I extends UniqueNamedItem> I getItem(MapLink mapLink, String id) {
         return SingletonHolder.INSTANCE._getItem(mapLink, id);
     }
 
@@ -424,6 +429,24 @@ public class EventManager {
         return _getItem(this.activeConnectionID, mapLink, id);
     }
 
+    private <I extends UniqueNamedItem> I _getItem(MapLink mapLink, String uniqueName) {
+        if (!StringUtils.containsData(uniqueName)) {
+            return null;
+        }
+        // requested map
+        ItemMap<I> requestMap = _getItemMap(mapLink);
+        if (requestMap == null) {
+            return null;
+        }
+        List<I> values = new ArrayList<>(requestMap.values());
+        for (I item : values) {
+            if (item instanceof UniqueNamedItem && uniqueName.equals(item.getName())) {
+                return item;
+            }
+        }
+        return null;
+    }
+
     private <I extends Item> ItemMap<I> _getItemMap(Integer connectionID, MapLink mapLink) {
         if (!this.statusMap.containsKey(connectionID)) {
             return null;
@@ -539,7 +562,8 @@ public class EventManager {
 
             Status status = this.statusMap.get(this.activeConnectionID);
 
-            EventManager.fire(ComEvent.MAPLINKS_INITIALIZED, this, status.getSessionType(), status.getProjectName(), status.getAppType());
+            EventManager.fire(ComEvent.MAPLINKS_INITIALIZED, this, status.getSessionType(), status.getProjectName(), status.getAppType(),
+                    SettingsManager.getServerSlotID(this.activeConnectionID));
         }
 
     }

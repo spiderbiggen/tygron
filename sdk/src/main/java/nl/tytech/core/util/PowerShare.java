@@ -44,9 +44,9 @@ public class PowerShare {
      */
     public static class MultiTask {
 
-        private AtomicInteger counter = new AtomicInteger(0);
+        private AtomicInteger unfinishedTasks = new AtomicInteger(0);
 
-        protected AtomicInteger tasks = new AtomicInteger(0);
+        protected AtomicInteger totalTasks = new AtomicInteger(0);
 
         private long start = System.currentTimeMillis();
 
@@ -61,8 +61,8 @@ public class PowerShare {
 
         public void execute(Runnable runnable) {
 
-            counter.incrementAndGet();
-            tasks.incrementAndGet();
+            unfinishedTasks.incrementAndGet();
+            totalTasks.incrementAndGet();
 
             pool.execute(() -> {
                 try {
@@ -70,25 +70,29 @@ public class PowerShare {
                 } catch (Exception e) {
                     throw e;
                 } finally {
-                    counter.decrementAndGet();
+                    unfinishedTasks.decrementAndGet();
                 }
             });
-        }
-
-        public int getExecutedTasks() {
-            return tasks.get();
         }
 
         public long getExecutionTimeMS() {
             return System.currentTimeMillis() - start;
         }
 
+        public int getTaskAmount() {
+            return totalTasks.get();
+        }
+
+        public int getUnfinishedTaskAmount() {
+            return unfinishedTasks.get();
+        }
+
         public boolean waitUntilAllFinished() {
 
-            while (counter.get() > 0) {
+            while (unfinishedTasks.get() > 0) {
 
                 // sleep on it depending on counter how long
-                ThreadUtils.sleepInterruptible(MathUtils.clamp(counter.get() * 4, 0, 40));
+                ThreadUtils.sleepInterruptible(MathUtils.clamp(unfinishedTasks.get() * 4, 0, 40));
 
                 // check for shutdowns when Lord is present.
                 if (lord != null && lord.isShutdown()) {
@@ -205,7 +209,7 @@ public class PowerShare {
             }
             // count as 1 task done
             if (!completeList.isEmpty()) {
-                mt.tasks.set(1);
+                mt.totalTasks.set(1);
             }
             return mt;
         }

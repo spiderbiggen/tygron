@@ -164,10 +164,11 @@ public class PipeSetting extends AbstractSetting<PipeSetting.Type> {
     private static final long serialVersionUID = 3730370813278282986L;
     public static final String HEAT_FILES = "Heat/";
     public static final String DEFAULT_HEAT_FILES = HEAT_FILES + "Default/";
+    public static final String HEAT_EXCEL_DIR = HEAT_FILES + "Excel/";
 
     public static final PipeSetting.Type[] ADJUSTABLES = { Type.BAK_VALUE, Type.TRANSPORT_FIXED, Type.TRANSPORT_VAR,
-            Type.HEAT_RETURN_ON_INVESTMENT, Type.GENERATED_POWER, Type.HEAT_ENERGY_BUY_PRICE, Type.HEAT_GAS_BUY_PRICE, Type.HEAT_PRICE,
-            Type.HEAT_VAR_GAS_PRICE, Type.HEAT_FIXED_GAS_PRICE, Type.AVAILABILITY };
+        Type.HEAT_RETURN_ON_INVESTMENT, Type.GENERATED_POWER, Type.HEAT_ENERGY_BUY_PRICE, Type.HEAT_GAS_BUY_PRICE, Type.HEAT_PRICE,
+        Type.HEAT_VAR_GAS_PRICE, Type.HEAT_FIXED_GAS_PRICE, Type.AVAILABILITY };
 
     @Override
     public Type[] getEnumValues() {

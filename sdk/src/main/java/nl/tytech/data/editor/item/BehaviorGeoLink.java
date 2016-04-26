@@ -5,7 +5,7 @@
 package nl.tytech.data.editor.item;
 
 import nl.tytech.core.item.annotations.XMLValue;
-import nl.tytech.data.engine.item.BehaviorTerrain;
+import nl.tytech.data.engine.item.Terrain;
 import nl.tytech.data.engine.item.Stakeholder;
 import nl.tytech.util.StringUtils;
 import nl.tytech.util.color.TColor;
@@ -22,7 +22,7 @@ public class BehaviorGeoLink extends GeoLink {
     private static final TColor CLIENT_ARTIST_COLOR_CONCRETE = TColor.GRAY;
     private static final TColor CLIENT_ARTIST_COLOR_BEACH = TColor.YELLOW;
 
-    public static TColor getColor(BehaviorTerrain.Behavior behavior) {
+    public static TColor getColor(Terrain.TerrainType behavior) {
         switch (behavior) {
             case BOEZEM_WATER:
             case POLDER_WATER:
@@ -41,9 +41,9 @@ public class BehaviorGeoLink extends GeoLink {
     }
 
     @XMLValue
-    private BehaviorTerrain.Behavior tileBehavior = null;
+    private Terrain.TerrainType tileBehavior = null;
 
-    public BehaviorTerrain.Behavior getBehavior() {
+    public Terrain.TerrainType getBehavior() {
         return tileBehavior;
     }
 
@@ -75,7 +75,7 @@ public class BehaviorGeoLink extends GeoLink {
         return getBehavior().isWater();
     }
 
-    public void setTileBehavior(BehaviorTerrain.Behavior tileUsageType) {
+    public void setTileBehavior(Terrain.TerrainType tileUsageType) {
         tileBehavior = tileUsageType;
     }
 

@@ -24,7 +24,7 @@ import nl.tytech.util.color.TColor;
  * @author Maxim Knepfle
  *
  */
-public class GlobalIndicator extends Indicator {
+public class GlobalIndicator extends ExcelIndicator {
 
     public enum GlobalIndicatorType implements TypeInterface {
 
@@ -47,6 +47,12 @@ public class GlobalIndicator extends Indicator {
         PARKING(EditOptions.GREEN, TColor.YELLOW, 2, new TargetDescription[] { new TargetDescription(
                 "Parking compliance rate. Higher means more parking space is required.", 1, 0, Double.MAX_VALUE, UnitType.NONE) }, true),
 
+        TRAFFIC_NO2(EditOptions.GREEN, TColor.YELLOW, 2, new TargetDescription[] { new TargetDescription(
+                "This value is ignored, handled by Excelsheet.", 0, -Double.MAX_VALUE, Double.MAX_VALUE, UnitType.NONE) }, true),
+
+        TRAFFIC_NOISE(EditOptions.GREEN, TColor.YELLOW, 2, new TargetDescription[] { new TargetDescription(
+                "This value is ignored, handled by Excelsheet.", 0, -Double.MAX_VALUE, Double.MAX_VALUE, UnitType.NONE) }, true),
+
         @Deprecated
         DEPRECATED(EditOptions.RED, null, 0, null, true),
 
@@ -67,12 +73,9 @@ public class GlobalIndicator extends Indicator {
         public static GlobalIndicatorType[] getActiveValues(EditOptions userZone) {
 
             List<GlobalIndicatorType> types = new ArrayList<GlobalIndicator.GlobalIndicatorType>();
-            for (GlobalIndicatorType type : GlobalIndicatorType.values()) {
+            for (GlobalIndicatorType type : getActiveValues()) {
                 if (type.userZone.ordinal() <= userZone.ordinal()) {
-                    Deprecated depAnno = ObjectUtils.getEnumAnnotation(type, Deprecated.class);
-                    if (depAnno == null) {
-                        types.add(type);
-                    }
+                    types.add(type);
                 }
             }
             return types.toArray(new GlobalIndicatorType[0]);
@@ -155,6 +158,11 @@ public class GlobalIndicator extends Indicator {
     private GlobalIndicatorType type = null;
 
     @Override
+    public String getFileName() {
+        return isDefaultExcel() ? type.name().toLowerCase() + ".xlsx" : super.getFileName();
+    }
+
+    @Override
     public TypeInterface getType() {
         return type;
     }
@@ -183,6 +191,16 @@ public class GlobalIndicator extends Indicator {
     }
 
     @Override
+    public boolean isDefaultExcel() {
+        return !StringUtils.containsData(this.fileName) || "-".equals(this.fileName);
+    }
+
+    @Override
+    public boolean isExcelUpdated() {
+        return isDefaultExcel() ? false : super.isExcelUpdated();
+    }
+
+    @Override
     public void resetStartOfLevelValues() {
         super.resetStartOfLevelValues();
         this.maquetteZoneScores.clear();
@@ -195,6 +213,5 @@ public class GlobalIndicator extends Indicator {
 
     public void setZoneTotalScore(MapType mapType, Integer neighbourhoodID, double score) {
         getZoneScores(mapType).put(neighbourhoodID, score);
-
     }
 }

@@ -12,15 +12,19 @@ import nl.tytech.util.StringUtils;
  * <p>
  * This class keeps track of a translated word.
  * <p>
- * 
- * 
+ *
+ *
  * @author Maxim Knepfle
  */
 
 public abstract class Word<E extends Enum<E>> extends EnumOrderedItem<E> {
 
+    public interface Terms {
+
+    }
+
     /**
-	 * 
+	 *
 	 */
     private static final long serialVersionUID = -4333909239136691264L;
 

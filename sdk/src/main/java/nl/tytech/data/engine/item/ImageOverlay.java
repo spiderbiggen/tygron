@@ -27,6 +27,9 @@ public class ImageOverlay extends Overlay {
     @AssetDirectory(OVERLAY_IMAGES)
     private String imageName = DEFAULT_IMAGE;
 
+    // local value used to check if asset was updated in editor
+    private int imageVersion = 1;
+
     public String getImageLocation() {
         return OVERLAY_IMAGES + getImageName();
     }
@@ -35,7 +38,12 @@ public class ImageOverlay extends Overlay {
         return imageName;
     }
 
+    public int getImageVersion() {
+        return imageVersion;
+    }
+
     public void setImageName(String imageName) {
         this.imageName = imageName;
+        this.imageVersion++;
     }
 }

@@ -92,6 +92,9 @@ public class ActionMenu extends Item {
     @Deprecated
     private HashMap<Integer, Boolean> activeForStakeholder = new HashMap<>();
 
+    // local value used to check if asset was updated in editor
+    private int iconVersion = 0;
+
     public ActionMenu() {
 
     }
@@ -193,6 +196,10 @@ public class ActionMenu extends Item {
 
     public int getIconSortIndex() {
         return iconSortIndex;
+    }
+
+    public int getImageVersion() {
+        return iconVersion;
     }
 
     public String getImageLocation() {
@@ -312,6 +319,7 @@ public class ActionMenu extends Item {
 
     public void setIconFileName(String iconName) {
         this.iconFileName = iconName;
+        this.iconVersion++;
     }
 
     public void setIconSortIndex(int index) {

@@ -29,20 +29,17 @@ public class SlotData implements Serializable {
 
     private String name;
 
-    private boolean publicSession;
-
     private Network.SessionType sessionType;
 
     public SlotData() {
 
     }
 
-    public SlotData(Integer slotID, Network.SessionType sessionType, boolean publicSession, String name, List<ClientData> clients) {
+    public SlotData(Integer slotID, Network.SessionType sessionType, String name, List<ClientData> clients) {
         this.slotID = slotID;
         this.sessionType = sessionType;
         this.name = name;
         this.clients = ObjectUtils.toArrayList(clients);
-        this.publicSession = publicSession;
     }
 
     public boolean areClientsActive() {
@@ -73,10 +70,6 @@ public class SlotData implements Serializable {
 
     public Integer getSlotID() {
         return slotID;
-    }
-
-    public boolean isPublicSession() {
-        return publicSession;
     }
 
     @Override

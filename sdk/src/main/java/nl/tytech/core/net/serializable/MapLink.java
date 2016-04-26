@@ -31,7 +31,7 @@ public enum MapLink implements EventTypeEnum {
 
     ACTION_MENUS(false, false, false),
 
-    BEHAVIOR_TERRAINS(false, false),
+    TERRAINS(false, false),
 
     BUILDINGS(false, false),
 
@@ -91,7 +91,7 @@ public enum MapLink implements EventTypeEnum {
 
     OVERLAYS(false),
 
-    PANELS(false, false),
+    PANELS(false),
 
     PARTICLE_EMITTERS(false, false),
 
@@ -111,7 +111,9 @@ public enum MapLink implements EventTypeEnum {
 
     POPUPS(false, false, false),
 
-    PREDICTIONS(false, false, false),
+    ACTION_LOGS(false, false, false),
+
+    PROJECT_ASSETS(),
 
     PROGRESS(),
 

@@ -410,12 +410,10 @@ public abstract class StringUtils {
             result = data;
         }
 
-        // replace with values
+        // replace with args if available
         try {
-            if (args != null) {
+            if (args != null && args.length > 0) {
                 result = String.format(result, args);
-            } else {
-                result = String.format(result, new Object[0]);
             }
         } catch (Exception e) {
             TLogger.exception(e, "Bad formatting for: " + term);

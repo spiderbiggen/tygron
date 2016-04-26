@@ -65,6 +65,9 @@ public class UpgradeType extends UniqueNamedItem implements Action {
     @XMLValue
     private CalculationSpaceType calculationType = CalculationSpaceType.SURFACE_SPACE;
 
+    // local value used to check if asset was updated in editor
+    private int imageVersion = 0;
+
     public void addUpgradePair(UpgradePair pair) {
         if (containsSourceFunction(pair.getSourceFunctionID())) {
             return;
@@ -118,6 +121,10 @@ public class UpgradeType extends UniqueNamedItem implements Action {
 
     public String getImageName() {
         return imageName;
+    }
+
+    public int getImageVersion() {
+        return imageVersion;
     }
 
     @Override
@@ -229,6 +236,7 @@ public class UpgradeType extends UniqueNamedItem implements Action {
 
     public void setImageName(String name) {
         this.imageName = name;
+        this.imageVersion++;
     }
 
     public void setMustOwn(boolean mustOwn) {

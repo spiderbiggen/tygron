@@ -143,6 +143,23 @@ public class ObjectUtils {
         return clone;
     }
 
+    /**
+     * Returns the enum value or NULL when none found
+     */
+    @SuppressWarnings("unchecked")
+    public final static <T extends Enum<T>> T getEnum(String name, Class<?>... enumClasses) {
+
+        for (Class<?> enumClass : enumClasses) {
+            try {
+                return Enum.valueOf((Class<T>) enumClass, name);
+            } catch (Exception e) {
+                // ignore
+            }
+        }
+        // none found return NULL;
+        return null;
+    }
+
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> T getEnumAnnotation(Enum enumm, Class clasz) {
         String fieldName = enumm.name();

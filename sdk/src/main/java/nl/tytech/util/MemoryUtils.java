@@ -4,7 +4,10 @@
  ******************************************************************************/
 package nl.tytech.util;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.lang.reflect.Field;
+import java.util.concurrent.atomic.AtomicLong;
 import nl.tytech.util.logger.TLogger;
 
 /**
@@ -32,6 +35,29 @@ public class MemoryUtils {
         } catch (Exception e) {
             TLogger.exception(e);
         }
+    }
+
+    public final static int MAX_JVM_MEMORY_SETTING_MB;
+    private final static String JVM_MEMORY_SETTING = "-Xmx";
+
+    static {
+        int maxJVM = -1;
+        try {
+            RuntimeMXBean bean = ManagementFactory.getRuntimeMXBean();
+            for (String arg : bean.getInputArguments()) {
+                if (arg.startsWith(JVM_MEMORY_SETTING) && arg.endsWith("M")) {
+                    maxJVM = Integer.valueOf(arg.replaceFirst(JVM_MEMORY_SETTING, "").replaceFirst("M", ""));
+                } else if (arg.startsWith(JVM_MEMORY_SETTING) && arg.endsWith("G")) {
+                    maxJVM = Integer.valueOf(arg.replaceFirst(JVM_MEMORY_SETTING, "").replaceFirst("G", "")) * 1024;
+                }
+            }
+        } catch (Exception e) {
+            TLogger.exception(e);
+        }
+        if (maxJVM < 0) {
+            TLogger.severe("Unable to find JVM Memory setting!");
+        }
+        MAX_JVM_MEMORY_SETTING_MB = maxJVM;
     }
 
     public static void dumpMemoryUsage() {
@@ -62,7 +88,10 @@ public class MemoryUtils {
     public static long getDirectMemoryMB() {
         try {
             synchronized (nioBits) {
-                return ((Long) reservedMemory.get(null)) / mb;
+                // Note: Changed from Long to AtomicLong in Java 8 Update 74
+                Object bitsValue = reservedMemory.get(null);
+                long value = bitsValue instanceof AtomicLong ? ((AtomicLong) bitsValue).get() : (Long) bitsValue;
+                return value / mb;
             }
         } catch (Exception e) {
             TLogger.exception(e);

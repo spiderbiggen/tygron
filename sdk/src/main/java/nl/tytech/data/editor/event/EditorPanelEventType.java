@@ -32,6 +32,9 @@ public enum EditorPanelEventType implements EventTypeEnum {
     SET_NAME(Integer.class, String.class),
 
     @EventIDField(links = { "PANELS" }, params = { 0 })
+    SET_TEXT(Integer.class, String.class),
+
+    @EventIDField(links = { "PANELS" }, params = { 0 })
     SET_URL(Integer.class, String.class),
 
     @EventIDField(links = { "PANELS" }, params = { 0 })
@@ -87,6 +90,9 @@ public enum EditorPanelEventType implements EventTypeEnum {
 
     IMPORT_WIKIPEDIA_POINTS(),
 
+    @EventIDField(links = { "PANELS" }, params = { 0 })
+    EXPORT_EXCEL_FILE(Integer.class, Boolean.class),
+
     ;
 
     private List<Class<?>> classes;
@@ -107,8 +113,11 @@ public enum EditorPanelEventType implements EventTypeEnum {
 
     @Override
     public Class<?> getResponseClass() {
-        if (this == SET_EXCEL_NAME || this == SET_URL || this == REMOVE_GLOBAL_IDS || this == ADD_GLOBAL_IDS) {
+        if (this == SET_EXCEL_NAME || this == SET_URL || this == REMOVE_GLOBAL_IDS || this == ADD_GLOBAL_IDS || this == SET_TEXT) {
             return String.class;
+        }
+        if (this == EXPORT_EXCEL_FILE) {
+            return byte[].class;
         }
         return null;
     }

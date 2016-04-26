@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import nl.tytech.core.event.EventValidationUtils;
 import nl.tytech.core.event.Event.EventTypeEnum;
+import nl.tytech.core.event.EventValidationUtils;
 import nl.tytech.core.item.annotations.AssetDirectory;
 import nl.tytech.core.item.annotations.DoNotSaveToInit;
 import nl.tytech.core.item.annotations.ItemIDField;
@@ -142,6 +142,9 @@ public class Measure extends UniqueNamedItem implements Action, TimeStateItem {
     @AssetDirectory(GUI_IMAGES_ACTIONS)
     @XMLValue
     private String imageName = DEFAULT_IMAGE;
+
+    // local value used to check if asset was updated in editor
+    private int imageVersion = 1;
 
     @XMLValue
     @ListOfClass(IndicatorScore.class)
@@ -341,6 +344,10 @@ public class Measure extends UniqueNamedItem implements Action, TimeStateItem {
             return StringUtils.EMPTY;
         }
         return GUI_IMAGES_ACTIONS + imageName;
+    }
+
+    public int getImageVersion() {
+        return imageVersion;
     }
 
     public double getIncome() {
@@ -588,7 +595,7 @@ public class Measure extends UniqueNamedItem implements Action, TimeStateItem {
 
     public void setImageName(String imageName) {
         this.imageName = imageName;
-
+        this.imageVersion++;
     }
 
     public void setIndicatorScore(Indicator indicator, double value) {
@@ -602,7 +609,7 @@ public class Measure extends UniqueNamedItem implements Action, TimeStateItem {
         indicatorScores.add(new IndicatorScore(indicator.getID(), value));
     }
 
-    public void setInnovative(Boolean innovative) {
+    public void setInnovative(boolean innovative) {
         this.innovative = innovative;
     }
 

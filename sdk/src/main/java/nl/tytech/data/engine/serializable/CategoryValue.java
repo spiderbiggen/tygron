@@ -34,7 +34,32 @@ public enum CategoryValue implements Value {
     /**
      * Demand for heat flow per m2 floorspace
      */
+    @Deprecated
     HEAT_FLOW_M2_YEAR(FunctionValueGroup.PIPES, "Heat Flow", ClientTerms.HEAT_FLOW_M2_YEAR, -100, 100, false, UnitType.HEAT_FLOW),
+
+    /**
+     * Demand for heat flow per m2 floorspace start value.
+     */
+    HEAT_FLOW_M2_START_VALUE(FunctionValueGroup.PIPES, "Heat Flow value at start year", ClientTerms.HEAT_FLOW_M2_START_VALUE, -100, 100,
+            false, UnitType.ENERGY),
+
+    /**
+     * Demand for heat flow start year.
+     */
+    HEAT_FLOW_M2_START_YEAR(FunctionValueGroup.PIPES, "Heat Flow formula start year", ClientTerms.HEAT_FLOW_M2_START_YEAR, 0, 3000, false,
+            UnitType.NONE),
+
+    /**
+     * Demand for heat flow per m2 floorspace change per year after start year.
+     */
+    HEAT_FLOW_M2_CHANGE_PER_YEAR(FunctionValueGroup.PIPES, "Heat Flow change per year", ClientTerms.HEAT_FLOW_M2_CHANGE_PER_YEAR,
+            -Double.MAX_VALUE, Double.MAX_VALUE, false, UnitType.ENERGY),
+
+    /**
+     * Heat flow to GJ multiplier
+     */
+    HEAT_POWER_TO_FLOW_MULTIPLIER(FunctionValueGroup.PIPES, "Heat Flow to Power multiplier", ClientTerms.HEAT_POWER_TO_FLOW_MULTIPLIER,
+            -Double.MAX_VALUE, Double.MAX_VALUE, false, UnitType.NONE),
 
     /**
      * Park lots per m2 floorspace

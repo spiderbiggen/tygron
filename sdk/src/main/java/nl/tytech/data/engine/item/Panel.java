@@ -27,6 +27,8 @@ public class Panel extends Item {
 
         WEB_PANEL,
 
+        TEXT_PANEL,
+
         ;
         public static final PanelType[] VALUES = PanelType.values();
     }
@@ -34,13 +36,16 @@ public class Panel extends Item {
     private static final long serialVersionUID = 7679659744033436741L;
 
     public static final double MAX_WIDTH = 1000;
-    public static final double MAX_HEIGHT = 600;
+    public static final double MAX_HEIGHT = 4000;
+
+    private final static double DEFAULT_WIDTH = 600;
+    private final static double DEFAULT_HEIGHT = 300;
 
     @XMLValue
-    private double width = 600;// default width
+    protected Double width = null;
 
     @XMLValue
-    private double height = 300;// default height
+    protected Double height = null;
 
     @XMLValue
     private String name = StringUtils.EMPTY;
@@ -107,7 +112,7 @@ public class Panel extends Item {
     }
 
     public double getHeight() {
-        return height;
+        return height == null ? DEFAULT_HEIGHT : height.doubleValue();
     }
 
     public String getName() {
@@ -127,7 +132,7 @@ public class Panel extends Item {
     }
 
     public double getWidth() {
-        return width;
+        return width == null ? DEFAULT_WIDTH : width.doubleValue();
     }
 
     public boolean isActive() {

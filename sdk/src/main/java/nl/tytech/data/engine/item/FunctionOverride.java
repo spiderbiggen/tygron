@@ -78,6 +78,9 @@ public class FunctionOverride extends Item {
     @XMLValue
     private TColor wallColor = null;
 
+    // local value used to check if asset was updated in editor
+    private int imageVersion = 1;
+
     public boolean addNewCategory(Category cat) {
 
         readDefaults();
@@ -152,6 +155,10 @@ public class FunctionOverride extends Item {
 
     public String getImageName() {
         return imageName;
+    }
+
+    public int getImageVersion() {
+        return imageVersion;
     }
 
     private IndicatorScore getIndicatorScoreOrGenerate(Integer indicatorID) {
@@ -245,6 +252,7 @@ public class FunctionOverride extends Item {
 
     public void setImageName(String image) {
         this.imageName = image;
+        this.imageVersion++;
     }
 
     public void setIndicatorScorePer100M2(Integer indicatorID, double scoreValue) {

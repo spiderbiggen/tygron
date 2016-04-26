@@ -54,6 +54,21 @@ public class SettingsTest {
 	private static Settings credentials;
 
 	@Test
+	public void test() throws Exception {
+		test01Setup();
+		test02Connect();
+		test03CreateNewProject();
+		test04StartEditSessionAsEditor();
+		test05doEditSession();
+		test06closeEditSession();
+		test07startRegularSessionAsParticipant();
+		test08selectStakeholderToPlay();
+		test09planBuilding();
+		test10closeRegularSession();
+		test11deleteProject();
+
+	}
+
 	public void test01Setup() throws Exception {
 		credentials = new Settings();
 
@@ -62,7 +77,6 @@ public class SettingsTest {
 		SettingsManager.setServerIP(credentials.getServerIp());
 	}
 
-	@Test
 	public void test02Connect() throws Exception {
 
 		String result = ServicesManager.testServerConnection();
@@ -77,7 +91,6 @@ public class SettingsTest {
 				user.getMaxAccessLevel().ordinal() >= AccessLevel.EDITOR.ordinal());
 	}
 
-	@Test
 	public void test03CreateNewProject() throws Exception {
 
 		String projectName = "test" + System.currentTimeMillis();
@@ -85,7 +98,6 @@ public class SettingsTest {
 		assertNotNull(data);
 	}
 
-	@Test
 	public void test04StartEditSessionAsEditor() throws Exception {
 
 		slotID = ServicesManager.fireServiceEvent(IOServiceEventType.START_NEW_SESSION, SessionType.EDITOR,
@@ -105,7 +117,6 @@ public class SettingsTest {
 		eventHandler = new ExampleEventHandler();
 	}
 
-	@Test
 	public void test05doEditSession() throws Exception {
 
 		int mapSizeM = 500;
@@ -130,7 +141,6 @@ public class SettingsTest {
 		assertTrue(updated);
 	}
 
-	@Test
 	public void test06closeEditSession() throws Exception {
 
 		/**
@@ -145,7 +155,6 @@ public class SettingsTest {
 		slotConnection.disconnect(false);
 	}
 
-	@Test
 	public void test07startRegularSessionAsParticipant() throws Exception {
 
 		slotID = ServicesManager.fireServiceEvent(IOServiceEventType.START_NEW_SESSION, SessionType.SINGLE,
@@ -165,7 +174,6 @@ public class SettingsTest {
 		eventHandler = new ExampleEventHandler();
 	}
 
-	@Test
 	public void test08selectStakeholderToPlay() throws Exception {
 
 		stakeholderID = 0;
@@ -179,7 +187,6 @@ public class SettingsTest {
 				reply.client.getClientToken());
 	}
 
-	@Test
 	public void test09planBuilding() throws Exception {
 
 		/**
@@ -208,12 +215,11 @@ public class SettingsTest {
 
 	}
 
-	@Test
 	public void test10closeRegularSession() throws Exception {
 		slotConnection.disconnect(false);
+		Thread.sleep(1000);
 	}
 
-	@Test
 	public void test11deleteProject() throws Exception {
 		assertTrue(ServicesManager.fireServiceEvent(IOServiceEventType.DELETE_PROJECT, data.getFileName()));
 	}

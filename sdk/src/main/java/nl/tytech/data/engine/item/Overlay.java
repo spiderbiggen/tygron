@@ -66,14 +66,13 @@ public class Overlay extends UniqueNamedItem {
         LIVABILITY(GridOverlay.class, EditOptions.GREEN, GlobalIndicatorType.LIVABILITY, FunctionValue.LIVABILITY_EFFECT, 100, 0),
 
         //
-        TRAFFIC_NOISE(GridOverlay.class, EditOptions.GREEN, null, null, 4, -300),
+        TRAFFIC_NOISE(GridOverlay.class, EditOptions.GREEN, GlobalIndicatorType.TRAFFIC_NOISE, null, 4, -300),
 
         //
-        TRAFFIC_NO2(NO2Overlay.class, EditOptions.GREEN, null, null, -50, 100),
+        TRAFFIC_NO2(NO2Overlay.class, EditOptions.GREEN, GlobalIndicatorType.TRAFFIC_NO2, null, -50, 100),
 
         //
-        @Deprecated
-        WATER_STRESS(Overlay.class, EditOptions.RED, false, null),
+        @Deprecated WATER_STRESS(Overlay.class, EditOptions.RED, false, null),
 
         FLOODING_AREA(Overlay.class, EditOptions.GREEN, false, null),
 

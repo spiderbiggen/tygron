@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,6 +39,12 @@ public class TestEnvironmentStates {
 		env = new EisEnv();
 	}
 
+	@After
+	public void after() throws ManagementException, InterruptedException {
+		env.kill();
+		Thread.sleep(1000);
+	}
+
 	private final String ENTITY = "entity";
 
 	@Test
@@ -55,7 +62,6 @@ public class TestEnvironmentStates {
 		// after the init, a new entity should appear that we can connect to.
 		verify(envlistener).handleNewEntity(ENTITY);
 
-		env.kill();
 	}
 
 	@Test
@@ -69,7 +75,6 @@ public class TestEnvironmentStates {
 				new ParameterList(new Parameter[] { new Identifier("Municipality") }));
 		assertTrue(percepts.contains(expectedPercept));
 
-		env.kill();
 	}
 
 	@Test
@@ -80,7 +85,6 @@ public class TestEnvironmentStates {
 
 		findRoadFunction();
 
-		env.kill();
 	}
 
 	@Test
@@ -108,7 +112,6 @@ public class TestEnvironmentStates {
 
 		env.performEntityAction(ENTITY, action);
 
-		env.kill();
 	}
 
 	/**
@@ -139,7 +142,6 @@ public class TestEnvironmentStates {
 
 		env.performEntityAction(ENTITY, action);
 
-		env.kill();
 	}
 
 	/********************** UTIL FUNCTIONS **************************/

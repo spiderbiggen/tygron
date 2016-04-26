@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import nl.tytech.core.event.Event.EventTypeEnum;
 import nl.tytech.core.item.annotations.EventIDField;
+import nl.tytech.data.engine.item.Global.ReadOnly;
 import com.vividsolutions.jts.geom.Point;
 
 /**
@@ -38,6 +39,8 @@ public enum EditorGlobalEventType implements EventTypeEnum {
 
     @EventIDField(links = { "GLOBALS" }, params = { 0 })
     SET_START_VALUE(Integer.class, Double.class),
+
+    SET_READ_ONLY_START_VALUE(ReadOnly.class, Double.class),
 
     @EventIDField(links = { "GLOBALS", "STAKEHOLDERS" }, params = { 0, 1 })
     SET_BOOK_VALUE(Integer.class, Integer.class),

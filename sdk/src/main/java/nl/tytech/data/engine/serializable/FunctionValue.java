@@ -115,7 +115,7 @@ public enum FunctionValue implements Value {
     /**
      * Demolish time in months;
      */
-    DEMOLISH_TIME_IN_MONTHS(FunctionValueGroup.FINANCIAL, ClientTerms.DEMOLISH_PERIOD_UNIT, 0, Double.MAX_VALUE),
+    DEMOLISH_TIME_IN_MONTHS(FunctionValueGroup.CONSTRUCTION, ClientTerms.DEMOLISH_PERIOD_UNIT, 0, Double.MAX_VALUE),
 
     /**
      * Drainage influence;

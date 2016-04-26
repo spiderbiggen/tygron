@@ -18,7 +18,7 @@ import nl.tytech.locale.unit.UnitSystemType;
 
 /**
  * @author Jeroen Warmerdam
- * 
+ *
  */
 public enum EditorSettingsEventType implements EventTypeEnum {
 
@@ -28,8 +28,6 @@ public enum EditorSettingsEventType implements EventTypeEnum {
      * Set region, e.g. Asia.
      */
     SET_REGION(Region.class),
-
-    UPLOAD_PROJECT_ASSET(String.class, String.class, byte[].class),
 
     /**
      * Set the introduction description of this project
@@ -48,11 +46,6 @@ public enum EditorSettingsEventType implements EventTypeEnum {
     SET_RAINMAN_WEATHER_ID(Integer.class),
 
     SET_SETTING(Setting.Type.class, String.class),
-
-    /**
-     * Set the allowed water level increase
-     */
-    SET_WATER_LEVEL(Double.class),
 
     /**
      * Triggered at the end of the wizard.
@@ -98,7 +91,7 @@ public enum EditorSettingsEventType implements EventTypeEnum {
 
     @Override
     public Class<?> getResponseClass() {
-        return this == UPLOAD_PROJECT_ASSET ? Boolean.class : null;
+        return null;
     }
 
     @Override

@@ -44,6 +44,8 @@ public enum ViewEnum {
     //
     BEAMER_HEAT(AppType.BEAMER, false, "BeamerHeatScreenController"),
     //
+    BEAMER_WEBVIEW(AppType.BEAMER, false, "BeamerWebviewScreenController"),
+    //
     BEAMER_SCORE(AppType.BEAMER, false, "BeamerMapScreenController");
 
     private static final String VIEWFLOW_PLACEHOLDER_IMAGE_JPG = "viewflow_ph.jpg";

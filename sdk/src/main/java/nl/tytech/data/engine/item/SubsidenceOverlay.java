@@ -38,6 +38,9 @@ public class SubsidenceOverlay extends GroundWaterOverlay {
     private String clayThicknessKey = "CLAY_THICKNESS";
 
     @XMLValue
+    private String subsidenceKey = "SUBSIDENCE";
+
+    @XMLValue
     @ItemIDField("GLOBALS")
     private Integer yearsID = Item.NONE;
 
@@ -65,6 +68,10 @@ public class SubsidenceOverlay extends GroundWaterOverlay {
         return Math.max(1, this.getYears());
     }
 
+    public String getSubsidenceKey() {
+        return subsidenceKey;
+    }
+
     public double getYears() {
         Global global = this.getItem(MapLink.GLOBALS, this.yearsID);
         return global != null ? global.getActualValue() : ReadOnly.SUBSIDENCE_YEARS.getDefaultValue();
@@ -88,6 +95,10 @@ public class SubsidenceOverlay extends GroundWaterOverlay {
 
     public void setGlobalYears(Integer id) {
         this.yearsID = id;
+    }
+
+    public void setSubsidenceKey(String subsidenceKey) {
+        this.subsidenceKey = subsidenceKey;
     }
 
     @Override

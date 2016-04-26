@@ -5,7 +5,9 @@
 package nl.tytech.data.engine.item;
 
 import nl.tytech.core.item.annotations.XMLValue;
+import nl.tytech.core.net.serializable.MapLink;
 import nl.tytech.data.engine.item.CustomIndicator.CustomIndicatorType;
+import nl.tytech.data.engine.other.ExcelItem;
 import nl.tytech.util.StringUtils;
 
 /**
@@ -13,7 +15,7 @@ import nl.tytech.util.StringUtils;
  *
  * @author Maxim Knepfle
  */
-public class ExcelIndicator extends Indicator {
+public class ExcelIndicator extends Indicator implements ExcelItem {
 
     /**
      *
@@ -21,17 +23,19 @@ public class ExcelIndicator extends Indicator {
     private static final long serialVersionUID = -3312131928668156364L;
 
     @XMLValue
-    private String fileName = StringUtils.EMPTY;
+    protected String fileName = StringUtils.EMPTY;
 
     // runtime setting do not save to XML
     private boolean excelUpdated = true;
 
-    public String getFileLocation() {
-        return Setting.EXCEL_DIR + getFileName();
-    }
-
+    @Override
     public String getFileName() {
         return fileName;
+    }
+
+    @Override
+    public String getFileSubDirectory() {
+        return StringUtils.capitalizeFirstLetter(MapLink.INDICATORS.name().toLowerCase()) + "/" + getID() + "/";
     }
 
     @Override
@@ -39,17 +43,25 @@ public class ExcelIndicator extends Indicator {
         return CustomIndicatorType.EXCEL;
     }
 
+    @Override
+    public boolean isDefaultExcel() {
+        return false;
+    }
+
+    @Override
     public boolean isExcelUpdated() {
         return excelUpdated;
     }
 
+    @Override
     public void setExcelUpdated(boolean excelUpdated) {
         this.excelUpdated = excelUpdated;
     }
 
+    @Override
     public void setFileName(String fileName) {
         this.fileName = fileName;
-        this.setCalcTime(0);//reset calc time
+        this.setCalcTime(0);// reset calc time
         this.setExcelUpdated(true);
     }
 }

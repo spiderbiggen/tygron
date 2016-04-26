@@ -16,7 +16,6 @@ import nl.tytech.core.net.serializable.PolygonItem;
 import nl.tytech.data.core.item.Item;
 import nl.tytech.data.core.item.UniqueNamedItem;
 import nl.tytech.data.engine.serializable.Category;
-import nl.tytech.data.engine.serializable.MapType;
 import nl.tytech.util.JTSUtils;
 import nl.tytech.util.ObjectUtils;
 import nl.tytech.util.StringUtils;
@@ -52,16 +51,8 @@ public class Zone extends UniqueNamedItem implements PolygonItem {
     @XMLValue
     private int allowedFloors = DEFAULT_MAX_FLOORS;
 
-    private int categoryVersion = Item.NONE;
-
-    private int categoryVersionMaquette = Item.NONE;
-
     @XMLValue
     private boolean showLabel = true;
-
-    private double[][] details = new double[MapType.VALUES.length][Building.Detail.values().length];
-
-    private int[] detailVersions = new int[MapType.VALUES.length];
 
     @XMLValue
     private Integer sortIndex = Item.NONE;
@@ -73,9 +64,6 @@ public class Zone extends UniqueNamedItem implements PolygonItem {
     private MultiPolygon polygons = JTSUtils.EMPTY;
 
     public Zone() {
-        for (MapType mapType : MapType.VALUES) {
-            detailVersions[mapType.ordinal()] = NONE;
-        }
     }
 
     public boolean addAllowedCategory(Category category) {
@@ -102,14 +90,6 @@ public class Zone extends UniqueNamedItem implements PolygonItem {
     @Override
     public String getDescription() {
         return description;
-    }
-
-    public double[] getDetails(MapType mapType) {
-        return details[mapType.ordinal()];
-    }
-
-    public int getDetailVersion(MapType mapType) {
-        return detailVersions[mapType.ordinal()];
     }
 
     public int getMaxAllowedFloors() {
@@ -220,14 +200,6 @@ public class Zone extends UniqueNamedItem implements PolygonItem {
         }
     }
 
-    public void setCategoryVersion(MapType mapType, int value) {
-        if (mapType == MapType.CURRENT) {
-            categoryVersion = value;
-        } else {
-            categoryVersionMaquette = value;
-        }
-    }
-
     /**
      * @param color the color to set
      */
@@ -238,14 +210,6 @@ public class Zone extends UniqueNamedItem implements PolygonItem {
 
     public void setDescription(String desc) {
         description = desc;
-    }
-
-    public void setDetails(MapType mapType, double[] mapTypeDetails) {
-        this.details[mapType.ordinal()] = mapTypeDetails;
-    }
-
-    public void setDetailVersion(MapType mapType, int version) {
-        detailVersions[mapType.ordinal()] = version;
     }
 
     public void setMaxAllowedFloors(int allowedFloors) {

@@ -34,7 +34,10 @@ public enum Category {
             // sell build demolish (costs per M2)
             3000, 2000, 250,
             // unit size, parking lots/m2, green m2/m2 and buildtime in months
-            80, -0.03f, 0, 2.5f, "category_house.png", false),
+            80, -0.03f, 0, 2.5f, "category_house.png", false,
+            // heat flow start year, start value, change per year, power multiplier
+            1978, -0.322532, 0.004685, 4.86),
+
     /**
      * Mid-range homes and apartments.
      */
@@ -48,7 +51,9 @@ public enum Category {
             // sell build demolish (costs per M2)
             4000, 3000, 250,
             // unit size, parking lots/m2, green m2/m2 and buildtime in months
-            150, -0.017f, 0, 3, "category_house.png", false),
+            150, -0.017f, 0, 3, "category_house.png", false,
+            // heat flow start year, start value, change per year, power multiplier
+            1978, -0.322532, 0.004685, 4.86),
     /**
      * Luxurious villa's and penthouses.
      */
@@ -62,7 +67,9 @@ public enum Category {
             // sell build demolish (costs per M2)
             5000, 4000, 250,
             // unit size, parking lots/m2, green m2/m2 and buildtime in months
-            250, -0.009f, 0, 3, "category_house.png", false),
+            250, -0.009f, 0, 3, "category_house.png", false,
+            // heat flow start year, start value, change per year, power multiplier
+            1978, -0.322532, 0.004685, 4.86),
     /**
      * Roads (both small and large)
      */
@@ -76,7 +83,9 @@ public enum Category {
             // sell build demolish (costs per M2)
             0, 100, 20,
             // unit size, parking lots/m2, green m2/m2 and buildtime in months
-            1, 0, 0, 2, "category_road.png", true),
+            1, 0, 0, 2, "category_road.png", true,
+            // heat flow start year, start value, change per year, power multiplier
+            0, 0, 0, 0),
     /**
      * Paved areas like squares, parking lots
      */
@@ -90,7 +99,9 @@ public enum Category {
             // sell build demolish (costs per M2)
             0, 100, 20,
             // unit size, parking lots/m2, green m2/m2 and buildtime in months
-            1, 0, 0, 2, "category_watersquare.png", true),
+            1, 0, 0, 2, "category_watersquare.png", true,
+            // heat flow start year, start value, change per year, power multiplier
+            0, 0, 0, 0),
     /**
      * Educational building.
      */
@@ -104,7 +115,9 @@ public enum Category {
             // sell build demolish (costs per M2)
             0, 2000, 250,
             // unit size, parking lots/m2, green m2/m2 and buildtime in months
-            1, -0.06f, 0, 4, "category_apartments.png", false),
+            1, -0.06f, 0, 4, "category_apartments.png", false,
+            // heat flow start year, start value, change per year, power multiplier
+            1900, -0.39783, 0.00174, 3.78),
     /**
      * Healthcare building.
      */
@@ -118,7 +131,9 @@ public enum Category {
             // sell build demolish (costs per M2)
             0, 2000, 250,
             // unit size, parking lots/m2, green m2/m2 and buildtime in months
-            1, -0.08f, 0, 4, "category_office.png", false),
+            1, -0.08f, 0, 4, "category_office.png", false,
+            // heat flow start year, start value, change per year, power multiplier
+            1900, -0.4296, 0.001, 6.3),
     /**
      * Public cultivated Park
      */
@@ -132,7 +147,9 @@ public enum Category {
             // sell build demolish (costs per M2)
             0, 500, 10,
             // unit size, parking lots/m2, green m2/m2 and buildtime in months
-            1, 0f, 1f, 1, "category_park.png", true),
+            1, 0f, 1f, 1, "category_park.png", true,
+            // heat flow start year, start value, change per year, power multiplier
+            0, 0, 0, 0),
     /**
      * Raw nature (mostly trees)
      */
@@ -146,7 +163,9 @@ public enum Category {
             // sell build demolish (costs per M2)
             0, 0, 10,
             // unit size, parking lots/m2, green m2/m2 and buildtime in months
-            1, 0f, 1f, 1, "category_park.png", true),
+            1, 0f, 1f, 1, "category_park.png", true,
+            // heat flow start year, start value, change per year, power multiplier
+            0, 0, 0, 0),
     /**
      * Industry (both heavy and normal)
      */
@@ -160,7 +179,9 @@ public enum Category {
             // sell build demolish (costs per M2)
             5000, 4000, 250,
             // unit size, parking lots/m2, green m2/m2 and buildtime in months
-            1, -0.02f, 0, 4, "category_industry.png", false),
+            1, -0.02f, 0, 4, "category_industry.png", false,
+            // heat flow start year, start value, change per year, power multiplier
+            1900, -0.14738564, 0, 4.5),
     /**
      * Offices
      */
@@ -174,7 +195,9 @@ public enum Category {
             // sell build demolish (costs per M2)
             5000, 4000, 250,
             // unit size, parking lots/m2, green m2/m2 and buildtime in months
-            1, -0.02f, 0, 4, "category_office.png", false),
+            1, -0.02f, 0, 4, "category_office.png", false,
+            // heat flow start year, start value, change per year, power multiplier
+            1900, -0.32340, 0.00066, 4.5),
     /**
      * The rest
      */
@@ -188,7 +211,9 @@ public enum Category {
             // sell build demolish (costs per M2)
             5000, 4000, 250,
             // unit size, parking lots/m2, green m2/m2 and buildtime in months
-            1, 0f, 0, 3, "category_actor.png", true),
+            1, 0f, 0, 3, "category_actor.png", true,
+            // heat flow start year, start value, change per year, power multiplier
+            0, 0, 0, 0),
     /**
      * Senior/Elderly people housing.
      */
@@ -202,7 +227,9 @@ public enum Category {
             // sell build demolish (costs per M2)
             3000, 2000, 250,
             // unit size, parking lots/m2, green m2/m2 and buildtime in months
-            100, -0.015f, 0, 2, "category_house.png", false),
+            100, -0.015f, 0, 2, "category_house.png", false,
+            // heat flow start year, start value, change per year, power multiplier
+            1978, -0.322532, 0.004685, 4.86),
 
     /**
      * Underground without a building on top
@@ -217,7 +244,9 @@ public enum Category {
             // sell build demolish (costs per M2)
             0, 1, 20,
             // unit size, parking lots/m2, green m2/m2 and buildtime in months
-            1, 0, 0, 2, "category_sewers.png", true),
+            1, 0, 0, 2, "category_sewers.png", true,
+            // heat flow start year, start value, change per year, power multiplier
+            0, 0, 0, 0),
 
     /**
      * Underground with a building on top
@@ -233,7 +262,9 @@ public enum Category {
             // sell build demolish (costs per M2)
             0, 100, 20,
             // unit size, parking lots/m2, green m2/m2 and buildtime in months
-            1, 0, 0, 2, "category_sewers.png", true),
+            1, 0, 0, 2, "category_sewers.png", true,
+            // heat flow start year, start value, change per year, power multiplier
+            0, 0, 0, 0),
 
     @Deprecated
     DIKE(ClientTerms.FUNCTION_CATEGORY_DIKE,
@@ -246,7 +277,9 @@ public enum Category {
             // sell build demolish (costs per M2)
             0, 0, 500,
             // unit size, parking lots/m2, green m2/m2 and buildtime in months
-            1, 0f, 0.5f, 3, "category_wateroverflow.png", false),
+            1, 0f, 0.5f, 3, "category_wateroverflow.png", false,
+            // heat flow start year, start value, change per year, power multiplier
+            0, 0, 0, 0),
     /**
      * Shops including restaurants and bars
      */
@@ -260,7 +293,9 @@ public enum Category {
             // sell build demolish (costs per M2)
             5000, 4000, 250,
             // unit size, parking lots/m2, green m2/m2 and buildtime in months
-            1, -0.033f, 0, 4, "category_office.png", false),
+            1, -0.033f, 0, 4, "category_office.png", false,
+            // heat flow start year, start value, change per year, power multiplier
+            1900, -0.318158, 0.00106, 4.32),
 
     /**
      * Agriculture
@@ -275,7 +310,9 @@ public enum Category {
             // sell build demolish (costs per M2)
             5000, 4000, 250,
             // unit size, parking lots/m2, green m2/m2 and buildtime in months
-            1, 0f, 0, 3, "category_roof.png", true),
+            1, 0f, 0, 3, "category_roof.png", true,
+            // heat flow start year, start value, change per year, power multiplier
+            0, 0, 0, 0),
     /**
      * Recreation, sports, culture
      */
@@ -289,7 +326,9 @@ public enum Category {
             // sell build demolish (costs per M2)
             5000, 4000, 500,
             // unit size, parking lots/m2, green m2/m2 and buildtime in months
-            1, -0.013f, 0, 3, "category_heart.png", true),
+            1, -0.013f, 0, 3, "category_heart.png", true,
+            // heat flow start year, start value, change per year, power multiplier
+            1900, -0.41016, 0.0022, 5.04),
     /**
      * Student housing. (form of social housing)
      */
@@ -303,8 +342,9 @@ public enum Category {
             // sell build demolish (costs per M2)
             3000, 2000, 250,
             // unit size, parking lots/m2, green m2/m2 and buildtime in months
-            20, -0.008f, 0, 2.5f, "category_apartments.png", false),
-
+            20, -0.008f, 0, 2.5f, "category_apartments.png", false,
+            // heat flow start year, start value, change per year, power multiplier
+            1978, -0.322532, 0.004685, 4.86),
     /**
      * Gardens around houses
      */
@@ -318,7 +358,9 @@ public enum Category {
             // sell build demolish (costs per M2)
             0, 500, 10,
             // unit size, parking lots/m2, green m2/m2 and buildtime in months
-            1, 0f, 1f, 1, "category_park.png", true),
+            1, 0f, 1f, 1, "category_park.png", true,
+            // heat flow start year, start value, change per year, power multiplier
+            0, 0, 0, 0),
 
     /**
      * Roads (both small and large)
@@ -333,7 +375,9 @@ public enum Category {
             // sell build demolish (costs per M2)
             0, 100, 20,
             // unit size, parking lots/m2, green m2/m2 and buildtime in months
-            1, 0, 0, 2, "category_road.png", true),
+            1, 0, 0, 2, "category_road.png", true,
+            // heat flow start year, start value, change per year, power multiplier
+            0, 0, 0, 0),
     /**
      * Roads (both small and large)
      */
@@ -347,7 +391,9 @@ public enum Category {
             // sell build demolish (costs per M2)
             0, 100, 20,
             // unit size, parking lots/m2, green m2/m2 and buildtime in months
-            1, 0, 0, 2, "category_road.png", true);
+            1, 0, 0, 2, "category_road.png", true,
+            // heat flow start year, start value, change per year, power multiplier
+            0, 0, 0, 0);
 
     public final static Category[] VALUES;
     static {
@@ -369,7 +415,8 @@ public enum Category {
 
     private Category(ClientTerms term, boolean housing, boolean zoningPermitRequired, double heat, double qol, TColor color,
             TColor roofColor, double sellPriceM2, double buildCostM2, double demolishCostM2, double unitSizeM2,
-            double parkingLotsDemandPerM2, double greenM2, double buildTimeMonths, String iconName, boolean single) {
+            double parkingLotsDemandPerM2, double greenM2, double buildTimeMonths, String iconName, boolean single,
+            double heatFlowStartYear, double heatFlowGJm2StartValue, double heatFlowGJm2ChangePerYear, double heatFlowPowerMultiplier) {
 
         this.term = term;
         this.housing = housing;
@@ -424,10 +471,12 @@ public enum Category {
          * TODO: Maxim differentiate per function type.
          */
         double demand = zoningPermitRequired ? -0.3d : 0d;
-        // if (ROTerms.FUNCTION_CATEGORY_INDUSTRY == gameName) {
-        // demand = 1.75f;
-        // }
         categoryValues.put(CategoryValue.HEAT_FLOW_M2_YEAR, demand);
+
+        categoryValues.put(CategoryValue.HEAT_FLOW_M2_START_YEAR, heatFlowStartYear);
+        categoryValues.put(CategoryValue.HEAT_FLOW_M2_START_VALUE, heatFlowGJm2StartValue);
+        categoryValues.put(CategoryValue.HEAT_FLOW_M2_CHANGE_PER_YEAR, heatFlowGJm2ChangePerYear);
+        categoryValues.put(CategoryValue.HEAT_POWER_TO_FLOW_MULTIPLIER, heatFlowPowerMultiplier);
 
     }
 

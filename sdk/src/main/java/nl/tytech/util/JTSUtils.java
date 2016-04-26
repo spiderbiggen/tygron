@@ -12,6 +12,14 @@ import java.util.List;
 import javax.vecmath.Point3d;
 import nl.tytech.util.jts.EmptyMultiPolygon;
 import nl.tytech.util.logger.TLogger;
+import straightskeleton.Corner;
+import straightskeleton.Edge;
+import straightskeleton.Machine;
+import straightskeleton.Output.Face;
+import straightskeleton.Output.SharedEdge;
+import straightskeleton.Skeleton;
+import utils.Loop;
+import utils.LoopL;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -37,14 +45,6 @@ import com.vividsolutions.jts.precision.GeometryPrecisionReducer;
 import com.vividsolutions.jts.simplify.DouglasPeuckerSimplifier;
 import com.vividsolutions.jts.triangulate.ConformingDelaunayTriangulationBuilder;
 import com.vividsolutions.jts.triangulate.ConstraintEnforcementException;
-import straightskeleton.Corner;
-import straightskeleton.Edge;
-import straightskeleton.Machine;
-import straightskeleton.Output.Face;
-import straightskeleton.Output.SharedEdge;
-import straightskeleton.Skeleton;
-import utils.Loop;
-import utils.LoopL;
 
 /**
  * Helper methods for JTS
@@ -711,7 +711,7 @@ public class JTSUtils {
         try {
             // cheap method to test intersection first
             if (!preparedGeometry1.intersects(geometry2)) {
-                return false;
+                return false; 
             }
             // cheap method to test if it only touches edges
             if (preparedGeometry1.touches(geometry2)) {

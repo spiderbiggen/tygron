@@ -13,6 +13,8 @@ import nl.tytech.core.net.serializable.MapLink;
 import nl.tytech.data.core.item.Item;
 import nl.tytech.data.engine.item.Building.Detail;
 import nl.tytech.data.engine.serializable.Address;
+import nl.tytech.data.engine.serializable.Category;
+import nl.tytech.data.engine.serializable.CategoryValue;
 import nl.tytech.data.engine.serializable.MapType;
 import nl.tytech.data.engine.serializable.TimeState;
 import nl.tytech.util.JTSUtils;
@@ -29,6 +31,29 @@ import com.vividsolutions.jts.geom.Point;
  */
 public class PipeLoad extends Item {
 
+    private static class LoadCostSegment {
+        private double baseCost;
+        private double incrCost;
+        private int minConnections;
+
+        public LoadCostSegment(double baseCost, double incrCost, int minConnections) {
+            this.baseCost = baseCost;
+            this.incrCost = incrCost;
+            this.minConnections = minConnections;
+        }
+
+        public double getCost(int amountOfConnections) {
+            if (!isValidSegment(amountOfConnections)) {
+                return 0;
+            }
+            return baseCost + incrCost * amountOfConnections;
+        }
+
+        public boolean isValidSegment(int amountOfConnections) {
+            return amountOfConnections >= minConnections;
+        }
+    }
+
     public enum LoadParameterType {
         FLOW, //
         POWER, //
@@ -42,19 +67,29 @@ public class PipeLoad extends Item {
 
     public enum LoadType {
 
-        UNKNOWN("Onbekend", 1500),
+        UNKNOWN("Onbekend", new LoadCostSegment[] { new LoadCostSegment(0, 2500, 1) }),
 
-        COLLECTIVE("Collectieve ketel", 1500), // , meerdere (stijg)strangen per woning, individueel tapwater"),
+        // , meerdere (stijg)strangen per woning, individueel tapwater"),
+        COLLECTIVE("Collectieve ketel", new LoadCostSegment[] { new LoadCostSegment(19250, 1100, 2), new LoadCostSegment(34500, 1100, 62),
+                new LoadCostSegment(41500, 1100, 139) }),
 
-        COLLECTIVE_TAP("Collectieve ketel", 1500), // , meerdere (stijg)strangen per woning, collectief tapwater"),
+        // , meerdere (stijg)strangen per woning, collectief tapwater"),
+        COLLECTIVE_TAP("Collectieve ketel", new LoadCostSegment[] { new LoadCostSegment(19250, 500, 2),
+                new LoadCostSegment(34500, 500, 62), new LoadCostSegment(41500, 500, 139) }),
 
-        COLLECTIVE_RADIATOR("Collectieve ketel", 1500), // , verdeling naar radiatoren per woning, individueel tapwater"),
+        // , verdeling naar radiatoren per woning, individueel tapwater"),
+        COLLECTIVE_RADIATOR("Collectieve ketel", new LoadCostSegment[] { new LoadCostSegment(11250, 1800, 2),
+                new LoadCostSegment(26500, 1800, 62), new LoadCostSegment(33500, 1800, 139) }),
 
-        COLLECTIVE_RADIATOR_TAP("Collectieve ketel", 1500), // , verdeling naar radiatoren per woning, collectief tapwater"),
+        // , verdeling naar radiatoren per woning, collectief tapwater"),
+        COLLECTIVE_RADIATOR_TAP("Collectieve ketel", new LoadCostSegment[] { new LoadCostSegment(11250, 1800, 2),
+                new LoadCostSegment(26500, 1800, 62), new LoadCostSegment(33500, 1800, 139) }),
 
-        INDIVIDUAL("Individuele (combi)ketel", 3000),
+        INDIVIDUAL("Individuele (combi)ketel", new LoadCostSegment[] { new LoadCostSegment(2500, 0, 1),
+                new LoadCostSegment(11250, 2200, 2), new LoadCostSegment(26500, 2200, 62), new LoadCostSegment(33500, 2200, 139) }),
 
-        LARGE_SCALE_CONSUMER("Grootverbruiker", 3000),
+        LARGE_SCALE_CONSUMER("Grootverbruiker", new LoadCostSegment[] { new LoadCostSegment(11250, 0, 6),
+                new LoadCostSegment(26500, 0, 62), new LoadCostSegment(33500, 0, 139) }),
 
         ;
 
@@ -62,15 +97,26 @@ public class PipeLoad extends Item {
 
         private String text;
 
-        private double cost;
+        private LoadCostSegment[] segments;
 
-        private LoadType(String text, double cost) {
+        private LoadType(String text, LoadCostSegment[] loadCostSegments) {
             this.text = text;
-            this.cost = cost;
+            this.segments = loadCostSegments;
         }
 
-        public double getDefaultConnectionCost() {
-            return cost;
+        public double getConnectionCost(int amountOfConnections) {
+            LoadCostSegment loadCostSegment = null;
+            for (int i = 0; i < segments.length; i++) {
+                if (segments[i].isValidSegment(amountOfConnections)) {
+                    loadCostSegment = segments[i];
+                } else {
+                    break;
+                }
+            }
+            if (loadCostSegment == null) {
+                return 0;
+            }
+            return loadCostSegment.getCost(amountOfConnections);
         }
 
         public String getText() {
@@ -145,7 +191,7 @@ public class PipeLoad extends Item {
     }
 
     public double getCalculatedConnectionCosts() {
-        return this.getType().getDefaultConnectionCost() * this.getConnectionCount();
+        return this.getType().getConnectionCost(this.getConnectionCount());
     }
 
     public int getCalculatedConnectionCount() {
@@ -170,13 +216,29 @@ public class PipeLoad extends Item {
         if (building == null) {
             return 0;
         }
-        double lotSizeM2 = getFloorspaceM2(MapType.CURRENT) / building.getFloors();
-        double flowContent = building.getBuildingDetailForM2(lotSizeM2, Detail.HEAT_FLOW_GJ_YEAR);
-        return MathUtils.round(flowContent, 2);
+        double flowPerm2 = 0;
+        for (Category category : building.getCategories()) {
+            double startValue = building.getValue(category, CategoryValue.HEAT_FLOW_M2_START_VALUE);
+            double startYear = building.getValue(category, CategoryValue.HEAT_FLOW_M2_START_YEAR);
+            if (startValue == 0 && startYear == 0) {
+                continue;
+            }
+
+            double yearDifference = MathUtils.clamp(building.getConstructionYear() - startYear, 0, Double.MAX_VALUE);
+            flowPerm2 += building.getCategoryPercentage(category)
+                    * (startValue + yearDifference * building.getValue(category, CategoryValue.HEAT_FLOW_M2_CHANGE_PER_YEAR));
+        }
+        double floorSizeM2 = getFloorspaceM2(MapType.CURRENT);
+        return flowPerm2 * floorSizeM2;
     }
 
     public double getCalculatedPower() {
-        return MathUtils.round(this.getCalculatedFlow() / FLOW_TO_POWER, 2);
+        Building building = getBuilding();
+        if (building == null) {
+            return 0;
+        }
+        double flowToPower = building.getValue(CategoryValue.HEAT_POWER_TO_FLOW_MULTIPLIER);
+        return this.getCalculatedFlow() / flowToPower;
     }
 
     public PipeCluster getCluster() {

@@ -9,6 +9,7 @@ import java.util.List;
 import nl.tytech.core.event.Event.SessionEventTypeEnum;
 import nl.tytech.core.item.annotations.EventIDField;
 import nl.tytech.core.item.annotations.EventParamData;
+import nl.tytech.core.net.serializable.MapLink;
 import nl.tytech.data.engine.item.Economy;
 import nl.tytech.data.engine.item.MoneyTransfer;
 import nl.tytech.data.engine.item.Overlay.OverlayType;
@@ -53,9 +54,9 @@ public enum LogicEventType implements SessionEventTypeEnum {
     @EventParamData(desc = "Set what panel the beamer should show", params = { "BeamerPanel Type" })
     BEAMER_SET_SCORE_PANEL(BeamerPanelEnum.class),
 
-    @EventParamData(desc = "Set what screen and panel the beamer should show", params = { "Beamer View", "BeamerPanel Type", "Overlay ID" })
-    @EventIDField(links = { "OVERLAYS" }, params = { 2 })
-    BEAMER_SWITCH(ViewEnum.class, BeamerPanelEnum.class, Integer.class),
+    @EventParamData(desc = "Set what screen and panel the beamer should show", params = { "Beamer View", "BeamerPanel Type",
+            "MapLink mapLink", "Item ID" })
+    BEAMER_SWITCH(ViewEnum.class, BeamerPanelEnum.class, MapLink.class, Integer.class),
 
     @EventParamData(editor = true, desc = "Set the beamer layer to a specific overlay type", params = { "Overlay Type" })
     @Deprecated
@@ -209,9 +210,7 @@ public enum LogicEventType implements SessionEventTypeEnum {
     @EventParamData(editor = true, desc = "Multiply traffic density with this factor", params = { "Factor, default 1.0" })
     SET_TRAFFIC_MULTIPLIER(Double.class),
 
-    @EventParamData(editor = true, desc = "Delete prediction when it is not needed anymore", params = { "Prediction ID" })
-    @EventIDField(links = { "PREDICTIONS" }, params = { 0 })
-    PREDICTION_DELETE(Integer.class),
+
 
     ;
 

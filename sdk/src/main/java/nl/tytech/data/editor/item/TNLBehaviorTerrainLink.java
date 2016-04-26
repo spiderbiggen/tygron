@@ -5,8 +5,8 @@
 package nl.tytech.data.editor.item;
 
 import nl.tytech.core.item.annotations.XMLValue;
-import nl.tytech.data.engine.item.BehaviorTerrain;
-import nl.tytech.data.engine.item.BehaviorTerrain.Behavior;
+import nl.tytech.data.engine.item.Terrain;
+import nl.tytech.data.engine.item.Terrain.TerrainType;
 import nl.tytech.data.engine.item.Stakeholder;
 import nl.tytech.data.engine.item.Stakeholder.Type;
 import nl.tytech.util.color.TColor;
@@ -22,9 +22,9 @@ public class TNLBehaviorTerrainLink extends TNLTerrainLink {
     private static final long serialVersionUID = -3030480178840758455L;
 
     @XMLValue
-    private BehaviorTerrain.Behavior behavior = BehaviorTerrain.Behavior.GRASSLAND;
+    private Terrain.TerrainType behavior = Terrain.TerrainType.GRASSLAND;
 
-    public Behavior getBehavior() {
+    public TerrainType getBehavior() {
         return behavior;
     }
 

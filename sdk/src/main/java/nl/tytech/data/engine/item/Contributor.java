@@ -29,9 +29,16 @@ public class Contributor extends UniqueNamedItem {
     @XMLValue
     private String iconFileName = DEFAULT_IMAGE;
 
+    // local value used to check if asset was updated in editor
+    private int iconVersion = 1;
+
     @XMLValue
     @ListOfClass(String.class)
     private ArrayList<String> persons = new ArrayList<String>();
+
+    public int getIconVersion() {
+        return iconVersion;
+    }
 
     public String getImageFileName() {
         return iconFileName;
@@ -47,5 +54,6 @@ public class Contributor extends UniqueNamedItem {
 
     public void setIconFileName(String iconFileName) {
         this.iconFileName = iconFileName;
+        this.iconVersion++;
     }
 }

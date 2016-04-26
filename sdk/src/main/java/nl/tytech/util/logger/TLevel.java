@@ -35,6 +35,13 @@ public class TLevel extends Level {
     public final static TLevel NOTIFICATION = new TLevel("NOTIFICATION", 1050);
 
     /**
+     * DEBUG only logged in NOT release mode
+     *
+     * <CODE>750</CODE>.
+     */
+    public final static TLevel DEBUG = new TLevel("DEBUG", 750);
+
+    /**
      * @param name
      * @param value
      */

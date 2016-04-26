@@ -45,9 +45,6 @@ public class DetailUtils {
             case BUYOUT_COST:
                 return floorSizeM2 * valueItem.getValue(CategoryValue.BUYOUT_COST_M2);
 
-            case HEAT_FLOW_GJ_YEAR:
-                return floorSizeM2 * valueItem.getValue(CategoryValue.HEAT_FLOW_M2_YEAR);
-
             case SELL_PRICE:
                 return floorSizeM2 * valueItem.getValue(CategoryValue.SELL_PRICE_M2);
 
@@ -73,12 +70,6 @@ public class DetailUtils {
                     }
                 }
                 return houses;
-
-            case AVG_HEAT:
-            case AVG_LIVABILITY:
-                // TODO (Frank) Decide what to return here later
-                return 0;
-
             default:
                 return 0;
         }

@@ -3,6 +3,19 @@ Tygron EIS connector
 
 This connector puts an EIS layer on top of the Tygron SDK.
 
+Usage
+---
+To use the environment, you need to put a configuration.cfg file with the following contents in your project. 
+
+```
+username: yourtygronusername
+password: yourtygronpassword
+server: the tygron url, typically preview.tygron.com
+```
+
+
+
+
 
 Usage  of GOAL example
 ---

@@ -69,10 +69,13 @@ public class RestUtils {
     @SuppressWarnings("unchecked")
     public static <T> T readByteStream(InputStream inputStream, Class<T> responseClass) throws Exception {
 
-        if (responseClass != byte[].class) {
-            throw new Exception("Zipped Binary can only handle byte[].class as response class. Not: " + responseClass);
+        if (responseClass == byte[].class) {
+            return (T) ZipUtils.fromByteStream(inputStream, true);
         }
-        return (T) ZipUtils.fromByteStream(inputStream, true);
+        if (responseClass == GZIPInputStream.class) {
+            return (T) new GZIPInputStream(inputStream);
+        }
+        throw new Exception("Zipped Binary can only handle byte[].class, GZIPInputStream as response class. Not: " + responseClass);
     }
 
     public static <T> T readJsonFile(Format format, File file, Class<T> responseClass) throws JsonParseException, JsonMappingException,
@@ -195,7 +198,7 @@ public class RestUtils {
 
         switch (format) {
             case HTML:
-                return object;
+                return object == null ? null : object.toString();
             case JSON:
             case TJSON:
                 return writeJsonString(format, object);

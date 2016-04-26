@@ -46,6 +46,9 @@ public class EventBundle extends Item implements Action {
     @XMLValue
     @AssetDirectory(GUI_IMAGES_ACTIONS)
     private String imageName = DEFAULT_IMAGE;
+    
+    // local value used to check if asset was updated in editor
+    private int imageVersion = 0;
 
     @ItemIDField("EVENT_BUNDLES")
     @XMLValue
@@ -53,6 +56,10 @@ public class EventBundle extends Item implements Action {
 
     public EventBundle() {
         name = "New bundle";
+    }
+    
+    public int getImageVersion(){
+        return imageVersion;
     }
 
     public CodedEvent addCodedEvent(EventTypeEnum type, Object... objects) {
@@ -190,7 +197,7 @@ public class EventBundle extends Item implements Action {
 
     public void setImageName(String name) {
         this.imageName = name;
-
+        this.imageVersion++;
     }
 
     public void setName(String string) {

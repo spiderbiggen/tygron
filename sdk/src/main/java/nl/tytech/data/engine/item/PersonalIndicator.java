@@ -31,12 +31,15 @@ public class PersonalIndicator extends Indicator {
         FINANCE(EditOptions.GREEN, TColor.WHITE, new TargetDescription[] { new TargetDescription(
                 "Amount of money that the Stakeholder needs to earn.", 1000, -Double.MAX_VALUE, Double.MAX_VALUE, UnitType.NONE) }, true),
 
+        @Deprecated
         PIPE_NETWORK_CONNECTED(EditOptions.HEAT, TColor.RED, new TargetDescription[] { new TargetDescription("Amount of connected units.",
                 1000, -Double.MAX_VALUE, Double.MAX_VALUE, UnitType.NONE) }, true),
 
+        @Deprecated
         PIPE_NETWORK_POLLUTION(EditOptions.HEAT, TColor.RED, new TargetDescription[] { new TargetDescription("Reduction of e.g. CO2.).", 1,
                 0, Double.MAX_VALUE, UnitType.NONE) }, true),
 
+        @Deprecated
         PIPE_NETWORK_FINANCE(EditOptions.HEAT, TColor.RED, new TargetDescription[] { new TargetDescription(
                 "Efficiency of a pipe transport network (Amount X delivered/cost).", 1, 0, Double.MAX_VALUE, UnitType.NONE) }, true),
 
@@ -62,7 +65,7 @@ public class PersonalIndicator extends Indicator {
         public static PersonalIndicatorType[] getActiveValues(EditOptions userZone) {
 
             List<PersonalIndicatorType> types = new ArrayList<>();
-            for (PersonalIndicatorType type : PersonalIndicatorType.values()) {
+            for (PersonalIndicatorType type : getActiveValues()) {
                 if (type.editZone.ordinal() <= userZone.ordinal()) {
                     types.add(type);
                 }

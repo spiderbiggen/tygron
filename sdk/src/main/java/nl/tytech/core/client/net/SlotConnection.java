@@ -68,7 +68,7 @@ public class SlotConnection {
 
         COMMUNICATION_STAKEHOLDER_SET(CoreStakeholder.class),
 
-        MAPLINKS_INITIALIZED(Network.SessionType.class, String.class, AppType.class);
+        MAPLINKS_INITIALIZED(Network.SessionType.class, String.class, AppType.class, Integer.class);
 
         private List<Class<?>> classes = new ArrayList<Class<?>>();
 
@@ -694,7 +694,8 @@ public class SlotConnection {
                 status.setSessionType(reply.sessionType, reply.project);
                 TLogger.info("Client MapLinks for: " + reply.sessionType + ": " + status.getAppType() + ": " + reply.project + ": "
                         + DataLord.getAppTypes(reply.sessionType, status.getAppType()).length);
-                EventManager.fire(connectionID, ComEvent.MAPLINKS_INITIALIZED, this, reply.sessionType, reply.project, status.getAppType());
+                EventManager.fire(connectionID, ComEvent.MAPLINKS_INITIALIZED, this, reply.sessionType, reply.project, status.getAppType(),
+                        serverSlotID);
             }
 
         } catch (Exception exp) {

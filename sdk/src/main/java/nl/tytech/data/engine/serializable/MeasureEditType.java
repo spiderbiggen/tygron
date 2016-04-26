@@ -4,7 +4,7 @@
  ******************************************************************************/
 package nl.tytech.data.engine.serializable;
 
-import nl.tytech.data.engine.item.BehaviorTerrain.Behavior;
+import nl.tytech.data.engine.item.Terrain.TerrainType;
 
 /**
  *
@@ -15,31 +15,31 @@ public enum MeasureEditType {
 
     BUILDING(false, null),
 
-    DIKE(true, Behavior.GRASSLAND),
+    DIKE(true, TerrainType.GRASSLAND),
 
-    FLATTEN(false, Behavior.GRASSLAND),
+    FLATTEN(false, TerrainType.GRASSLAND),
 
-    WATER(true, Behavior.POLDER_WATER),
+    WATER(true, TerrainType.POLDER_WATER),
 
     UPGRADE(false, null);
 
     public final static MeasureEditType[] VALUES = MeasureEditType.values();
 
     private boolean isHeightMapEditType;
-    private Behavior behavior;
+    private TerrainType terrainType;
 
-    private MeasureEditType(boolean isHeightMapEditType, Behavior behavior) {
+    private MeasureEditType(boolean isHeightMapEditType, TerrainType terrainType) {
         this.isHeightMapEditType = isHeightMapEditType;
-        this.behavior = behavior;
+        this.terrainType = terrainType;
 
     }
 
-    public Behavior getBehavior() {
-        return behavior;
+    public TerrainType getTerrainType() {
+        return terrainType;
     }
 
-    public boolean hasBehavior() {
-        return behavior != null;
+    public boolean hasTerrainType() {
+        return terrainType != null;
     }
 
     public boolean isHeightMapEditType() {

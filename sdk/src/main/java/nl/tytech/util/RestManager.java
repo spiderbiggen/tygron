@@ -8,6 +8,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -287,7 +288,9 @@ public class RestManager {
                 throw ResponseException.create(status, response.readEntity(String.class));
             }
         } finally {
-            response.close();
+            if (responseClass != GZIPInputStream.class) {
+                response.close();
+            }
         }
     }
 

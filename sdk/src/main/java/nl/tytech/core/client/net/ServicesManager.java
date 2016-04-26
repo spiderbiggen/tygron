@@ -133,11 +133,19 @@ public class ServicesManager {
     }
 
     /**
-     * Test the online connection to the server and tries to create a HTTP Tunnel when needed.
+     * Test the online connection to the server as API/SDK client
+     * @return NULL means OK, otherwise a String is returned with the failure cause.
+     */
+    public static String testServerAPIConnection() {
+        return SingletonHolder.INSTANCE._testServerConnection(true);
+    }
+
+    /**
+     * Test the online connection to the server as Tygron Cient Application
      * @return NULL means OK, otherwise a String is returned with the failure cause.
      */
     public static String testServerConnection() {
-        return SingletonHolder.INSTANCE._testServerConnection();
+        return SingletonHolder.INSTANCE._testServerConnection(false);
     }
 
     /**
@@ -298,19 +306,27 @@ public class ServicesManager {
      * Test online connection when valid return NULL otherwise the fail cause.
      * @return
      */
-    private String _testServerConnection() {
+    private String _testServerConnection(boolean api) {
 
         try {
-            TLogger.info("Using HTTP SSL to contact the server.");
+            TLogger.info("Using HTTP SSL to contact the server for " + (api ? "API/SDK compatibility test." : "App version test."));
 
             // do online test
             String[] result = RestManager.post(server, "test", null, null, String[].class);
-            if (result == null || result.length != 2) {
+            if (result == null || result.length != 2 || !StringUtils.containsData(result[0]) || !StringUtils.containsData(result[1])) {
                 return "Got negative answer from Server on test connection.";
             }
             serverBootupTime = Long.valueOf(result[0]);
-            if (!Engine.VERSION.equals(result[1])) {
-                return "Please update your Client Application to version: " + result[1];
+            String serverVersion = result[1];
+
+            if (api) {
+                if (!serverVersion.startsWith(Engine.VERSION_API_COMPATIBLE)) {
+                    return "Please update your API/SDK to version: " + serverVersion;
+                }
+            } else {
+                if (!serverVersion.equals(Engine.VERSION)) {
+                    return "Please update your Client Application to version: " + serverVersion;
+                }
             }
             return null;
 

@@ -6,12 +6,14 @@ package nl.tytech.data.engine.item;
 
 import nl.tytech.core.item.annotations.DoNotSaveToInit;
 import nl.tytech.core.item.annotations.XMLValue;
+import nl.tytech.core.net.serializable.MapLink;
+import nl.tytech.data.engine.other.ExcelItem;
 import nl.tytech.util.StringUtils;
 
 /**
  * @author Frank Baars
  */
-public class ExcelPanel extends Panel {
+public class ExcelPanel extends Panel implements ExcelItem {
 
     private static final long serialVersionUID = 2805451253961720700L;
 
@@ -23,7 +25,7 @@ public class ExcelPanel extends Panel {
 
     @XMLValue
     @DoNotSaveToInit
-    private String panelCode = StringUtils.EMPTY;
+    private String text = StringUtils.EMPTY;
 
     @XMLValue
     @DoNotSaveToInit
@@ -33,18 +35,26 @@ public class ExcelPanel extends Panel {
         return calcTime;
     }
 
-    public String getFileLocation() {
-        return Setting.EXCEL_DIR + getFileName();
-    }
-
+    @Override
     public String getFileName() {
         return fileName;
     }
 
-    public String getPanelCode() {
-        return panelCode;
+    @Override
+    public String getFileSubDirectory() {
+        return StringUtils.capitalizeFirstLetter(MapLink.PANELS.name().toLowerCase()) + "/" + getID() + "/";
     }
 
+    public String getText() {
+        return text;
+    }
+
+    @Override
+    public boolean isDefaultExcel() {
+        return false;
+    }
+
+    @Override
     public boolean isExcelUpdated() {
         return excelUpdated;
     }
@@ -53,16 +63,19 @@ public class ExcelPanel extends Panel {
         this.calcTime = calcTime;
     }
 
+    @Override
     public void setExcelUpdated(boolean excelUpdated) {
         this.excelUpdated = excelUpdated;
     }
 
+    @Override
     public void setFileName(String fileName) {
         this.fileName = fileName;
         this.setExcelUpdated(true);
     }
 
-    public void setPanelCode(String panelCode) {
-        this.panelCode = panelCode;
+    public void setText(String text) {
+        this.text = text;
     }
+
 }

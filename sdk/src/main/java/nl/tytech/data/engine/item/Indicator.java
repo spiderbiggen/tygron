@@ -19,7 +19,6 @@ import nl.tytech.data.core.item.UniqueNamedItem;
 import nl.tytech.data.engine.item.ClientWord.ClientTerms;
 import nl.tytech.data.engine.item.GlobalIndicator.GlobalIndicatorType;
 import nl.tytech.data.engine.item.PersonalIndicator.PersonalIndicatorType;
-import nl.tytech.data.engine.serializable.GraphInformation;
 import nl.tytech.data.engine.serializable.MapType;
 import nl.tytech.data.engine.serializable.TargetDescription;
 import nl.tytech.util.ObjectUtils;
@@ -57,9 +56,6 @@ public abstract class Indicator extends UniqueNamedItem {
 
     public static final String IMAGE_LOCATION = "Gui/Images/Panels/TopMenu/Icons/";
 
-    @XMLValue
-    private GraphInformation graphInformation = new GraphInformation();
-
     @DoNotSaveToInit
     @XMLValue
     private HashMap<Long, Double> indicatorScores = new HashMap<>();
@@ -75,10 +71,6 @@ public abstract class Indicator extends UniqueNamedItem {
     @DoNotSaveToInit
     @XMLValue
     private HashMap<MapType, String> exactTextValues = new HashMap<>();
-
-    @DoNotSaveToInit
-    @XMLValue
-    private String actionsForImprovement = StringUtils.EMPTY;
 
     @XMLValue
     private HashMap<Integer, Boolean> active = new HashMap<>();
@@ -99,9 +91,8 @@ public abstract class Indicator extends UniqueNamedItem {
     @XMLValue
     private boolean weightless = false;
 
-    @DoNotSaveToInit
     @XMLValue
-    private double[] progress = new double[0];
+    private boolean absolute = false;
 
     @XMLValue
     private String shortName = StringUtils.EMPTY;
@@ -121,6 +112,9 @@ public abstract class Indicator extends UniqueNamedItem {
     @XMLValue
     private final Integer videoID = Item.NONE;
 
+    // local value used to check if asset was updated in editor
+    private int imageVersion;
+
     /**
      * @param stakeholder the stakeholder for which the indicator value must be set (null if indicator is global)
      * @param moment value of the moment it has that value
@@ -131,9 +125,13 @@ public abstract class Indicator extends UniqueNamedItem {
         indicatorScores.put(moment, score);
     }
 
-    public String getActionsForImprovement() {
+    public double getAbsoluteValue(final MapType mapType) {
 
-        return actionsForImprovement;
+        Double value = mapTypeValues.get(mapType);
+        if (value == null) {
+            return 0;
+        }
+        return value;
     }
 
     private Integer getActiveLevelID() {
@@ -193,10 +191,6 @@ public abstract class Indicator extends UniqueNamedItem {
         return text;
     }
 
-    public GraphInformation getGraphInformation() {
-        return graphInformation;
-    }
-
     public int getIconSortIndex() {
 
         // finance always first!
@@ -214,6 +208,10 @@ public abstract class Indicator extends UniqueNamedItem {
         return imageName;
     }
 
+    public int getImageVersion() {
+        return imageVersion;
+    }
+
     /**
      * Score mapped from a starting value to 100%.
      * @param value
@@ -228,19 +226,6 @@ public abstract class Indicator extends UniqueNamedItem {
             return 1d;
         }
         return (value - zeroScore) / distance;
-    }
-
-    public double getOrginalValue(final MapType mapType) {
-
-        Double value = mapTypeValues.get(mapType);
-        if (value == null) {
-            return 0;
-        }
-        return value;
-    }
-
-    public double[] getProgress() {
-        return progress;
     }
 
     public Map<Long, Double> getScoreHistory() {
@@ -267,9 +252,9 @@ public abstract class Indicator extends UniqueNamedItem {
                 }
             }
         }
-        // there is always one level with a startValue otherwise validate would fail.
         Double result = this.startOfLevelValues.get(levelID);
         if (result == null) {
+            // fallback to Zero
             return 0;
         }
         return result;
@@ -314,7 +299,10 @@ public abstract class Indicator extends UniqueNamedItem {
      * @return
      */
     public double getValue(final MapType mapType) {
-        double orginalValue = getOrginalValue(mapType);
+        double orginalValue = getAbsoluteValue(mapType);
+        if (absolute) {
+            return orginalValue;
+        }
         return this.getMappedScore(getActiveLevelID(), orginalValue);
     }
 
@@ -324,6 +312,10 @@ public abstract class Indicator extends UniqueNamedItem {
 
     public Integer getVideoID() {
         return videoID;
+    }
+
+    public boolean isAbsolute() {
+        return absolute;
     }
 
     public boolean isActive() {
@@ -344,6 +336,10 @@ public abstract class Indicator extends UniqueNamedItem {
             }
         }
         return this.active.containsKey(levelID) && this.active.get(levelID);
+    }
+
+    public boolean isStartOfLevelSet() {
+        return !startOfLevelValues.isEmpty();
     }
 
     /**
@@ -369,11 +365,27 @@ public abstract class Indicator extends UniqueNamedItem {
 
     public void resetStartOfLevelValues() {
         startOfLevelValues.clear();
-        graphInformation = new GraphInformation();
     }
 
-    public void setActionsForImprovement(String improvement) {
-        actionsForImprovement = improvement;
+    public void setAbsolute(boolean absolute) {
+        this.absolute = absolute;
+    }
+
+    private final void setAbsoluteValue(double[] values) {
+
+        if (values.length != MapType.VALUES.length) {
+            TLogger.severe("Double array values of function setValue for class " + GlobalIndicator.class.getSimpleName() + " with type "
+                    + this.getType().toString() + "is not of the same size as size of enum " + MapType.class.getSimpleName() + "!"
+                    + " Therefore, values are not set!");
+        }
+        for (MapType mapType : MapType.VALUES) {
+            mapTypeValues.put(mapType, values[mapType.ordinal()]);
+        }
+    }
+
+    public final void setAbsoluteValue(double[] values, final String explanation) {
+        setAbsoluteValue(values);
+        this.explanation = explanation;
     }
 
     public void setActive(boolean visible) {
@@ -416,6 +428,7 @@ public abstract class Indicator extends UniqueNamedItem {
 
     public void setImageName(String imageName) {
         this.imageName = imageName;
+        this.imageVersion++;
     }
 
     public void setShortName(String text) {
@@ -423,10 +436,6 @@ public abstract class Indicator extends UniqueNamedItem {
     }
 
     public void setStartOfLevelValue(Integer levelID, double zeroScoreValue) {
-        // this is the base value of the indicator at 33% percent score.
-        // this.startOfGameValue = 1f - ((1f - currentValue) * 1.5f);
-
-        // TODO: Maxim: indicator start at zero, discussion
         /**
          * When the score starts at 100%, I still need a starting value. Then the default value of 0 is used!
          */
@@ -443,25 +452,6 @@ public abstract class Indicator extends UniqueNamedItem {
 
     public void setTargets(Integer levelID, double[] targets) {
         this.targets.put(levelID, targets);
-    }
-
-    private final void setValue(double[] values) {
-
-        if (values.length != MapType.VALUES.length) {
-            TLogger.severe("Double array values of function setValue for class " + GlobalIndicator.class.getSimpleName() + " with type "
-                    + this.getType().toString() + "is not of the same size as size of enum " + MapType.class.getSimpleName() + "!"
-                    + " Therefore, values are not set!");
-        }
-        for (MapType mapType : MapType.VALUES) {
-            mapTypeValues.put(mapType, values[mapType.ordinal()]);
-        }
-    }
-
-    public final void setValue(double[] values, double[] progress, final String explanation) {
-
-        this.progress = progress;
-        setValue(values);
-        this.explanation = explanation;
     }
 
     /**
@@ -523,8 +513,8 @@ public abstract class Indicator extends UniqueNamedItem {
                         ClientWord clientWord = this.getItem(MapLink.CLIENT_WORDS, targetDescription.getROTermAddition());
                         addition = clientWord.getTranslation();
                     }
-                    text += "\n" + i + ": " + targetDescription.getDescription() + addition + " Between: " + targetDescription.getMinValue()
-                            + " - " + targetDescription.getMaxValue();
+                    text += "\n" + i + ": " + targetDescription.getDescription() + addition + " Between: "
+                            + targetDescription.getMinValue() + " - " + targetDescription.getMaxValue();
                     i++;
                 }
                 result += "\nIncorrect targets for: " + this.getName() + " in level: " + level.getName() + ", use:" + text;
@@ -538,12 +528,6 @@ public abstract class Indicator extends UniqueNamedItem {
                                 + " should be between: " + targetDescription.getMinValue() + " - " + targetDescription.getMaxValue();
                     }
                 }
-            }
-
-            // XXX: (Frank) After conversion of games to include and save startOfGameScoreValues, improve this validation check
-            Double startValue = this.startOfLevelValues.get(level.getID());
-            if (startValue == null) {
-                this.startOfLevelValues.put(level.getID(), 0d);
             }
         }
         return result;

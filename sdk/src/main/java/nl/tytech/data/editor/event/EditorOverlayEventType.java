@@ -91,7 +91,7 @@ public enum EditorOverlayEventType implements EventTypeEnum {
     SET_TRAFFIC_EMISSION_VALUE(Integer.class, TrafficType.class, GasType.class, Boolean.class, Double.class),
 
     @EventIDField(links = { "OVERLAYS" }, params = { 0 })
-    SET_SUBSIDENCE_VALUES(Integer.class, String.class, Double.class, Double.class, Double.class, Double.class),
+    SET_SUBSIDENCE_VALUES(Integer.class, String.class, String.class, Double.class, Double.class, Double.class, Double.class),
 
     @EventIDField(links = { "OVERLAYS" }, params = { 0 })
     SET_GROUND_WATER_VALUES(Integer.class, String.class, String.class, String.class),

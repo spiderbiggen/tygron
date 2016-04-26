@@ -45,6 +45,10 @@ public class TLogger {
         SingletonHolder.INSTANCE._addHandler(handler);
     }
 
+    public static void debug(final String log) {
+        log(TLevel.DEBUG, log);
+    }
+
     /**
      * Log an exception with a message and level
      *
@@ -113,10 +117,6 @@ public class TLogger {
         }
     }
 
-    /**
-     * @param logToFile the logToFile to set
-     */
-    // FIXME: this should be a separate handler class. just like console or syslog.
     public static void setLogToFile(boolean logToFile) {
         synchronized (LOCK) {
             SingletonHolder.INSTANCE.setLogToFileInner(logToFile);
@@ -124,7 +124,9 @@ public class TLogger {
     }
 
     public static void setSimpleLogger(boolean simpleLogging) {
-        SingletonHolder.INSTANCE._setSimpleLogger(simpleLogging);
+        synchronized (LOCK) {
+            SingletonHolder.INSTANCE._setSimpleLogger(simpleLogging);
+        }
     }
 
     /**

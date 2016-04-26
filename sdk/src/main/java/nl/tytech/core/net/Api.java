@@ -16,17 +16,20 @@ public class Api {
      */
     public static final String ROOT = "api/";
 
+    public static final String ITEMS = "items/";
+
     public static final String DEVELOPER = "developer/";
 
     public static final String ASSETS = "assets/";
-    public static final String ASSETS_STREAM = "stream/";
-    public static final String ASSETS_UPLOAD = "upload/";
-
     public static final String SERVICES = "services/";
 
     public static final String STATE = "state/";
     public static final String AUTH = "auth/";
 
     public static final String SLOTS = "slots/";
+
+    public final static String TOKEN_TAG = "$TOKEN";
+
+    public final static String SLOT_TAG = "$SLOT";
 
 }

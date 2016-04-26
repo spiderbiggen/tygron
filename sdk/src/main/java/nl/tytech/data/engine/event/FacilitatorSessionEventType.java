@@ -28,7 +28,10 @@ public enum FacilitatorSessionEventType implements SessionEventTypeEnum {
 
     @EventParamData(editor = true, desc = "Revoke a message", params = { "Message ID" })
     @EventIDField(links = { "MESSAGES" }, params = { 0 })
-    REVOKE_MESSAGE(Integer.class);
+    REVOKE_MESSAGE(Integer.class),
+
+    @EventParamData(editor = true, desc = "Export history of actions taken by participants", params = {})
+    EXPORT_ACTION_HISTORY;
 
     private List<Class<?>> classes;
 
@@ -48,7 +51,7 @@ public enum FacilitatorSessionEventType implements SessionEventTypeEnum {
 
     @Override
     public Class<?> getResponseClass() {
-        return null;
+        return this == EXPORT_ACTION_HISTORY ? byte[].class : null;
     }
 
     @Override

@@ -7,6 +7,7 @@ package nl.tytech.data.engine.item;
 import nl.tytech.core.item.annotations.DoNotSaveToInit;
 import nl.tytech.core.item.annotations.EnumHtml;
 import nl.tytech.core.net.serializable.EditOptions;
+import nl.tytech.core.net.serializable.MapLink;
 import nl.tytech.core.net.serializable.SettingType;
 import nl.tytech.data.core.item.AbstractSetting;
 import nl.tytech.data.core.item.Moment;
@@ -53,6 +54,7 @@ public class Setting extends AbstractSetting<Setting.Type> {
         /**
          * Allowed raise of the
          */
+        @Deprecated
         ALLOWED_WATER_LEVEL_INCREASE(Double.class, "0.3"),
 
         /** Basic panels that are not triggered by special functionality. */
@@ -69,7 +71,7 @@ public class Setting extends AbstractSetting<Setting.Type> {
          * Beamer Overlay ID
          */
         @DoNotSaveToInit
-        BEAMER_OVERLAY_ID(Integer.class, "-1"),
+        BEAMER_ITEM_ID(Integer.class, "-1"),
 
         /**
          * Ordinal of active beamer score panel
@@ -263,6 +265,7 @@ public class Setting extends AbstractSetting<Setting.Type> {
         WORLD_REFERENCE_POINT(Double[].class, "0 0"),
 
         @DoNotSaveToInit
+        @Deprecated
         PROJECT_ASSETS_VERSION(Integer.class, "1"),
 
         @Deprecated
@@ -273,6 +276,12 @@ public class Setting extends AbstractSetting<Setting.Type> {
         MODEL_STYLE(ModelStyle.class, "TEXTURED"),
 
         SATELLITE_BRIGHTNESS(Double.class, "-1"),
+
+        /**
+         * Beamer active item maplink
+         */
+        @DoNotSaveToInit
+        BEAMER_MAPLINK(MapLink.class, MapLink.INDICATORS.name()),
 
         ;
 

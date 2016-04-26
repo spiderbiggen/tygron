@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MultivaluedMap;
+import nl.tytech.core.event.Event;
 import nl.tytech.core.event.Event.EventTypeEnum;
 import nl.tytech.core.net.serializable.MapLink;
 import nl.tytech.core.structure.DataLord;
@@ -16,6 +18,7 @@ import nl.tytech.util.JTSUtils;
 import nl.tytech.util.JsonMapper;
 import nl.tytech.util.RestManager.Format;
 import nl.tytech.util.RestUtils;
+import nl.tytech.util.RestUtils.BadRequestType;
 import nl.tytech.util.StringUtils;
 import nl.tytech.util.color.TColor;
 import nl.tytech.util.logger.TLogger;
@@ -106,7 +109,8 @@ public class JsonEventUtils {
         JsonMapper.setDefaultTyping(new ItemTypeResolverBuilder());
     }
 
-    public final static Object[] parseFormParams(Format format, EventTypeEnum event, MultivaluedMap<String, String> formParams) {
+    public final static Object[] parseFormParams(Format format, EventTypeEnum event, MultivaluedMap<String, String> formParams)
+            throws WebApplicationException {
 
         try {
             Object[] params = new Object[formParams.size()];
@@ -133,12 +137,13 @@ public class JsonEventUtils {
             }
             return params;
         } catch (Exception e) {
-            TLogger.exception(e);
+            String message = "Invalid parameters for: " + Event.getDescription(event) + " error: " + e.getMessage();
+            RestUtils.throwWebException(BadRequestType.INVALID_REQUEST, message);
             return null;
         }
     }
 
-    public static Object[] parseJsonParams(Format format, EventTypeEnum type, String json) {
+    public static Object[] parseJsonParams(Format format, EventTypeEnum type, String json) throws WebApplicationException {
 
         try {
 
@@ -159,9 +164,9 @@ public class JsonEventUtils {
                 }
             }
             return params;
-
         } catch (Exception e) {
-            TLogger.exception(e);
+            String message = "Invalid parameters for: " + Event.getDescription(type) + " error: " + e.getMessage();
+            RestUtils.throwWebException(BadRequestType.INVALID_REQUEST, message);
             return null;
         }
     }

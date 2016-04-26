@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import nl.tytech.core.item.annotations.AssetDirectory;
 import nl.tytech.core.item.annotations.DoNotSaveToInit;
-import nl.tytech.core.item.annotations.ItemIDField;
 import nl.tytech.core.item.annotations.ListOfClass;
 import nl.tytech.core.item.annotations.XMLValue;
 import nl.tytech.core.net.serializable.MapLink;
@@ -150,6 +149,9 @@ public class Stakeholder extends CoreStakeholder {
     @AssetDirectory(GUI_IMAGES_PORTRAITS)
     private String portrait = StringUtils.EMPTY;
 
+    // local value used to check if asset was updated in editor
+    private int portraitVersion = 1;
+
     @DoNotSaveToInit
     @XMLValue
     @ListOfClass(Double.class)
@@ -171,10 +173,6 @@ public class Stakeholder extends CoreStakeholder {
     private double yearlyIncome = 0;
 
     @XMLValue
-    @ItemIDField("LANDS")
-    private ArrayList<Integer> ownedLands = new ArrayList<Integer>();
-
-    @XMLValue
     private Point startPoint = null;
 
     @DoNotSaveToInit
@@ -185,15 +183,10 @@ public class Stakeholder extends CoreStakeholder {
     @XMLValue
     private String shortName = StringUtils.EMPTY;
 
-    public void addOwnedLandID(Integer id) {
-        ownedLands.add(id);
-    }
-
     /**
      * @param scores the scores to set
      */
     public final void addScore(final double score) {
-
         this.scores.add(score);
     }
 
@@ -367,6 +360,10 @@ public class Stakeholder extends CoreStakeholder {
 
     public String getPortraitName() {
         return portrait;
+    }
+
+    public int getPortraitVersion() {
+        return portraitVersion;
     }
 
     /**
@@ -579,8 +576,9 @@ public class Stakeholder extends CoreStakeholder {
         this.setNewAssignment(setting.getIntegerValue(), newAssignment);
     }
 
-    public void setPortrait(String p) {
-        portrait = p;
+    public void setPortrait(String name) {
+        portrait = name;
+        portraitVersion++;
     }
 
     public void setShortName(String shortName) {

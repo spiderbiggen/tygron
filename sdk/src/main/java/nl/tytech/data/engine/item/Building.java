@@ -23,7 +23,6 @@ import nl.tytech.data.core.item.UniqueNamedItem;
 import nl.tytech.data.engine.item.ClientWord.ClientTerms;
 import nl.tytech.data.engine.item.Function.Value;
 import nl.tytech.data.engine.item.ModelData.Stack;
-import nl.tytech.data.engine.item.Overlay.OverlayType;
 import nl.tytech.data.engine.item.UnitData.TrafficType;
 import nl.tytech.data.engine.other.TimeStateItem;
 import nl.tytech.data.engine.other.ValueItem;
@@ -37,6 +36,7 @@ import nl.tytech.util.JTSUtils;
 import nl.tytech.util.StringUtils;
 import nl.tytech.util.color.TColor;
 import nl.tytech.util.logger.TLogger;
+import straightskeleton.Skeleton;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
@@ -46,7 +46,6 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.prep.PreparedGeometry;
 import com.vividsolutions.jts.geom.prep.PreparedGeometryFactory;
-import straightskeleton.Skeleton;
 
 /**
  * Building
@@ -102,36 +101,11 @@ public class Building extends UniqueNamedItem implements TimeStateItem, PolygonI
         WATER_STORAGE_TRADITIONAL_M3,
 
         /**
-         * Total require HEAT flow in GJ per year
-         */
-        HEAT_FLOW_GJ_YEAR,
-
-        /**
          * Number of houses inside this building.
          */
-        NUMBER_OF_HOUSES,
-
-        /**
-         * AVG livability
-         */
-        AVG_LIVABILITY,
-
-        /**
-         * AVG heat
-         */
-        AVG_HEAT;
+        NUMBER_OF_HOUSES;
 
         public final static Detail[] VALUES = Detail.values();
-
-        public OverlayType getOverlayType() {
-
-            if (this == AVG_HEAT) {
-                return Overlay.OverlayType.HEAT;
-            } else if (this == AVG_LIVABILITY) {
-                return Overlay.OverlayType.LIVABILITY;
-            }
-            return null;
-        }
 
         public boolean isMoneyDetail() {
             return (this == CONSTRUCTION_COST || this == DEMOLISH_COST || this == BUYOUT_COST || this == SELL_PRICE);

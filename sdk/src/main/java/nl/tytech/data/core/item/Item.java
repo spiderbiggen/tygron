@@ -165,18 +165,35 @@ public abstract class Item implements Serializable, Comparable<Item> {
      * @return The requested Item.
      */
 
-    public final <I extends Item> I getItem(MapLink eventType, final Integer id) {
+    public final <I extends Item> I getItem(MapLink mapLink, final Integer id) {
         if (id == null || NONE.equals(id)) {
             // okay!
             return null;
         }
         // requested map
-        ItemMap<I> requestMap = this.getMap(eventType);
+        ItemMap<I> requestMap = this.getMap(mapLink);
         if (requestMap == null) {
             return null;
         }
         // return the item
         return requestMap.get(id);
+    }
+
+    public final <I extends UniqueNamedItem> I getItem(MapLink mapLink, final String uniqueName) {
+        if (!StringUtils.containsData(uniqueName)) {
+            return null;
+        }
+        // requested map
+        ItemMap<I> requestMap = this.getMap(mapLink);
+        if (requestMap == null) {
+            return null;
+        }
+        for (I item : requestMap.values()) {
+            if (item instanceof UniqueNamedItem && uniqueName.equals(item.getName())) {
+                return item;
+            }
+        }
+        return null;
     }
 
     /**
@@ -429,11 +446,11 @@ public abstract class Item implements Serializable, Comparable<Item> {
         Item item = this.getItem(mapLink, intValue);
         if (item == null) {
             if (field == null) {
-                result += "\nFailed linkage in [" + intValue + "] of item " + this.getClass().getSimpleName() + " " + this.getID() + " for "
-                        + mapLink + ".";
+                result += "\nFailed linkage in [" + intValue + "] of item " + this.getClass().getSimpleName() + " " + this.getID()
+                        + " for " + mapLink + ".";
             } else {
-                result += "\nFailed linkage in field: " + field.getName() + " [" + intValue + "] of item " + this.getClass().getSimpleName()
-                        + " " + this.getID() + ".";
+                result += "\nFailed linkage in field: " + field.getName() + " [" + intValue + "] of item "
+                        + this.getClass().getSimpleName() + " " + this.getID() + ".";
             }
             return result;
         }

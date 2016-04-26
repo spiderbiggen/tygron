@@ -112,9 +112,8 @@ public class SettingsManager {
          * Shows the model batches in the world with random colours.
          */
         BATCHING,
-        /**
-         * Dev mode that double default fps
-         */
+
+        @Deprecated
         FPS2;
     }
 
@@ -281,6 +280,8 @@ public class SettingsManager {
 
         V_SYNC(true),
 
+        IGNORE_UNKNOWN_HARDWARE(false),
+
         SHOW_INTRO_TUTORIAL(true),
 
         FRAME_RATE(30),
@@ -355,8 +356,6 @@ public class SettingsManager {
             return instancePixels;
         }
     }
-
-    private static final String DEFAULT_JME_FILE_LOC = "Config/SettingsDefaults.xml";
 
     public static final String ROOT_LOCATION = "TyTech/Engine";
 
@@ -572,6 +571,10 @@ public class SettingsManager {
         return SingletonHolder.getInstance()._isForceNativeResolution();
     }
 
+    public static boolean isIgnoreUnknownHardware() {
+        return SingletonHolder.getInstance()._isIgnoreUnknownHardware();
+    }
+
     public static boolean isLogToFile() {
         return SingletonHolder.getInstance()._isLogToFile();
     }
@@ -620,6 +623,10 @@ public class SettingsManager {
         SingletonHolder.getInstance()._setHardwareScore(type, data);
     }
 
+    public static void setIgnoreUnknownHardware(boolean ignore) {
+        SingletonHolder.getInstance()._setIgnoreUnknownHardware(ignore);
+    }
+
     public static void setLanguage(TLanguage language) {
         SingletonHolder.getInstance()._setLanguage(language);
     }
@@ -660,8 +667,8 @@ public class SettingsManager {
         SingletonHolder.getInstance()._setPreloaderSkippedVersion(version);
     }
 
-    public static void setProjectName(String gameName) {
-        SingletonHolder.getInstance()._setProjectName(gameName);
+    public static void setProjectName(String projectName) {
+        SingletonHolder.getInstance()._setProjectName(projectName);
     }
 
     protected static void setPropertyDirect(String key, Object value) {
@@ -1120,6 +1127,10 @@ public class SettingsManager {
         return getProperty(SettingsType.FORCE_NATIVE_RES, Boolean.class);
     }
 
+    private boolean _isIgnoreUnknownHardware() {
+        return getProperty(SettingsType.IGNORE_UNKNOWN_HARDWARE, Boolean.class);
+    }
+
     private boolean _isLogToFile() {
         return getProperty(SettingsType.LOGTOFILE, Boolean.class);
     }
@@ -1163,6 +1174,10 @@ public class SettingsManager {
 
     private void _setHardwareScore(SettingsType type, String data) {
         setProperty(type, data);
+    }
+
+    private void _setIgnoreUnknownHardware(boolean ignore) {
+        setProperty(SettingsType.IGNORE_UNKNOWN_HARDWARE, ignore);
     }
 
     private void _setLanguage(TLanguage language) {

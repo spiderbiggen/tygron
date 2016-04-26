@@ -10,7 +10,6 @@ import nl.tytech.core.item.annotations.EventParamData;
 import nl.tytech.core.net.Network;
 import nl.tytech.core.net.Network.AppType;
 import nl.tytech.core.net.event.RemoteServicesEvent.ServiceEventType;
-import nl.tytech.core.net.serializable.AssetList;
 import nl.tytech.core.net.serializable.BucketWaiter;
 import nl.tytech.core.net.serializable.Domain.Filter;
 import nl.tytech.core.net.serializable.Invite;
@@ -48,10 +47,6 @@ public enum IOServiceEventType implements ServiceEventType {
 
     @EventParamData(desc = "Get all active sessions on this server", params = {})
     GET_ALL_SESSIONS(AccessLevel.SUPER_USER),
-
-    @EventParamData(desc = "Get a listing of the uploaded assets for the given project", params = { "Project name",
-            "My version (only items with newer version are returned)" })
-    GET_UPLOADED_ASSETS_LIST(AssetList.class, AccessLevel.JOIN_ONLY, String.class, Integer.class),
 
     @EventParamData(desc = "Get a listing of the projects that I am allowed to manage for given domain", params = { "Domain name", })
     GET_VISIBLE_DOMAIN_PROJECTS(ProjectData[].class, AccessLevel.DOMAIN_ADMIN, String.class),

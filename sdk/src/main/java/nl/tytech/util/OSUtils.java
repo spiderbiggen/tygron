@@ -19,15 +19,22 @@ import nl.tytech.util.logger.TLogger;
 public class OSUtils {
 
     /**
+     * Operating System tag
+     */
+    private final static String OS_NAME = System.getProperty("os.name").toLowerCase();
+
+    /**
      * TyTech Engine dir.
      */
     public final static String STORAGE_DIRECTORY;
 
     static {
-        STORAGE_DIRECTORY = getAppDataDirectory() + File.separator + "TyTech" + File.separator;
+        STORAGE_DIRECTORY = getLocalAppDirectory() + File.separator + getLocalFileName() + File.separator;
     }
 
-    public static String getAppDataDirectory() {
+    public final static String getLocalAppDirectory() {
+
+        String userHome = System.getProperty("user.home");
 
         if (isWindows()) {
             /**
@@ -51,12 +58,25 @@ public class OSUtils {
                     return localAppDataLocation;
                 }
             }
+        } else if (isMac()) {
+            // macs store it in app support dir
+            return userHome + File.separator + "Library" + File.separator + "Application Support";
         }
 
         /**
          * Fall back to default user dir.
          */
-        return System.getProperty("user.home");
+        return userHome;
+    }
+
+    private final static String getLocalFileName() {
+
+        String fileName = "TyTech";
+        if (isLinux()) {
+            // linux stores data is hidden directory
+            return "." + fileName;
+        }
+        return fileName;
     }
 
     /**
@@ -95,32 +115,22 @@ public class OSUtils {
     }
 
     public static boolean isAndroid() {
-        String os = System.getProperty("java.vendor").toLowerCase();
-        // linux or unix
-        return (os.indexOf("android") >= 0);
+        return (OS_NAME.indexOf("android") >= 0);
     }
 
     public static boolean isLinux() {
-        String os = System.getProperty("os.name").toLowerCase();
-        // linux
-        return (os.indexOf("linux") >= 0);
+        return (OS_NAME.indexOf("linux") >= 0);
     }
 
     public static boolean isMac() {
-        String os = System.getProperty("os.name").toLowerCase();
-        // Mac
-        return (os.indexOf("mac") >= 0);
+        return (OS_NAME.indexOf("mac") >= 0);
     }
 
     public static boolean isSolaris() {
-        String os = System.getProperty("os.name").toLowerCase();
-        // Solaris
-        return (os.indexOf("sunos") >= 0);
+        return (OS_NAME.indexOf("sunos") >= 0);
     }
 
     public static boolean isWindows() {
-        String os = System.getProperty("os.name").toLowerCase();
-        // windows
-        return (os.indexOf("win") >= 0);
+        return (OS_NAME.indexOf("win") >= 0);
     }
 }

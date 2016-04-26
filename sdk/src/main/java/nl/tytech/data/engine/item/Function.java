@@ -217,7 +217,7 @@ public abstract class Function extends Item implements Action, ValueItem {
      */
     public abstract int getDistanceRoad();
 
-    public final double getDistanceToBehavior(BehaviorTerrain.Behavior b) {
+    public final double getDistanceToTerrain(Terrain.TerrainType b) {
 
         double result = 0;
         switch (b) {
@@ -279,6 +279,19 @@ public abstract class Function extends Item implements Action, ValueItem {
     public abstract String getImageLocation();
 
     public abstract String getImageName();
+
+    public int getImageVersion() {
+        /**
+         * Try game override first
+         */
+        if (this.getLord() != null) {
+            FunctionOverride functionOverride = this.getItem(MapLink.FUNCTION_OVERRIDES, this.getID());
+            if (functionOverride != null && functionOverride.getCategories().size() > 0) {
+                return functionOverride.getImageVersion();
+            }
+        }
+        return 0;
+    }
 
     public final int getMaxFloorsFunction() {
         return (int) this.getValue(FunctionValue.MAX_FLOORS);
@@ -497,8 +510,8 @@ public abstract class Function extends Item implements Action, ValueItem {
                 total += percentage;
             }
             if (total != 1d) {
-                result += "\nFunction (" + getID() + ") " + this.getName() + " should have a total traffic percenatge of 100, not:"
-                        + total * 100d + "!";
+                result += "\nFunction (" + getID() + ") " + this.getName() + " should have a total traffic percenatge of 100, not:" + total
+                        * 100d + "!";
             }
         }
 

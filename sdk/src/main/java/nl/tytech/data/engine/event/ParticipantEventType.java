@@ -12,6 +12,7 @@ import nl.tytech.core.item.annotations.EventIDField;
 import nl.tytech.core.item.annotations.EventParamData;
 import nl.tytech.core.item.annotations.TimelineOnly;
 import nl.tytech.data.engine.item.Building;
+import nl.tytech.data.engine.item.ClientWord.ClientTerms;
 import nl.tytech.data.engine.item.MapMeasure.WaterClassification;
 import nl.tytech.data.engine.item.MoneyTransfer;
 import nl.tytech.data.engine.serializable.Category;
@@ -33,7 +34,7 @@ public enum ParticipantEventType implements SessionEventTypeEnum, StartWithMySta
     @EventParamData(desc = "Apply a bundle of events on the serverside for a particular stakeholder", params = { "Stakeholder ID",
             "Eventbundle ID" })
     @EventIDField(links = { "STAKEHOLDERS", "EVENT_BUNDLES" }, params = { 0, 1 })
-    EVENT_BUNDLE_APPLY_SERVER_EVENTS(Integer.class, Integer.class),
+    EVENT_BUNDLE_APPLY_SERVER_EVENTS(ClientTerms.ACTION_LOG_APPLIED, Integer.class, Integer.class),
 
     @EventParamData(desc = "Set the location of a Stakeholder in the 3D world.", params = { "Stakeholder ID",
             "Location of the Stakeholder on the map as Point", "Ping others (show them my location)" })
@@ -47,27 +48,27 @@ public enum ParticipantEventType implements SessionEventTypeEnum, StartWithMySta
     @EventParamData(desc = "Plan a new building in the MAQUETTE map", params = { "Stakeholder ID", "Function ID", "Amount of floors",
             "MultiPolygon describing the build contour" })
     @EventIDField(links = { "STAKEHOLDERS", "FUNCTIONS" }, params = { 0, 1 })
-    BUILDING_PLAN_CONSTRUCTION(Integer.class, Integer.class, Integer.class, MultiPolygon.class),
+    BUILDING_PLAN_CONSTRUCTION(ClientTerms.ACTION_LOG_BUILD, Integer.class, Integer.class, Integer.class, MultiPolygon.class),
 
     @EventParamData(desc = "Plan the demolition of a building in the MAQUETTE map", params = { "Stakeholder ID (also owner)",
             "Building ID", })
     @EventIDField(links = { "STAKEHOLDERS", "BUILDINGS" }, params = { 0, 1 })
-    BUILDING_PLAN_DEMOLISH(Integer.class, Integer.class),
+    BUILDING_PLAN_DEMOLISH(ClientTerms.ACTION_LOG_DEMOLISH, Integer.class, Integer.class),
 
     @EventParamData(desc = "Plan the demolition of a buildings in the given polygon in the MAQUETTE map", params = { "Stakeholder ID",
             "Multipolygon describing the demolition area", "Ground type: SURFACE or UNDERGROUND" })
     @EventIDField(links = { "STAKEHOLDERS" }, params = { 0 })
-    BUILDING_PLAN_DEMOLISH_POLYGON(Integer.class, MultiPolygon.class, Building.GroundLayerType.class),
+    BUILDING_PLAN_DEMOLISH_POLYGON(ClientTerms.ACTION_LOG_DEMOLISH, Integer.class, MultiPolygon.class, Building.GroundLayerType.class),
 
     @EventParamData(desc = "Plan the upgrade of buildings in the given polygon in the MAQUETTE map", params = { "Stakeholder ID",
             "Upgrade Type ID", "Multipolygon describing the upgrade area" })
     @EventIDField(links = { "STAKEHOLDERS", "UPGRADE_TYPES" }, params = { 0, 1 })
-    BUILDING_PLAN_UPGRADE(Integer.class, Integer.class, MultiPolygon.class),
+    BUILDING_PLAN_UPGRADE(ClientTerms.ACTION_LOG_UPGRADE, Integer.class, Integer.class, MultiPolygon.class),
 
     @EventParamData(desc = "Revert polygon to orginal CURRENT map situation.", params = { "Stakeholder ID",
             "Multipolygon describing the to be reverted area" })
     @EventIDField(links = { "STAKEHOLDERS" }, params = { 0 })
-    BUILDING_REVERT_POLYGON(Integer.class, MultiPolygon.class),
+    BUILDING_REVERT_POLYGON(ClientTerms.ACTION_LOG_REVERT, Integer.class, MultiPolygon.class),
 
     @EventParamData(editor = true, desc = "Set a category active for a stakeholder", params = { "Stakeholder ID", "ActionMenu ID", "Active" })
     @EventIDField(links = { "STAKEHOLDERS", "ACTION_MENUS" }, params = { 0, 1 })
@@ -91,16 +92,16 @@ public enum ParticipantEventType implements SessionEventTypeEnum, StartWithMySta
 
     @EventParamData(desc = "Lower land to create open water", params = { "Stakeholder ID", "Multipolygon describing the lowered area" })
     @EventIDField(links = { "STAKEHOLDERS" }, params = { 0 })
-    MAP_LOWER_LAND(Integer.class, MultiPolygon.class),
+    MAP_LOWER_LAND(ClientTerms.ACTION_LOG_LOWER_LAND, Integer.class, MultiPolygon.class),
 
     @EventParamData(desc = "Raise land by one length unit", params = { "Stakeholder ID", "Multipolygon describing the raised area" })
     @EventIDField(links = { "STAKEHOLDERS" }, params = { 0 })
-    MAP_RAISE_LAND(Integer.class, MultiPolygon.class),
+    MAP_RAISE_LAND(ClientTerms.ACTION_LOG_RAISE_LAND, Integer.class, MultiPolygon.class),
 
     @EventParamData(desc = "Create a dike with a given height and area", params = { "Stakeholder ID", "Dike ID",
             "Multipolygon describing the surface area", "Height in meters" })
     @EventIDField(links = { "STAKEHOLDERS", "DIKES" }, params = { 0, 1 })
-    MAP_DIKE(Integer.class, Integer.class, MultiPolygon.class, Double.class),
+    MAP_DIKE(ClientTerms.ACTION_LOG_DIKE, Integer.class, Integer.class, MultiPolygon.class, Double.class),
 
     @EventParamData(desc = "Buy the land definied by the polygon for given price", params = { "Land owner", "Proposed buyer of the land",
             "Multipolygon describing the area to be sold", "Price per square meter" })
@@ -110,7 +111,7 @@ public enum ParticipantEventType implements SessionEventTypeEnum, StartWithMySta
     @EventParamData(editor = true, desc = "Cancel a measure planned by an Stakeholder while in pre-construction phase", params = {
             "Stakeholder ID", "Measure ID" })
     @EventIDField(links = { "STAKEHOLDERS", "MEASURES" }, params = { 0, 1 })
-    MEASURE_CANCEL_CONSTRUCTION(Integer.class, Integer.class),
+    MEASURE_CANCEL_CONSTRUCTION(ClientTerms.ACTION_LOG_MEASURE_CANCEL, Integer.class, Integer.class),
 
     @EventParamData(desc = "Create a custom measure during the session that costs money", params = { "Measure owner",
             "Name of the measure", "Description of the measure", "Price" })
@@ -120,13 +121,13 @@ public enum ParticipantEventType implements SessionEventTypeEnum, StartWithMySta
     @EventParamData(editor = true, desc = "Plan construction of a measure by an Stakeholder that is not yet planned", params = {
             "Stakeholder ID", "Measure ID" })
     @EventIDField(links = { "STAKEHOLDERS", "MEASURES" }, params = { 0, 1 })
-    MEASURE_PLAN_CONSTRUCTION(Integer.class, Integer.class),
+    MEASURE_PLAN_CONSTRUCTION(ClientTerms.ACTION_LOG_MEASURE_BUILD, Integer.class, Integer.class),
 
     @TimelineOnly
     @EventParamData(editor = true, desc = "Plan demolishion of a measure by an Stakeholder. (Works only for Timeline simulations)", params = {
             "Stakeholder ID", "Measure ID" })
     @EventIDField(links = { "STAKEHOLDERS", "MEASURES" }, params = { 0, 1 })
-    MEASURE_PLAN_DEMOLISH(Integer.class, Integer.class),
+    MEASURE_PLAN_DEMOLISH(ClientTerms.ACTION_LOG_MEASURE_DEMOLISH, Integer.class, Integer.class),
 
     // TODO: (Frank) Water clasification is currently not used. Disabled in editor for now!
     // @EventParamData(desc = "Classify the water measure as a Waterboard Stakeholder", params = { "Waterboard Stakeholder", "Measure",
@@ -186,7 +187,7 @@ public enum ParticipantEventType implements SessionEventTypeEnum, StartWithMySta
 
     @EventParamData(desc = "Stakeholder restores land back to orginal state", params = { "Stakeholder ID", "Area to be restored" })
     @EventIDField(links = { "STAKEHOLDERS" }, params = { 0 })
-    RESTORE_LAND(Integer.class, MultiPolygon.class),
+    RESTORE_LAND(ClientTerms.ACTION_LOG_RESTORED_LAND, Integer.class, MultiPolygon.class),
 
     @EventParamData(desc = "Set the team name for this session.", params = { "Stakeholder ID", "Proposed team name" })
     @EventIDField(links = { "STAKEHOLDERS" }, params = { 0 })
@@ -243,9 +244,17 @@ public enum ParticipantEventType implements SessionEventTypeEnum, StartWithMySta
     @EventIDField(links = { "STAKEHOLDERS", "ZONES", }, params = { 0, 1 })
     ZONE_SET_MAX_FLOORS(Integer.class, Integer.class, Integer.class);
 
-    private List<Class<?>> classes;
+    private final List<Class<?>> classes;
+
+    private final ClientTerms term;
 
     private ParticipantEventType(Class<?>... classes) {
+        this.term = null;
+        this.classes = Arrays.asList(classes);
+    }
+
+    private ParticipantEventType(ClientTerms term, Class<?>... classes) {
+        this.term = term;
         this.classes = Arrays.asList(classes);
     }
 
@@ -259,17 +268,26 @@ public enum ParticipantEventType implements SessionEventTypeEnum, StartWithMySta
         return classes;
     }
 
+    public ClientTerms getClientTerm() {
+        return term;
+    }
+
     @Override
     public Class<?> getResponseClass() {
 
         if (this == STAKEHOLDER_SELECT) {
             return Boolean.class;
-        } else if (this == BUILDING_PLAN_CONSTRUCTION || this == BUILDING_PLAN_DEMOLISH || this == BUILDING_PLAN_DEMOLISH_POLYGON
-                || this == BUILDING_PLAN_UPGRADE || this == MEASURE_PLAN_CONSTRUCTION || this == MAP_RAISE_LAND || this == MAP_LOWER_LAND
-                || this == EVENT_BUNDLE_APPLY_SERVER_EVENTS) {
+        } else if (isAction()) {
             return Integer.class;
         }
         return null;
+    }
+
+    public boolean isAction() {
+        return this == BUILDING_PLAN_CONSTRUCTION || this == BUILDING_PLAN_DEMOLISH || this == BUILDING_PLAN_DEMOLISH_POLYGON
+                || this == BUILDING_PLAN_UPGRADE || this == MEASURE_PLAN_CONSTRUCTION || this == MEASURE_CANCEL_CONSTRUCTION
+                || this == MEASURE_PLAN_DEMOLISH || this == MAP_RAISE_LAND || this == MAP_LOWER_LAND
+                || this == EVENT_BUNDLE_APPLY_SERVER_EVENTS || this == RESTORE_LAND || this == BUILDING_REVERT_POLYGON || this == MAP_DIKE;
     }
 
     @Override

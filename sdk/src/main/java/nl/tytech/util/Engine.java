@@ -12,7 +12,20 @@ package nl.tytech.util;
  */
 public class Engine {
 
-    public final static String VERSION = "2016.4.0 DEV 17";
+    /**
+     * Clients using API/SDK are compatible on this version level
+     */
+    public final static String VERSION_API_COMPATIBLE = "2016.4.1";
+
+    /**
+     * Hotfix version, no breaking API/SDK changes here
+     */
+    private final static int HOTFIX = 3;
+
+    /**
+     * App version based on API version extended with hotfixes
+     */
+    public final static String VERSION = VERSION_API_COMPATIBLE + "." + HOTFIX;
 
     private final static String APP_NAME = "Tygron Engine";
 
