@@ -170,8 +170,9 @@ public class SlotConnection {
                             EventManager.fire(connectionID, ConnectionEvent.FIRST_UPDATE_EVENT_FINISHED, this);
                         }
                     }));
-
-                    firstConnection = false;
+                    if(updater == this){
+                    	firstConnection = false;
+                    }
                 } else {
                     // wait for update
                     waitForUpdate();
