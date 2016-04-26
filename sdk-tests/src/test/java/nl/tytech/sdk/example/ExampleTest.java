@@ -43,16 +43,13 @@ import nl.tytech.data.engine.item.Stakeholder;
 import nl.tytech.data.engine.serializable.Category;
 import nl.tytech.locale.TLanguage;
 import nl.tytech.util.JTSUtils;
-import nl.tytech.util.SDKReadmeConfig;
 import nl.tytech.util.ThreadUtils;
 import nl.tytech.util.logger.TLogger;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ExampleTest {
 
-	// public final static String USER = SDKReadmeConfig.loadUser();
-
-	public final static String SERVER = SDKReadmeConfig.loadServer();
+	private final static String SERVER = "preview.tygron.com";
 
 	private static Integer slotID;
 
