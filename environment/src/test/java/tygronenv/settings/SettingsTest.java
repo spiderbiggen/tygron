@@ -157,8 +157,13 @@ public class SettingsTest {
 
 	public void test07startRegularSessionAsParticipant() throws Exception {
 
-		slotID = ServicesManager.fireServiceEvent(IOServiceEventType.START_NEW_SESSION, SessionType.SINGLE,
-				data.getFileName(), TLanguage.EN);
+		for (int attempt = 1; attempt < 10; attempt++) {
+			slotID = ServicesManager.fireServiceEvent(IOServiceEventType.START_NEW_SESSION, SessionType.SINGLE,
+					data.getFileName(), TLanguage.EN);
+			if (slotID != null)
+				break;
+			Thread.sleep(1000);
+		}
 		assertTrue(slotID != null && slotID >= 0);
 
 		reply = ServicesManager.fireServiceEvent(IOServiceEventType.JOIN_SESSION, slotID, AppType.PARTICIPANT);

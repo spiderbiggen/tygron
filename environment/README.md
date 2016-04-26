@@ -5,12 +5,12 @@ This connector puts an EIS layer on top of the Tygron SDK.
 
 Usage
 ---
-To use the environment, you need to put a configuration.cfg file with the following contents in your project. 
+To use the environment, you need to put a configuration.cfg file with the following contents in src/test/resources. 
 
 ```
 username: yourtygronusername
 password: yourtygronpassword
-server: the tygron url, typically preview.tygron.com
+server: preview.tygron.com
 ```
 
 
