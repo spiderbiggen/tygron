@@ -3,9 +3,9 @@ Tygron EIS connector
 
 This connector puts an EIS layer on top of the Tygron SDK.
 
-Usage
+Testing
 ---
-To use the environment, you need to put a configuration.cfg file with the following contents in src/test/resources. 
+To test the environment, you need to put a configuration.cfg file with the following contents in src/test/resources. 
 
 ```
 username: yourtygronusername
@@ -17,7 +17,7 @@ server: preview.tygron.com
 
 
 
-Usage  of GOAL example
+Use the GOAL example
 ---
 
  * download or build the env (```mvn packge```)
