@@ -20,7 +20,7 @@ server: preview.tygron.com
 Usage  of GOAL example
 ---
 
- * Download the latest release of this connector
- * Place it in src/main/GOAL
- * Place your license file in src/main/resources
+ * download or build the env (```mvn packge```)
+ * Place the resulting tygronenv-X.Y.Z-jar-with-dependencies.jar  in src/main/GOAL
+ * Place your configuration.cfg file in src/main/GOAL along with the environment file
  * Run the Tygron.mas2g in GOAL
