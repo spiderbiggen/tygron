@@ -1,6 +1,5 @@
 SDK test
 ============
 
-This just tests the SDK artefact. It uses the tygron README.txt license so you can only run this if you have the license.
-
-To use it, you must replace the README.txt in the resources directory with your license, and enter your password at the prompt.
+A few simple tests to check that the Tygron SDK artefact is working properly.
+You may be prompted to enter your tygron name and password to run this.
