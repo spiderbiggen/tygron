@@ -38,7 +38,7 @@ public class EntityEventHandler implements EventListenerInterface, EventIDListen
 	private Map<EventTypeEnum, List<Percept>> collectedPercepts = new HashMap<>();
 
 	public EntityEventHandler() {
-		EventManager.addListener(this, MapLink.STAKEHOLDERS, MapLink.FUNCTIONS);
+		EventManager.addListener(this, MapLink.STAKEHOLDERS, MapLink.FUNCTIONS, MapLink.BUILDINGS);
 		EventManager.addEnumListener(this, MapLink.SETTINGS, Setting.Type.MAP_WIDTH_METERS);
 	}
 
@@ -93,6 +93,9 @@ public class EntityEventHandler implements EventListenerInterface, EventIDListen
 			createPercepts((List<?>) contents[1], type);
 			break;
 		case "FUNCTIONS":
+			createPercepts((List<?>) contents[1], type);
+			break;
+		case "BUILDINGS":
 			createPercepts((List<?>) contents[1], type);
 			break;
 		default:
