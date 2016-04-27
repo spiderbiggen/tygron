@@ -2,10 +2,17 @@ Tygron SDK Wrapper
 ============
 
 This module is a wrapper around the tygron-sdk.zip file that we receive from Tygron.
-This wrapper creates a sdk-1.0.XX.jar file that contains the tygron sdk code, plus an associated sources.jar
-file that contains the javadoc and sources which is useful when developing code and debugging calls to the tygron sdk.
+This project creates a complete maven artefact from tygron sdk code and their sdk.jar file.
+
+This artefact is working properly for developing code and debugging calls to the tygron sdk.
 
 The wrapper is completely built automatically from the sources provided by Tygron.
+
+The jar and actual source code should always match. This project is NOT a proper 
+compiler for source code. So 
+```
+ALWAYS CHANGE JAR AND SOURCE CODE IN TANDEM
+```
 
 #Usage
 
