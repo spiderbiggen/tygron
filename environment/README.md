@@ -3,6 +3,8 @@ Tygron EIS connector
 
 This connector puts an EIS layer on top of the Tygron SDK.
 
+The connector allows you to control the Tygron engine in Planning mode.
+
 Testing
 ---
 To test the environment, you need to put a configuration.cfg file with the following contents in src/test/resources. 
