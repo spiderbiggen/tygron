@@ -21,7 +21,8 @@ import nl.tytech.data.engine.item.Setting;
 
 /**
  * Listen to entity events and store them till they are needed. Thread safe
- * because callbacks and calls from GOAL will be asynchronous.
+ * because callbacks and calls from GOAL will be asynchronous. The events that
+ * are reported are set up in the constructor.
  * 
  * @author W.Pasman
  *
