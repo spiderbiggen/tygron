@@ -10,7 +10,7 @@ Documentation
 ----
 The environment provides actions and percepts as an exact copy of the SDK percepts and actions.
 
-The percepts are staight translations of events coming in from the Tygron SDK. Please refer to EntityEventHandler javadoc. The incoming events are translated by the translators in the tygronenv.translators package. The current set of translators will need to be extended, the plan is to do this as needed.
+The percepts are staight translations of events coming in from the Tygron SDK. Please refer to EntityEventHandler javadoc. The incoming events are translated by the translators in the tygronenv.translators package. Only a small subset of the Tygron data objects are currently supported.  Also, not all contents in events are translated. Therefore, new translators will have to be added and existing translators probably will have to be extended. These extensions will be done as needed.
 
 The actions are a straightforward implementation of the tygron SDK ParticipantEventType. Please refer to the tygron SDK javadoc for details on each action.
 
