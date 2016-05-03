@@ -1,19 +1,15 @@
 %% Manual for the environment made by the group Tygron connect.
-%%% https://github.com/tygron-virtual-humans/tygron-connect
 
 \documentclass[english,11pt]{article}		
-%\documentclass[ngerman,11pt]{report}
 
 \usepackage{hyperref}
 \usepackage{caption}
 \usepackage{tabularx}
-
-%% \graphicspath{{images/}}   
 \bibliography{literatur} 
 
 \title{Tygron Environment \\ Guide}
 \author{W.Pasman}
-\date{May 2016}
+\date{\today}
 
 %%%----------------------------------------------------------
 \begin{document}
@@ -32,8 +28,9 @@ This document describes the installation and use of the Tygron Environment.
 \section{Installation}
 There are multiple ways to install the Tygron environment. 
 \begin{itemize}
-\item When using this with GOAL: use the agents zip file from https://github.com/goalhub/agents/releases. This zip file contains a ready-to-run example for the Tygron environment. 
-\item When using this with another agent platform: you can download the tygron EIS environment from https://github.com/eishub/tygron/releases and plug it into your agent platform. 
+\item When using this with GOAL: use the agents zip file from \url{https://github.com/goalhub/agents/releases}. This zip file contains a ready-to-run example for the Tygron environment. 
+\item When using this with another agent platform: you can download the tygron EIS environment from 
+\url{https://github.com/eishub/tygron/releases} and plug it into your agent platform. 
 \end{itemize}
 
 \section{Settings}
@@ -59,7 +56,7 @@ The init function takes the following parameters.
 \section{Percepts}
 %%%----------------------------------------------------------
 
-The following percepts are supported. Only changed percepts are sent. Please refer to javadoc of the translators in the package tygronenv.translators for more details about the parameters of the percepts.
+The following percepts are supported. Only changed percepts are sent. Please refer to javadoc of the translators in the package tygronenv.translators for more details about the parameters of the percepts. Only a small part of the incoming events are currently translated. New percepts and translators will be added as needed. Where needed, percept labels are translated to lower case, to avoid ambiguities with Prolog variables.
 \newline
 
 
@@ -101,7 +98,11 @@ The following percepts are supported. Only changed percepts are sent. Please ref
 \section{Actions}
 %%%----------------------------------------------------------
 
-Currently all actions in the ParticipantEventType class are supported. Please refer to the javadoc of ParticipantEventType for more details. 
+Currently all actions in the ParticipantEventType class are supported. Please refer to the javadoc of ParticipantEventType for more details. All action names are translated to lower case, to avoid ambiguities with Prolog variables.
+
+Some more documentation can be found on
+
+\url{http://support.tygron.com/wiki/Software_Development_Kit}
 
 
 
