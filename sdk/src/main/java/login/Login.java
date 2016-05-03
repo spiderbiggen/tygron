@@ -2,7 +2,9 @@ package login;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.util.prefs.Preferences;
 
+import javax.security.auth.login.LoginException;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -22,17 +24,22 @@ import nl.tytech.util.StringUtils;
  *
  */
 public class Login {
+	private static final String HASHEDPASS = "hashedpass";
+	private static final String USERNAME = "username";
 	String username;
 	String hashedPass;
 	boolean isSaved;
 
+	Preferences prefs = Preferences.userNodeForPackage(Login.class);
+
 	/**
 	 * Log in to the server. Check if pass needs to be stored and store.
+	 * 
+	 * @throws LoginException
+	 *             if login fails.
 	 */
-	public Login() {
-		username = SettingsManager.getOnlineUserName();
-		hashedPass = SettingsManager.getOnlinePassword();
-		isSaved = StringUtils.containsData(username) && StringUtils.containsData(hashedPass);
+	public Login() throws LoginException {
+		getCredentials();
 
 		if (!isSaved) {
 			passPrompt();
@@ -44,19 +51,27 @@ public class Login {
 		ServicesManager.setSessionLoginCredentials(username, hashedPass, true);
 	}
 
+	private void getCredentials() {
+		username = prefs.get(USERNAME, "");
+		hashedPass = prefs.get(HASHEDPASS, "");
+		isSaved = StringUtils.containsData(username) && StringUtils.containsData(hashedPass);
+	}
+
 	private void saveCredentials() {
-		SettingsManager.setOnlineUserName(username);
-		SettingsManager.setOnlinePassword(hashedPass);
+		prefs.put(USERNAME, username);
+		prefs.put(HASHEDPASS, hashedPass);
 		SettingsManager.setStayLoggedIn(true);
 	}
 
 	/**
 	 * Ask user for the credentials.
 	 * 
+	 * @throws LoginException
+	 * 
 	 * @throws IllegalStateException
 	 *             if user cancels login procedure.
 	 */
-	private void passPrompt() {
+	private void passPrompt() throws LoginException {
 		JPanel namepasspanel = new JPanel(new BorderLayout());
 		JTextField name = new JTextField(20);
 		JPasswordField pwd = new JPasswordField(20);
@@ -68,7 +83,7 @@ public class Login {
 				JOptionPane.OK_CANCEL_OPTION);
 
 		if (choice == JOptionPane.CANCEL_OPTION) {
-			throw new IllegalStateException("User cancelled login.");
+			throw new LoginException("User cancelled login.");
 		}
 		username = name.getText();
 		String pass = new String(pwd.getPassword());
@@ -96,4 +111,9 @@ public class Login {
 	public String getUserName() {
 		return username;
 	}
+
+	public static String getServerIp() {
+		return null;
+	}
+
 }

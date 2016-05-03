@@ -1,6 +1,9 @@
 package tygronenv.connection;
 
+import javax.security.auth.login.LoginException;
+
 import eis.exceptions.ManagementException;
+import login.Login;
 import nl.tytech.core.client.net.ServicesManager;
 import nl.tytech.core.net.Network;
 import nl.tytech.core.net.serializable.ProjectData;
@@ -8,7 +11,6 @@ import nl.tytech.core.net.serializable.User;
 import nl.tytech.core.net.serializable.User.AccessLevel;
 import nl.tytech.core.util.SettingsManager;
 import tygronenv.configuration.Configuration;
-import tygronenv.settings.Settings;
 
 /**
  * The top level connection with the server. Creates connection, checks
@@ -18,6 +20,8 @@ import tygronenv.settings.Settings;
  *
  */
 public class ServerConnection {
+
+	private final static String SERVER = "preview.tygron.com";
 
 	/**
 	 * True if project is created by us. False if someone else created the
@@ -40,22 +44,27 @@ public class ServerConnection {
 	 * @throws ManagementException
 	 */
 	public ServerConnection(Configuration config) throws ManagementException {
-		Settings credentials = new Settings();
 
 		// setup settings
 		SettingsManager.setup(SettingsManager.class, Network.AppType.EDITOR);
-		SettingsManager.setServerIP(credentials.getServerIp());
+		SettingsManager.setServerIP(SERVER);
 
 		String result = ServicesManager.testServerConnection();
 		if (result != null) {
 			throw new ManagementException("Server is actively refusing to connect:" + result);
 		}
 
-		ServicesManager.setSessionLoginCredentials(credentials.getUserName(), credentials.getPassword());
+		Login login;
+		try {
+			login = new Login();
+		} catch (LoginException e) {
+			throw new ManagementException("login failed", e);
+		}
+
 		User user = ServicesManager.getMyUserAccount();
 
 		if (user == null) {
-			throw new ManagementException("failed to attach user" + credentials.getUserName()
+			throw new ManagementException("failed to attach user" + login.getUserName()
 					+ ". Wrong name/pass? Please check the configuration.cfg file");
 		}
 

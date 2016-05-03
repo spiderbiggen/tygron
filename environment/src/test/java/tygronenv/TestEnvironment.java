@@ -3,6 +3,7 @@ package tygronenv;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,6 +19,12 @@ public class TestEnvironment {
 	@Before
 	public void before() {
 		env = new EisEnv();
+	}
+
+	@After
+	public void after() throws ManagementException, InterruptedException {
+		env.kill();
+		env = null;
 	}
 
 	@Test
@@ -36,7 +43,6 @@ public class TestEnvironment {
 		// any stakeholder so not specified.
 		// any slot so not specified.
 		env.init(parameters);
-		env.kill();
 	}
 
 	@Test
@@ -46,7 +52,6 @@ public class TestEnvironment {
 		parameters.put("stakeholder", new Identifier("MUNICIPALITY"));
 		// any slot so not specified.
 		env.init(parameters);
-		env.kill();
 	}
 
 	@Test(expected = ManagementException.class)
@@ -56,7 +61,6 @@ public class TestEnvironment {
 		parameters.put("stakeholder", new Identifier("BADSTAKEHOLDER"));
 		// any slot so not specified.
 		env.init(parameters);
-		env.kill();
 	}
 
 	@Test(expected = ManagementException.class)
@@ -66,7 +70,6 @@ public class TestEnvironment {
 		parameters.put("stakeholder", new Identifier("FARMER"));
 		// any slot so not specified.
 		env.init(parameters);
-		env.kill();
 	}
 
 }
