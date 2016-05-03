@@ -5,21 +5,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import com.vividsolutions.jts.geom.MultiPolygon;
 
+import login.Login;
 import nl.tytech.core.client.event.EventManager;
 import nl.tytech.core.client.net.ServicesManager;
 import nl.tytech.core.client.net.SlotConnection;
@@ -80,36 +72,15 @@ public class ExampleTest {
 		 * Enter user password
 		 */
 
-		JPanel namepasspanel = new JPanel(new BorderLayout());
-		JTextField name = new JTextField(20);
-		JPasswordField pwd = new JPasswordField(20);
-		namepasspanel.add(makeRow("name:", name), BorderLayout.NORTH);
-		namepasspanel.add(makeRow("password:", pwd), BorderLayout.CENTER);
-		JOptionPane.showConfirmDialog(null, namepasspanel, "Enter Name and Password", JOptionPane.OK_CANCEL_OPTION);
+		Login login = new Login();
 
-		ServicesManager.setSessionLoginCredentials(name.getText(), new String(pwd.getPassword()));
 		User user = ServicesManager.getMyUserAccount();
 
 		assertNotNull(user);
-		assertEquals(user.getUserName(), name.getText());
+		assertEquals(user.getUserName(), login.getUserName());
 
 		assertTrue("You need to be at least EDITOR to run these tests!",
 				user.getMaxAccessLevel().ordinal() >= AccessLevel.EDITOR.ordinal());
-	}
-
-	/**
-	 * Make a row with given label
-	 * 
-	 * @param label
-	 * @param inputarea
-	 *            the input area for user
-	 * @return component
-	 */
-	private JPanel makeRow(String label, Component inputarea) {
-		JPanel panel = new JPanel(new BorderLayout());
-		panel.add(new JLabel(label), BorderLayout.WEST);
-		panel.add(inputarea, BorderLayout.EAST);
-		return panel;
 	}
 
 	@Test
