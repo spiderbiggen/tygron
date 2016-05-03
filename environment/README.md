@@ -20,25 +20,3 @@ Some more documentation can be found here
 
 http://support.tygron.com/wiki/Software_Development_Kit
 
-
-Testing
----
-To test the environment, you need to put a configuration.cfg file with the following contents in src/test/resources. 
-
-```
-username: yourtygronusername
-password: yourtygronpassword
-server: preview.tygron.com
-```
-
-
-
-
-
-Use the GOAL example
----
-
- * download or build the env (```mvn packge```)
- * Place the resulting tygronenv-X.Y.Z-jar-with-dependencies.jar  in src/main/GOAL
- * Place your configuration.cfg file in src/main/GOAL along with the environment file
- * Run the Tygron.mas2g in GOAL
