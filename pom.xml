@@ -18,6 +18,7 @@
 		<module>sdk</module>
 		<module>sdk-tests</module>
 		<module>environment</module>
+		<module>doc</module>
 	</modules>
 
 	<build>
