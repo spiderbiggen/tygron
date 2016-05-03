@@ -1,4 +1,4 @@
-use "tygronenv-1.0.2-jar-with-dependencies.jar" as environment 
+use "tygronenv-1.0.3-jar-with-dependencies.jar" as environment 
 	with map = "testgoalmap" .
 
 define tygron as agent {
