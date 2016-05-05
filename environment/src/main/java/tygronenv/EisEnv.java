@@ -96,12 +96,9 @@ public class EisEnv extends EIDefaultImpl {
 			serverConnection = new ServerConnection(config);
 			setState(EnvironmentState.RUNNING);
 
-			// construct the entity first, as the constructor TygronEntity will
-			// start writing to the pipe. Notice that we are ready to handle
-			// getAllPercepts since that returns empty list anyway.
-			addEntity(ENTITY);
-
 			entity = new TygronEntity(config.getStakeholder(), serverConnection.getSession().getTeamSlot());
+
+			addEntity(ENTITY);
 
 		} catch (Exception e) {
 			throw new ManagementException("Problem with initialization of environment", e);
