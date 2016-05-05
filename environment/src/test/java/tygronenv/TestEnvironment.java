@@ -1,5 +1,6 @@
 package tygronenv;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,7 +8,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import eis.EnvironmentListener;
 import eis.exceptions.ManagementException;
+import eis.exceptions.NoEnvironmentException;
+import eis.exceptions.PerceiveException;
+import eis.iilang.EnvironmentState;
 import eis.iilang.Identifier;
 import eis.iilang.Parameter;
 
@@ -61,6 +66,66 @@ public class TestEnvironment {
 		parameters.put("stakeholder", new Identifier("BADSTAKEHOLDER"));
 		// any slot so not specified.
 		env.init(parameters);
+	}
+
+	enum StateType {
+		WAITING, DONE, ERROR
+	};
+
+	class State {
+		private StateType type;
+		private Exception exc;
+
+		public void setState(StateType t, Exception e) {
+			exc = e;
+			type = t;
+		}
+
+		public void waitTillDone() throws Exception {
+			while (type == StateType.WAITING) {
+				Thread.sleep(100);
+			}
+			if (type == StateType.ERROR) {
+				throw exc;
+			}
+		}
+	}
+
+	@Test
+	public void testEntityReady() throws ManagementException, InterruptedException {
+		State state = new State();
+
+		env.attachEnvironmentListener(new EnvironmentListener() {
+
+			@Override
+			public void handleStateChange(EnvironmentState newState) {
+			}
+
+			@Override
+			public void handleNewEntity(String entity) {
+				try {
+					env.getAllPerceptsFromEntity(entity);
+					state.setState(StateType.DONE, null);
+				} catch (PerceiveException | NoEnvironmentException e) {
+					state.setState(StateType.ERROR, e);
+				}
+			}
+
+			@Override
+			public void handleFreeEntity(String entity, Collection<String> agents) {
+			}
+
+			@Override
+			public void handleDeletedEntity(String entity, Collection<String> agents) {
+			}
+		});
+
+		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
+		parameters.put("map", MAP);
+		parameters.put("stakeholder", new Identifier("MUNICIPALITY"));
+		env.init(parameters);
+
+		state.wait();
 	}
 
 	@Test(expected = ManagementException.class)
