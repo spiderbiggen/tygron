@@ -92,7 +92,7 @@ public class TestEnvironment {
 	}
 
 	@Test
-	public void testEntityReady() throws ManagementException, InterruptedException {
+	public void testEntityReady() throws Exception {
 		State state = new State();
 
 		env.attachEnvironmentListener(new EnvironmentListener() {
@@ -125,7 +125,7 @@ public class TestEnvironment {
 		parameters.put("stakeholder", new Identifier("MUNICIPALITY"));
 		env.init(parameters);
 
-		state.wait();
+		state.waitTillDone();
 	}
 
 	@Test(expected = ManagementException.class)
