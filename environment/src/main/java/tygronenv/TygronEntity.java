@@ -17,6 +17,7 @@ import nl.tytech.core.net.serializable.JoinReply;
 import nl.tytech.core.net.serializable.MapLink;
 import nl.tytech.core.structure.ItemMap;
 import nl.tytech.core.util.SettingsManager;
+import nl.tytech.data.engine.event.LogicEventType;
 import nl.tytech.data.engine.event.ParticipantEventType;
 import nl.tytech.data.engine.item.Stakeholder;
 
@@ -56,6 +57,7 @@ public class TygronEntity {
 			}
 			slotConnection.fireServerEvent(true, ParticipantEventType.STAKEHOLDER_SELECT, stakeholder.getID(),
 					joinedConfirm.client.getClientToken());
+			slotConnection.fireServerEvent(true, LogicEventType.SETTINGS_ALLOW_INTERACTION, true);
 		} catch (Exception e) {
 			close(); // constructor fails, close down properly
 			throw e;
