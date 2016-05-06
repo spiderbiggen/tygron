@@ -2,6 +2,10 @@ package login;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.prefs.Preferences;
 
 import javax.security.auth.login.LoginException;
@@ -55,6 +59,46 @@ public class Login {
 		username = prefs.get(USERNAME, "");
 		hashedPass = prefs.get(HASHEDPASS, "");
 		isSaved = StringUtils.containsData(username) && StringUtils.containsData(hashedPass);
+		if(!isSaved) {
+			readStoredProperties();
+		}
+	}
+
+	private void readStoredProperties() {
+		String userName = null;
+		String passWord = null;
+		// in app.properties are the username and password as specified through environment variables
+		try (BufferedReader in = new BufferedReader(new FileReader("target/app.properties"))){
+			String line = "";
+			while((line = in.readLine()) != null){
+				if(line.contains("=") && !line.startsWith("#")){
+					String[] splittedline = line.split("=");
+					if (splittedline[0].equals("user")){
+						userName = splittedline[1];
+					} else if(splittedline[0].equals("pwd")){
+						passWord = splittedline[1];
+					}
+				}
+			}
+			if(userName != null && !userName.equals("undefined") && passWord != null && !passWord.equals("undefined") ){
+				// the user and password information is inputted through environment variables and these are used
+				ServicesManager.setSessionLoginCredentials(userName, passWord);
+				username = userName;
+				hashedPass = ServicesManager.fireServiceEvent(UserServiceEventType.GET_MY_HASH_KEY);
+				prefs.put(USERNAME, userName);
+				prefs.put(HASHEDPASS, hashedPass);
+				SettingsManager.setStayLoggedIn(true);
+			}
+
+		}
+		catch (FileNotFoundException e1) {
+			// errors are contained here because fallback is asking user for the user/pwd
+			System.out.println("File Could not be found");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			System.out.println("IOException");
+		}
+		
 	}
 
 	private void saveCredentials() {

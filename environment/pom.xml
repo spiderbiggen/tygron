@@ -8,6 +8,8 @@
 		<!-- name of the main project on eishub. -->
 		<environmentname>tygron</environmentname>
 		<mainclass>tygronenv.EisEnv</mainclass>
+		<user>undefined</user>
+		<pwd>undefined</pwd>
 	</properties>
 
 	<groupId>eishub</groupId>
@@ -93,6 +95,26 @@
 					<source>1.8</source>
 					<target>1.8</target>
 				</configuration>
+			</plugin>
+			
+			
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>properties-maven-plugin</artifactId>
+				<version>1.0.0</version>
+				<executions>
+				<execution>
+				<phase>generate-resources</phase>
+				<goals>
+					<goal>write-project-properties</goal>
+				</goals>
+				<configuration>
+				  <outputFile>
+					target/app.properties
+				</outputFile>
+				</configuration>
+				</execution>
+				</executions>
 			</plugin>
 
 			<plugin>
