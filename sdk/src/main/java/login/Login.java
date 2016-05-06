@@ -88,6 +88,7 @@ public class Login {
 				prefs.put(USERNAME, userName);
 				prefs.put(HASHEDPASS, hashedPass);
 				SettingsManager.setStayLoggedIn(true);
+				isSaved = StringUtils.containsData(username) && StringUtils.containsData(hashedPass);
 			}
 
 		}
