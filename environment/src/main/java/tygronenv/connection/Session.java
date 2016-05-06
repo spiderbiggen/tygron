@@ -2,6 +2,7 @@ package tygronenv.connection;
 
 import java.util.logging.Logger;
 
+import eis.exceptions.ManagementException;
 import nl.tytech.core.client.net.ServicesManager;
 import nl.tytech.core.net.Network.SessionType;
 import nl.tytech.core.net.event.IOServiceEventType;
@@ -84,6 +85,7 @@ public class Session {
 	/**
 	 * Close the session and clean up.
 	 */
-	public void close() {
+	public void close(){
+		ServicesManager.fireServiceEvent(IOServiceEventType.KILL_SESSION, slotID);			
 	}
 }
