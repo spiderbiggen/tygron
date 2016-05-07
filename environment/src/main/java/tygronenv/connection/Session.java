@@ -2,7 +2,6 @@ package tygronenv.connection;
 
 import java.util.logging.Logger;
 
-import eis.exceptions.ManagementException;
 import nl.tytech.core.client.net.ServicesManager;
 import nl.tytech.core.net.Network.SessionType;
 import nl.tytech.core.net.event.IOServiceEventType;
@@ -42,7 +41,8 @@ public class Session {
 
 	/**
 	 * 
-	 * @return the team's slot on the server.
+	 * @return the team's slot on the server, null if slot not available
+	 *         anymore.
 	 */
 	public Integer getTeamSlot() {
 		return slotID;
@@ -58,7 +58,7 @@ public class Session {
 	 *            the preferred slot
 	 * @return a session
 	 */
-	public SlotInfo findSession(Configuration config) {
+	private SlotInfo findSession(Configuration config) {
 		logger.info("Create or find a session with name: " + config.getMap());
 
 		SlotInfo[] availableSessions = ServicesManager.fireServiceEvent(IOServiceEventType.GET_MY_JOINABLE_SESSIONS,
@@ -85,7 +85,10 @@ public class Session {
 	/**
 	 * Close the session and clean up.
 	 */
-	public void close(){
-		ServicesManager.fireServiceEvent(IOServiceEventType.KILL_SESSION, slotID);			
+	public void close() {
+		if (slotID != null) {
+			ServicesManager.fireServiceEvent(IOServiceEventType.KILL_SESSION, slotID);
+		}
+		slotID = null;
 	}
 }
