@@ -18,7 +18,6 @@ import eis.iilang.Parameter;
 
 public class TestEnvironment {
 
-	private static final long LONG_ENOUGH_TO_GET_ENTITY = 5000;
 	private EisEnv env;
 	private static Identifier MAP = new Identifier("testmap");
 
