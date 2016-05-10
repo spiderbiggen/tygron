@@ -47,14 +47,16 @@ public class EntityEventHandler implements EventListenerInterface, EventIDListen
 	public void notifyEnumListener(Event event, Enum<?> enhum) {
 		EventTypeEnum type = event.getType();
 		Object[] contents = event.getContents();
-		switch (type.name()) {
-		case "SETTINGS":
-			createPercepts((List<?>) contents[1], type);
-			break;
-		default:
-			System.out.println("WARNING. EntityEventHandler ENUM received unknown event:" + event);
-			return;
+		if (type instanceof MapLink) {
+			switch ((MapLink) type) {
+			case SETTINGS:
+				createPercepts((List<?>) contents[MapLink.UPDATED_COLLECTION], type);
+				break;
+			default:
+				System.out.println("WARNING. EntityEventHandler ENUM received unknown event:" + event);
+				return;
 
+			}
 		}
 	}
 
@@ -89,20 +91,22 @@ public class EntityEventHandler implements EventListenerInterface, EventIDListen
 		EventTypeEnum type = event.getType();
 		Object[] contents = event.getContents();
 
-		switch (type.name()) {
-		case "STAKEHOLDERS":
-			createPercepts((List<?>) contents[1], type);
-			break;
-		case "FUNCTIONS":
-			createPercepts((List<?>) contents[1], type);
-			break;
-		case "BUILDINGS":
-			createPercepts((List<?>) contents[1], type);
-			break;
-		default:
-			System.out.println("WARNING. EntityEventHandler received unknown event:" + event);
-			return;
+		if (type instanceof MapLink) {
+			switch ((MapLink) type) {
+			case STAKEHOLDERS:
+				createPercepts((List<?>) contents[1], type);
+				break;
+			case FUNCTIONS:
+				createPercepts((List<?>) contents[1], type);
+				break;
+			case BUILDINGS:
+				createPercepts((List<?>) contents[1], type);
+				break;
+			default:
+				System.out.println("WARNING. EntityEventHandler received unknown event:" + event);
+				return;
 
+			}
 		}
 	}
 
