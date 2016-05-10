@@ -77,7 +77,7 @@ public class TygronEntity {
 				joinedConfirm.client.getClientToken());
 		slotConnection.fireServerEvent(true, LogicEventType.SETTINGS_ALLOW_INTERACTION, true);
 
-		environment.entityReady(entity);
+		environment.entityReady(stakeholder.getName());
 	}
 
 	/**

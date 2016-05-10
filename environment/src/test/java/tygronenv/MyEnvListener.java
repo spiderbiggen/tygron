@@ -30,10 +30,11 @@ public class MyEnvListener implements EnvironmentListener {
 		this.entity = entity;
 	}
 
-	public void waitForEntity() throws InterruptedException {
+	public String waitForEntity() throws InterruptedException {
 		while (entity == null) {
 			Thread.sleep(200);
 		}
+		return entity;
 	}
 
 }

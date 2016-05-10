@@ -132,7 +132,7 @@ public class EisEnv extends EIDefaultImpl {
 	 * @throws EntityException
 	 */
 	public void entityReady(String entity) throws EntityException {
-		addEntity(entity);
+		addEntity(entity, "stakeholder");
 	}
 
 	/************************* SUPPORT FUNCTIONS ****************************/
