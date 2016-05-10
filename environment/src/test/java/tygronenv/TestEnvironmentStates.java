@@ -72,7 +72,7 @@ public class TestEnvironmentStates {
 
 		LinkedList<Percept> percepts = env.getAllPerceptsFromEntity(ENTITY);
 		Percept expectedPercept = new Percept("stakeholders",
-				new ParameterList(new Parameter[] { new Identifier("Municipality") }));
+				new ParameterList(new Parameter[] { new Identifier("Municipality"), new Identifier("Inhabitants") }));
 		assertTrue(percepts.contains(expectedPercept));
 
 	}
@@ -158,7 +158,7 @@ public class TestEnvironmentStates {
 		// any slot so not specified.
 		env.init(parameters);
 
-		Thread.sleep(1500); // HACK wait some, to receive expected percepts.
+		Thread.sleep(2000); // HACK wait some, to receive expected percepts.
 	}
 
 	/**

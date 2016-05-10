@@ -9,15 +9,18 @@ import eis.eis2java.exception.TranslationException;
 import eis.eis2java.translation.Translator;
 import eis.iilang.Parameter;
 import eis.iilang.Percept;
-import nl.tytech.core.client.event.EventIDListenerInterface;
 import nl.tytech.core.client.event.EventManager;
 import nl.tytech.core.event.Event;
 import nl.tytech.core.event.Event.EventTypeEnum;
 import nl.tytech.core.event.EventListenerInterface;
+import nl.tytech.core.net.Network;
 import nl.tytech.core.net.serializable.MapLink;
 import nl.tytech.core.structure.ItemMap;
 import nl.tytech.data.core.item.Item;
+import nl.tytech.data.engine.item.Building;
+import nl.tytech.data.engine.item.Function;
 import nl.tytech.data.engine.item.Setting;
+import nl.tytech.data.engine.item.Stakeholder;
 
 /**
  * Listen to entity events and store them till they are needed. Thread safe
@@ -27,7 +30,7 @@ import nl.tytech.data.engine.item.Setting;
  * @author W.Pasman
  *
  */
-public class EntityEventHandler implements EventListenerInterface, EventIDListenerInterface {
+public class EntityEventHandler implements EventListenerInterface {
 
 	private Translator translator = Translator.getInstance();
 	/**
@@ -39,25 +42,8 @@ public class EntityEventHandler implements EventListenerInterface, EventIDListen
 	private Map<EventTypeEnum, List<Percept>> collectedPercepts = new HashMap<>();
 
 	public EntityEventHandler() {
-		EventManager.addListener(this, MapLink.STAKEHOLDERS, MapLink.FUNCTIONS, MapLink.BUILDINGS);
-		EventManager.addEnumListener(this, MapLink.SETTINGS, Setting.Type.MAP_WIDTH_METERS);
-	}
-
-	@Override
-	public void notifyEnumListener(Event event, Enum<?> enhum) {
-		EventTypeEnum type = event.getType();
-		Object[] contents = event.getContents();
-		if (type instanceof MapLink) {
-			switch ((MapLink) type) {
-			case SETTINGS:
-				createPercepts((List<?>) contents[MapLink.UPDATED_COLLECTION], type);
-				break;
-			default:
-				System.out.println("WARNING. EntityEventHandler ENUM received unknown event:" + event);
-				return;
-
-			}
-		}
+		EventManager.addListener(this, MapLink.STAKEHOLDERS, MapLink.FUNCTIONS, MapLink.BUILDINGS, MapLink.SETTINGS);
+		EventManager.addListener(this, Network.ConnectionEvent.FIRST_UPDATE_FINISHED);
 	}
 
 	/**
@@ -82,25 +68,22 @@ public class EntityEventHandler implements EventListenerInterface, EventIDListen
 	}
 
 	@Override
-	public void notifyIDListener(Event event, Integer id) {
-		System.out.println("ID EVENT:" + event);
-	}
-
-	@Override
 	public void notifyListener(Event event) {
 		EventTypeEnum type = event.getType();
-		Object[] contents = event.getContents();
 
 		if (type instanceof MapLink) {
 			switch ((MapLink) type) {
 			case STAKEHOLDERS:
-				createPercepts((List<?>) contents[1], type);
+				createPercepts(event.<ItemMap<Stakeholder>> getContent(MapLink.COMPLETE_COLLECTION), type);
 				break;
 			case FUNCTIONS:
-				createPercepts((List<?>) contents[1], type);
+				createPercepts(event.<ItemMap<Function>> getContent(MapLink.COMPLETE_COLLECTION), type);
 				break;
 			case BUILDINGS:
-				createPercepts((List<?>) contents[1], type);
+				createPercepts(event.<ItemMap<Building>> getContent(MapLink.COMPLETE_COLLECTION), type);
+				break;
+			case SETTINGS:
+				createPercepts(event.<ItemMap<Setting>> getContent(MapLink.COMPLETE_COLLECTION), type);
 				break;
 			default:
 				System.out.println("WARNING. EntityEventHandler received unknown event:" + event);
@@ -114,16 +97,18 @@ public class EntityEventHandler implements EventListenerInterface, EventIDListen
 	 * Create percepts contained in a ClientItemMap array and add them to the
 	 * {@link #collectedPercepts}.
 	 * 
-	 * @param map
+	 * @param itemMap
 	 *            list of ClientItemMap elements.
 	 * @param type
 	 *            the type of elements in the map.
 	 */
-	private void createPercepts(List<?> list, EventTypeEnum type) {
+
+	private <T extends Item> void createPercepts(ItemMap<T> itemMap, EventTypeEnum type) {
+		ArrayList<T> items = new ArrayList<T>(itemMap.values());
 		List<Percept> percepts = new ArrayList<Percept>();
 		Parameter[] parameters = null;
 		try {
-			parameters = translator.translate2Parameter(list);
+			parameters = translator.translate2Parameter(items);
 		} catch (TranslationException e) {
 			e.printStackTrace();
 		}
@@ -131,6 +116,7 @@ public class EntityEventHandler implements EventListenerInterface, EventIDListen
 			percepts.add(new Percept(type.name().toLowerCase(), parameters));
 		}
 		addPercepts(type, percepts);
+
 	}
 
 	public void stop() {
