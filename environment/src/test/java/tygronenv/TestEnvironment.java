@@ -18,6 +18,7 @@ import eis.iilang.Parameter;
 
 public class TestEnvironment {
 
+	private static final long LONG_ENOUGH_TO_GET_ENTITY = 5000;
 	private EisEnv env;
 	private static Identifier MAP = new Identifier("testmap");
 
@@ -126,15 +127,6 @@ public class TestEnvironment {
 		env.init(parameters);
 
 		state.waitTillDone();
-	}
-
-	@Test(expected = ManagementException.class)
-	public void testGetUnavailableStakeHolder() throws ManagementException {
-		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
-		parameters.put("map", MAP);
-		parameters.put("stakeholder", new Identifier("FARMER"));
-		// any slot so not specified.
-		env.init(parameters);
 	}
 
 }

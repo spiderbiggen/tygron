@@ -33,6 +33,7 @@ public class TestEnvironmentStates {
 
 	private EisEnv env;
 	private static Identifier MAP = new Identifier("testmap");
+	private String entity; // will be set when entity becomes available.
 
 	@Before
 	public void before() {
@@ -47,7 +48,8 @@ public class TestEnvironmentStates {
 	private final String ENTITY = "entity";
 
 	@Test
-	public void testEntityAppears() throws ManagementException, RelationException, AgentException {
+	public void testEntityAppears()
+			throws ManagementException, RelationException, AgentException, InterruptedException {
 
 		EnvironmentListener envlistener = mock(EnvironmentListener.class);
 
@@ -57,6 +59,7 @@ public class TestEnvironmentStates {
 		parameters.put("stakeholder", new Identifier("MUNICIPALITY"));
 		// any slot so not specified.
 		env.init(parameters);
+		Thread.sleep(5000); // give system sufficient time to create the entity.
 
 		// after the init, a new entity should appear that we can connect to.
 		verify(envlistener).handleNewEntity(ENTITY);
@@ -151,11 +154,17 @@ public class TestEnvironmentStates {
 	 * @throws InterruptedException
 	 */
 	private void joinAsMunicipality() throws ManagementException, InterruptedException {
+		MyEnvListener listener = new MyEnvListener();
+		env.attachEnvironmentListener(listener);
+
 		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
 		parameters.put("map", MAP);
 		parameters.put("stakeholder", new Identifier("MUNICIPALITY"));
 		// any slot so not specified.
 		env.init(parameters);
+
+		listener.waitForEntity();
+
 	}
 
 	/**

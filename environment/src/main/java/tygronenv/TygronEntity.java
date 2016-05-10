@@ -21,6 +21,7 @@ import nl.tytech.core.util.SettingsManager;
 import nl.tytech.data.engine.event.LogicEventType;
 import nl.tytech.data.engine.event.ParticipantEventType;
 import nl.tytech.data.engine.item.Stakeholder;
+import nl.tytech.data.engine.item.Stakeholder.Type;
 
 /**
  * the 'participant' - a single stakeholder connection. Handles events coming in
@@ -39,6 +40,7 @@ public class TygronEntity {
 	private EntityEventHandler eventHandler;
 	private Stakeholder stakeholder;
 	private EisEnv environment;
+	private Type intendedStakeholder;
 
 	private final static Translator translator = Translator.getInstance();
 
@@ -54,23 +56,10 @@ public class TygronEntity {
 	 *            the slot ID of the team.
 	 */
 	public TygronEntity(EisEnv env, Stakeholder.Type stakeholdertype, Integer slotID) {
-		try {
-			this.environment = env;
-			eventHandler = new EntityEventHandler(this);
-			getSlotConnection(slotID);
-
-			eventHandler.waitForReady();
-			stakeholder = getStakeholder(stakeholdertype);
-			if (stakeholder == null) {
-				throw new IllegalArgumentException("Stakeholder of type " + stakeholdertype + " is not available");
-			}
-			slotConnection.fireServerEvent(true, ParticipantEventType.STAKEHOLDER_SELECT, stakeholder.getID(),
-					joinedConfirm.client.getClientToken());
-			slotConnection.fireServerEvent(true, LogicEventType.SETTINGS_ALLOW_INTERACTION, true);
-		} catch (Exception e) {
-			close(); // constructor fails, close down properly
-			throw e;
-		}
+		this.environment = env;
+		this.intendedStakeholder = stakeholdertype;
+		eventHandler = new EntityEventHandler(this);
+		getSlotConnection(slotID);
 	}
 
 	/**
@@ -80,6 +69,14 @@ public class TygronEntity {
 	 * @throws EntityException
 	 */
 	public void notifyReady(String entity) throws EntityException {
+		stakeholder = getStakeholder(intendedStakeholder);
+		if (stakeholder == null) {
+			throw new IllegalArgumentException("Stakeholder of type " + intendedStakeholder + " is not available");
+		}
+		slotConnection.fireServerEvent(true, ParticipantEventType.STAKEHOLDER_SELECT, stakeholder.getID(),
+				joinedConfirm.client.getClientToken());
+		slotConnection.fireServerEvent(true, LogicEventType.SETTINGS_ALLOW_INTERACTION, true);
+
 		environment.entityReady(entity);
 	}
 
