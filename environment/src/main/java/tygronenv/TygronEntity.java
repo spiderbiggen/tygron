@@ -41,14 +41,19 @@ public class TygronEntity {
 	private final static Translator translator = Translator.getInstance();
 
 	/**
+	 * Create new Tygron entity. It will report to env when the entity is ready
+	 * to run (initial percepts have been prepared).
 	 * 
+	 * @param env
+	 *            the environment to report back to.
 	 * @param stakeholder
+	 *            stakeholder type that this entity represents
 	 * @param slotID
 	 *            the slot ID of the team.
 	 */
-	public TygronEntity(Stakeholder.Type stakeholdertype, Integer slotID) {
+	public TygronEntity(EisEnv env, Stakeholder.Type stakeholdertype, Integer slotID) {
 		try {
-			eventHandler = new EntityEventHandler();
+			eventHandler = new EntityEventHandler(env);
 			getSlotConnection(slotID);
 			eventHandler.waitForReady();
 			stakeholder = getStakeholder(stakeholdertype);

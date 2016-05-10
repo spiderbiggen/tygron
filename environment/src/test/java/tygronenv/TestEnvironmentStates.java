@@ -42,7 +42,6 @@ public class TestEnvironmentStates {
 	@After
 	public void after() throws ManagementException, InterruptedException {
 		env.kill();
-		Thread.sleep(1000);
 	}
 
 	private final String ENTITY = "entity";
@@ -157,8 +156,6 @@ public class TestEnvironmentStates {
 		parameters.put("stakeholder", new Identifier("MUNICIPALITY"));
 		// any slot so not specified.
 		env.init(parameters);
-
-		Thread.sleep(2000); // HACK wait some, to receive expected percepts.
 	}
 
 	/**

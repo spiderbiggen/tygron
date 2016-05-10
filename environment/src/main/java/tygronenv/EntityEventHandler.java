@@ -7,6 +7,7 @@ import java.util.Map;
 
 import eis.eis2java.exception.TranslationException;
 import eis.eis2java.translation.Translator;
+import eis.exceptions.EntityException;
 import eis.iilang.Parameter;
 import eis.iilang.Percept;
 import nl.tytech.core.client.event.EventManager;
@@ -33,6 +34,7 @@ import nl.tytech.data.engine.item.Stakeholder;
 public class EntityEventHandler implements EventListenerInterface {
 
 	private Translator translator = Translator.getInstance();
+	private static final String ENTITY = "entity";
 	/**
 	 * The collected percepts. Access this always through
 	 * {@link #addPercepts(EventTypeEnum, List)} and {@link #getPercepts()}.
@@ -40,8 +42,10 @@ public class EntityEventHandler implements EventListenerInterface {
 	 * FIXME collect Events and evaluate the percept lazy.
 	 */
 	private Map<EventTypeEnum, List<Percept>> collectedPercepts = new HashMap<>();
+	private EisEnv environment;
 
-	public EntityEventHandler() {
+	public EntityEventHandler(EisEnv env) {
+		environment = env;
 		EventManager.addListener(this, MapLink.STAKEHOLDERS, MapLink.FUNCTIONS, MapLink.BUILDINGS, MapLink.SETTINGS);
 		EventManager.addListener(this, Network.ConnectionEvent.FIRST_UPDATE_FINISHED);
 	}
@@ -69,6 +73,15 @@ public class EntityEventHandler implements EventListenerInterface {
 
 	@Override
 	public void notifyListener(Event event) {
+		try {
+			notifyListener1(event);
+		} catch (EntityException e) {
+			e.printStackTrace(); // can we do more?
+		}
+	}
+
+	private void notifyListener1(Event event) throws EntityException {
+
 		EventTypeEnum type = event.getType();
 
 		if (type instanceof MapLink) {
@@ -90,6 +103,9 @@ public class EntityEventHandler implements EventListenerInterface {
 				return;
 
 			}
+		} else if (type == Network.ConnectionEvent.FIRST_UPDATE_FINISHED) {
+			// entity is ready to run! Report to EIS
+			environment.entityReady(ENTITY);
 		}
 	}
 
