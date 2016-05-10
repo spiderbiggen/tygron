@@ -12,8 +12,8 @@
 
 	<groupId>eishub</groupId>
 	<artifactId>tygrondoc</artifactId>
-	<version>1.0.3</version>
-	<name>${environmentname}env</name>
+	<version>1.0.4</version>
+	<name>${environmentname}doc</name>
 	<description>Documentation for EIS-Tygron connector</description>
 	<url>http://www.github.com/eishub/${environmentname}</url>
 
