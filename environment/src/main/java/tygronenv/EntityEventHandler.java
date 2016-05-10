@@ -42,10 +42,10 @@ public class EntityEventHandler implements EventListenerInterface {
 	 * FIXME collect Events and evaluate the percept lazy.
 	 */
 	private Map<EventTypeEnum, List<Percept>> collectedPercepts = new HashMap<>();
-	private EisEnv environment;
+	private TygronEntity entity;
 
-	public EntityEventHandler(EisEnv env) {
-		environment = env;
+	public EntityEventHandler(TygronEntity entity) {
+		this.entity = entity;
 		EventManager.addListener(this, MapLink.STAKEHOLDERS, MapLink.FUNCTIONS, MapLink.BUILDINGS, MapLink.SETTINGS);
 		EventManager.addListener(this, Network.ConnectionEvent.FIRST_UPDATE_FINISHED);
 	}
@@ -105,7 +105,7 @@ public class EntityEventHandler implements EventListenerInterface {
 			}
 		} else if (type == Network.ConnectionEvent.FIRST_UPDATE_FINISHED) {
 			// entity is ready to run! Report to EIS
-			environment.entityReady(ENTITY);
+			entity.notifyReady(ENTITY);
 		}
 	}
 

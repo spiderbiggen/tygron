@@ -5,6 +5,7 @@ import java.util.List;
 
 import eis.eis2java.exception.TranslationException;
 import eis.eis2java.translation.Translator;
+import eis.exceptions.EntityException;
 import eis.iilang.Action;
 import eis.iilang.Parameter;
 import eis.iilang.Percept;
@@ -37,6 +38,7 @@ public class TygronEntity {
 	private JoinReply joinedConfirm;
 	private EntityEventHandler eventHandler;
 	private Stakeholder stakeholder;
+	private EisEnv environment;
 
 	private final static Translator translator = Translator.getInstance();
 
@@ -53,8 +55,10 @@ public class TygronEntity {
 	 */
 	public TygronEntity(EisEnv env, Stakeholder.Type stakeholdertype, Integer slotID) {
 		try {
-			eventHandler = new EntityEventHandler(env);
+			this.environment = env;
+			eventHandler = new EntityEventHandler(this);
 			getSlotConnection(slotID);
+
 			eventHandler.waitForReady();
 			stakeholder = getStakeholder(stakeholdertype);
 			if (stakeholder == null) {
@@ -67,6 +71,16 @@ public class TygronEntity {
 			close(); // constructor fails, close down properly
 			throw e;
 		}
+	}
+
+	/**
+	 * called when the entity has received initial percepts.
+	 * 
+	 * @param entity
+	 * @throws EntityException
+	 */
+	public void notifyReady(String entity) throws EntityException {
+		environment.entityReady(entity);
 	}
 
 	/**
@@ -216,4 +230,5 @@ public class TygronEntity {
 			throw new TranslationException("unknown action " + actionName);
 		}
 	}
+
 }
