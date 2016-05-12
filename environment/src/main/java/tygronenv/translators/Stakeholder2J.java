@@ -17,7 +17,7 @@ public class Stakeholder2J implements Parameter2Java<Type> {
 	@Override
 	public Type translate(Parameter parameter) throws TranslationException {
 		if (!(parameter instanceof Identifier)) {
-			throw new TranslationException();
+			throw new TranslationException("expected identifier but got " + parameter);
 		}
 		String id = ((Identifier) parameter).getValue();
 		Type value;
