@@ -13,6 +13,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import nl.tytech.core.client.net.ServicesManager;
+import nl.tytech.core.net.Network;
 import nl.tytech.core.net.event.UserServiceEventType;
 import nl.tytech.core.util.SettingsManager;
 import nl.tytech.util.StringUtils;
@@ -26,19 +27,37 @@ import nl.tytech.util.StringUtils;
 public class Login {
 	private static final String HASHEDPASS = "hashedpass";
 	private static final String USERNAME = "username";
-	String username;
-	String hashedPass;
-	boolean isSaved;
+	private final static String SERVER = "preview.tygron.com";
+	private Preferences prefs = Preferences.userNodeForPackage(Login.class);
 
-	Preferences prefs = Preferences.userNodeForPackage(Login.class);
+	private String username;
+	private String hashedPass;
+	private boolean isSaved;
 
 	/**
-	 * Log in to the server. Check if pass needs to be stored and store.
+	 * Class that contains procedures for login and storing name and passwords.
 	 * 
 	 * @throws LoginException
 	 *             if login fails.
 	 */
 	public Login() throws LoginException {
+		SettingsManager.setup(SettingsManager.class, Network.AppType.EDITOR);
+		SettingsManager.setServerIP(SERVER);
+		String result = ServicesManager.testServerConnection();
+		if (result != null) {
+			throw new LoginException("Server is actively refusing to connect:" + result);
+		}
+
+	}
+
+	/**
+	 * Execute standard login procedure: check if we have credentials. If not,
+	 * ask them from user and save
+	 * 
+	 * @throws LoginException
+	 */
+	public void doLogin() throws LoginException {
+
 		getCredentials();
 
 		if (!isSaved) {
@@ -51,12 +70,20 @@ public class Login {
 		ServicesManager.setSessionLoginCredentials(username, hashedPass, true);
 	}
 
+	/**
+	 * load existing username and pass from {@link Preferences}.
+	 */
 	private void getCredentials() {
 		username = prefs.get(USERNAME, "");
 		hashedPass = prefs.get(HASHEDPASS, "");
 		isSaved = StringUtils.containsData(username) && StringUtils.containsData(hashedPass);
 	}
 
+	/**
+	 * Saves username ad password as {@link Preferences}. Assumes name and
+	 * hashedpass have been set properly. see
+	 * {@link #setCredentials(String, String)}.
+	 */
 	private void saveCredentials() {
 		prefs.put(USERNAME, username);
 		prefs.put(HASHEDPASS, hashedPass);
@@ -87,8 +114,7 @@ public class Login {
 		}
 		username = name.getText();
 		String pass = new String(pwd.getPassword());
-		ServicesManager.setSessionLoginCredentials(username, pass);
-		hashedPass = ServicesManager.fireServiceEvent(UserServiceEventType.GET_MY_HASH_KEY);
+		setCredentials(username, pass);
 		isSaved = save.isSelected();
 
 	}
@@ -114,6 +140,26 @@ public class Login {
 
 	public static String getServerIp() {
 		return null;
+	}
+
+	public static void main(String[] args) throws LoginException {
+		if (args.length == 2) {
+			new Login().setCredentials(args[0], args[1]);
+		} else {
+			System.out.println("2 arguments required: name, password");
+		}
+	}
+
+	private void setCredentials(String name, String pass) throws LoginException {
+		this.username = name;
+		System.out.println("reset login credentials:" + username + "," + pass);
+		ServicesManager.setSessionLoginCredentials(username, pass);
+		hashedPass = ServicesManager.fireServiceEvent(UserServiceEventType.GET_MY_HASH_KEY);
+		if (hashedPass == null) {
+			// happens if the pass is wrong...
+			throw new LoginException("incorrect name/password");
+		}
+		saveCredentials();
 	}
 
 }
