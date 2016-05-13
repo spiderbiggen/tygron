@@ -116,4 +116,23 @@ public class Login {
 		return null;
 	}
 
+	public static void main(String[] args) throws LoginException {
+		if (args.length == 2) {
+			new Login().setCredentials(args[0], args[1]);
+		} else {
+			System.out.println("2 arguments required: name, password");
+		}
+	}
+
+	private void setCredentials(String name, String pass) throws LoginException {
+		this.username = name;
+		ServicesManager.setSessionLoginCredentials(username, pass);
+		hashedPass = ServicesManager.fireServiceEvent(UserServiceEventType.GET_MY_HASH_KEY);
+		if (hashedPass == null) {
+			// happens if the pass is wrong...
+			throw new LoginException("incorrect name/password");
+		}
+		saveCredentials();
+	}
+
 }
