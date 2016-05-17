@@ -17,7 +17,7 @@ import nl.tytech.data.engine.item.Stakeholder.Type;
  */
 public class Configuration {
 	private Type stakeholder = null;
-	private String map = null;
+	private String project = null;
 	private Integer slot = null;
 
 	/**
@@ -50,8 +50,8 @@ public class Configuration {
 			case STAKEHOLDER:
 				setStakeholder(translator.translate2Java(entry.getValue(), Stakeholder.Type.class));
 				break;
-			case MAP:
-				setMap(translator.translate2Java(entry.getValue(), String.class));
+			case PROJECT:
+				setProject(translator.translate2Java(entry.getValue(), String.class));
 				break;
 			case SLOT:
 				setSlot(translator.translate2Java(entry.getValue(), Integer.class));
@@ -63,7 +63,7 @@ public class Configuration {
 	}
 
 	private void checkSanity() {
-		if (map == null) {
+		if (project == null) {
 			throw new IllegalStateException("Invalid configuration: map is mandatory");
 		}
 	}
@@ -78,14 +78,24 @@ public class Configuration {
 		return stakeholder;
 	}
 
-	public void setMap(String map) {
-		if (map == null)
+	/**
+	 * Set the project name
+	 * 
+	 * @param project
+	 *            name of the project
+	 */
+	public void setProject(String project) {
+		if (project == null)
 			throw new IllegalStateException("map must be provided");
-		this.map = map;
+		this.project = project;
 	}
 
-	public String getMap() {
-		return map;
+	/**
+	 * 
+	 * @return the project name to use
+	 */
+	public String getProject() {
+		return project;
 	}
 
 	public void setSlot(int slot) {

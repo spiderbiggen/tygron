@@ -42,7 +42,7 @@ public class ProjectFactory {
 			}
 		}
 
-		return createProject(name);
+		return null;
 	}
 
 	/**

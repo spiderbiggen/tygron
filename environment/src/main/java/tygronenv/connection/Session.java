@@ -41,7 +41,8 @@ public class Session {
 
 	/**
 	 * 
-	 * @return the team's slot on the server.
+	 * @return the team's slot on the server, null if slot not available
+	 *         anymore.
 	 */
 	public Integer getTeamSlot() {
 		return slotID;
@@ -57,11 +58,11 @@ public class Session {
 	 *            the preferred slot
 	 * @return a session
 	 */
-	public SlotInfo findSession(Configuration config) {
-		logger.info("Create or find a session with name: " + config.getMap());
+	private SlotInfo findSession(Configuration config) {
+		logger.info("Create or find a session with name: " + config.getProject());
 
 		SlotInfo[] availableSessions = ServicesManager.fireServiceEvent(IOServiceEventType.GET_MY_JOINABLE_SESSIONS,
-				SessionType.SINGLE, config.getMap(), TLanguage.EN);
+				SessionType.SINGLE, config.getProject(), TLanguage.EN);
 
 		// Try to find the specified slot
 		for (SlotInfo slot : availableSessions) {
@@ -71,9 +72,9 @@ public class Session {
 		}
 
 		// The slot cannot be found, let's try on to find a session on the
-		// mapname.
+		// project.
 		for (SlotInfo slot : availableSessions) {
-			if (config.getMap().equals(slot.name)) {
+			if (config.getProject().equals(slot.name)) {
 				return slot;
 			}
 		}
@@ -85,5 +86,9 @@ public class Session {
 	 * Close the session and clean up.
 	 */
 	public void close() {
+		if (slotID != null) {
+			ServicesManager.fireServiceEvent(IOServiceEventType.KILL_SESSION, slotID);
+		}
+		slotID = null;
 	}
 }

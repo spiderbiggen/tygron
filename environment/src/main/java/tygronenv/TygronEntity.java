@@ -5,6 +5,7 @@ import java.util.List;
 
 import eis.eis2java.exception.TranslationException;
 import eis.eis2java.translation.Translator;
+import eis.exceptions.EntityException;
 import eis.iilang.Action;
 import eis.iilang.Parameter;
 import eis.iilang.Percept;
@@ -17,8 +18,10 @@ import nl.tytech.core.net.serializable.JoinReply;
 import nl.tytech.core.net.serializable.MapLink;
 import nl.tytech.core.structure.ItemMap;
 import nl.tytech.core.util.SettingsManager;
+import nl.tytech.data.engine.event.LogicEventType;
 import nl.tytech.data.engine.event.ParticipantEventType;
 import nl.tytech.data.engine.item.Stakeholder;
+import nl.tytech.data.engine.item.Stakeholder.Type;
 
 /**
  * the 'participant' - a single stakeholder connection. Handles events coming in
@@ -36,30 +39,45 @@ public class TygronEntity {
 	private JoinReply joinedConfirm;
 	private EntityEventHandler eventHandler;
 	private Stakeholder stakeholder;
+	private EisEnv environment;
+	private Type intendedStakeholder;
 
 	private final static Translator translator = Translator.getInstance();
 
 	/**
+	 * Create new Tygron entity. It will report to env when the entity is ready
+	 * to run (initial percepts have been prepared).
 	 * 
+	 * @param env
+	 *            the environment to report back to.
 	 * @param stakeholder
+	 *            stakeholder type that this entity represents
 	 * @param slotID
 	 *            the slot ID of the team.
 	 */
-	public TygronEntity(Stakeholder.Type stakeholdertype, Integer slotID) {
-		try {
-			eventHandler = new EntityEventHandler();
-			getSlotConnection(slotID);
-			eventHandler.waitForReady();
-			stakeholder = getStakeholder(stakeholdertype);
-			if (stakeholder == null) {
-				throw new IllegalArgumentException("Stakeholder of type " + stakeholdertype + " is not available");
-			}
-			slotConnection.fireServerEvent(true, ParticipantEventType.STAKEHOLDER_SELECT, stakeholder.getID(),
-					joinedConfirm.client.getClientToken());
-		} catch (Exception e) {
-			close(); // constructor fails, close down properly
-			throw e;
+	public TygronEntity(EisEnv env, Stakeholder.Type stakeholdertype, Integer slotID) {
+		this.environment = env;
+		this.intendedStakeholder = stakeholdertype;
+		eventHandler = new EntityEventHandler(this);
+		getSlotConnection(slotID);
+	}
+
+	/**
+	 * called when the entity has received initial percepts.
+	 * 
+	 * @param entity
+	 * @throws EntityException
+	 */
+	public void notifyReady(String entity) throws EntityException {
+		stakeholder = getStakeholder(intendedStakeholder);
+		if (stakeholder == null) {
+			throw new IllegalArgumentException("Stakeholder of type " + intendedStakeholder + " is not available");
 		}
+		slotConnection.fireServerEvent(true, ParticipantEventType.STAKEHOLDER_SELECT, stakeholder.getID(),
+				joinedConfirm.client.getClientToken());
+		slotConnection.fireServerEvent(true, LogicEventType.SETTINGS_ALLOW_INTERACTION, true);
+
+		environment.entityReady(stakeholder.getName());
 	}
 
 	/**
@@ -209,4 +227,5 @@ public class TygronEntity {
 			throw new TranslationException("unknown action " + actionName);
 		}
 	}
+
 }
