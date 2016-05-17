@@ -32,7 +32,8 @@ import eis.iilang.Percept;
 public class TestEnvironmentStates {
 
 	private EisEnv env;
-	private static Identifier MAP = new Identifier("testmap");
+	private static String PROJECT = "project";
+	private static Identifier PROJECTNAME = new Identifier("testmap");
 
 	@Before
 	public void before() {
@@ -42,25 +43,26 @@ public class TestEnvironmentStates {
 	@After
 	public void after() throws ManagementException, InterruptedException {
 		env.kill();
-		Thread.sleep(1000);
 	}
 
 	private final String ENTITY = "entity";
 
 	@Test
-	public void testEntityAppears() throws ManagementException, RelationException, AgentException {
+	public void testEntityAppears()
+			throws ManagementException, RelationException, AgentException, InterruptedException {
 
 		EnvironmentListener envlistener = mock(EnvironmentListener.class);
 
 		env.attachEnvironmentListener(envlistener);
 		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
-		parameters.put("map", MAP);
+		parameters.put(PROJECT, PROJECTNAME);
 		parameters.put("stakeholder", new Identifier("MUNICIPALITY"));
 		// any slot so not specified.
 		env.init(parameters);
+		Thread.sleep(5000); // give system sufficient time to create the entity.
 
 		// after the init, a new entity should appear that we can connect to.
-		verify(envlistener).handleNewEntity(ENTITY);
+		verify(envlistener).handleNewEntity("Municipality");
 
 	}
 
@@ -72,7 +74,7 @@ public class TestEnvironmentStates {
 
 		LinkedList<Percept> percepts = env.getAllPerceptsFromEntity(ENTITY);
 		Percept expectedPercept = new Percept("stakeholders",
-				new ParameterList(new Parameter[] { new Identifier("Municipality") }));
+				new ParameterList(new Parameter[] { new Identifier("Municipality"), new Identifier("Inhabitants") }));
 		assertTrue(percepts.contains(expectedPercept));
 
 	}
@@ -152,13 +154,16 @@ public class TestEnvironmentStates {
 	 * @throws InterruptedException
 	 */
 	private void joinAsMunicipality() throws ManagementException, InterruptedException {
+		MyEnvListener listener = new MyEnvListener();
+		env.attachEnvironmentListener(listener);
+
 		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
-		parameters.put("map", MAP);
+		parameters.put(PROJECT, PROJECTNAME);
 		parameters.put("stakeholder", new Identifier("MUNICIPALITY"));
 		// any slot so not specified.
 		env.init(parameters);
 
-		Thread.sleep(1500); // HACK wait some, to receive expected percepts.
+		assertEquals("Municipality", listener.waitForEntity());
 	}
 
 	/**

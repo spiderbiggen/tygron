@@ -5,11 +5,9 @@ import javax.security.auth.login.LoginException;
 import eis.exceptions.ManagementException;
 import login.Login;
 import nl.tytech.core.client.net.ServicesManager;
-import nl.tytech.core.net.Network;
 import nl.tytech.core.net.serializable.ProjectData;
 import nl.tytech.core.net.serializable.User;
 import nl.tytech.core.net.serializable.User.AccessLevel;
-import nl.tytech.core.util.SettingsManager;
 import tygronenv.configuration.Configuration;
 
 /**
@@ -20,8 +18,6 @@ import tygronenv.configuration.Configuration;
  *
  */
 public class ServerConnection {
-
-	private final static String SERVER = "preview.tygron.com";
 
 	/**
 	 * True if project is created by us. False if someone else created the
@@ -45,18 +41,10 @@ public class ServerConnection {
 	 */
 	public ServerConnection(Configuration config) throws ManagementException {
 
-		// setup settings
-		SettingsManager.setup(SettingsManager.class, Network.AppType.EDITOR);
-		SettingsManager.setServerIP(SERVER);
-
-		String result = ServicesManager.testServerConnection();
-		if (result != null) {
-			throw new ManagementException("Server is actively refusing to connect:" + result);
-		}
-
 		Login login;
 		try {
 			login = new Login();
+			login.doLogin();
 		} catch (LoginException e) {
 			throw new ManagementException("login failed", e);
 		}
@@ -72,9 +60,9 @@ public class ServerConnection {
 			throw new ManagementException("You need to have at least EDITOR access level");
 		}
 
-		project = factory.getProject(config.getMap());
+		project = factory.getProject(config.getProject());
 		if (project == null) {
-			project = factory.createProject(config.getMap());
+			project = factory.createProject(config.getProject());
 			createdProject = true;
 		}
 

@@ -11,7 +11,7 @@
 
 	<groupId>tygron</groupId>
 	<artifactId>sdk-tests</artifactId>
-	<version>1.0.20</version>
+	<version>1.0.21</version>
 	<name>${environmentname}-tests</name>
 	<description>Tests for the Tytech SDK</description>
 	<url>http://www.github.com/eishub/${environmentname}</url>
@@ -92,7 +92,15 @@
 			</plugin>
 
 
-			<!-- removed most plugins, this is only for testing the sdk, not for deployment. -->
+			<!--  ignore deployment, this is only for testing the sdk. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>2.8.2</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -100,7 +108,7 @@
 		<dependency>
 			<groupId>nl.tygron</groupId>
 			<artifactId>sdk</artifactId>
-			<version>2016.5.0.2</version>
+			<version>2016.5.0.3</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
