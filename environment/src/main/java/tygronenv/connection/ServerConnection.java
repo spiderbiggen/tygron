@@ -52,8 +52,7 @@ public class ServerConnection {
 		User user = ServicesManager.getMyUserAccount();
 
 		if (user == null) {
-			throw new ManagementException("failed to attach user" + login.getUserName()
-					+ ". Wrong name/pass? Please check the configuration.cfg file");
+			throw new ManagementException("failed to attach user" + login.getUserName() + ". Wrong name/pass? ");
 		}
 
 		if (user.getMaxAccessLevel().ordinal() < AccessLevel.EDITOR.ordinal()) {
