@@ -33,7 +33,8 @@ public class ServerConnection {
 	private ProjectFactory factory = new ProjectFactory();
 
 	/**
-	 * Connect with the server, using the {@link Settings}.
+	 * Connect with the server, and create Session with the
+	 * {@link Configuration}.
 	 * 
 	 * @param config
 	 *            the {@link Configuration} to use

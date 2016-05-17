@@ -7,6 +7,7 @@ import eis.iilang.Parameter;
 import eis.iilang.ParameterList;
 import nl.tytech.core.structure.ClientItemMap;
 
+@SuppressWarnings("rawtypes")
 public class J2ClientItemMap implements Java2Parameter<ClientItemMap> {
 
 	private final Translator translator = Translator.getInstance();

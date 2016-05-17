@@ -31,6 +31,7 @@ import eis.iilang.Percept;
 
 public class TestEnvironmentStates {
 
+	private static final String MUNICIPALITY = "MUNICIPALITY";
 	private EisEnv env;
 	private static String PROJECT = "project";
 	private static Identifier PROJECTNAME = new Identifier("testmap");
@@ -45,8 +46,6 @@ public class TestEnvironmentStates {
 		env.kill();
 	}
 
-	private final String ENTITY = "entity";
-
 	@Test
 	public void testEntityAppears()
 			throws ManagementException, RelationException, AgentException, InterruptedException {
@@ -56,7 +55,7 @@ public class TestEnvironmentStates {
 		env.attachEnvironmentListener(envlistener);
 		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
 		parameters.put(PROJECT, PROJECTNAME);
-		parameters.put("stakeholder", new Identifier("MUNICIPALITY"));
+		parameters.put("stakeholder", new ParameterList(new Identifier(MUNICIPALITY)));
 		// any slot so not specified.
 		env.init(parameters);
 		Thread.sleep(5000); // give system sufficient time to create the entity.
@@ -72,7 +71,7 @@ public class TestEnvironmentStates {
 
 		joinAsMunicipality();
 
-		LinkedList<Percept> percepts = env.getAllPerceptsFromEntity(ENTITY);
+		LinkedList<Percept> percepts = env.getAllPerceptsFromEntity(MUNICIPALITY);
 		Percept expectedPercept = new Percept("stakeholders",
 				new ParameterList(new Parameter[] { new Identifier("Municipality"), new Identifier("Inhabitants") }));
 		assertTrue(percepts.contains(expectedPercept));
@@ -112,7 +111,7 @@ public class TestEnvironmentStates {
 		Action action = new Action("BUILDING_PLAN_CONSTRUCTION".toLowerCase(), buildroadfunction.get(1), new Numeral(1),
 				new Function("square", new Numeral(10), new Numeral(10), new Numeral(200), new Numeral(10)));
 
-		env.performEntityAction(ENTITY, action);
+		env.performEntityAction(MUNICIPALITY, action);
 
 	}
 
@@ -142,7 +141,7 @@ public class TestEnvironmentStates {
 		Action action = new Action("BUILDING_PLAN_CONSTRUCTION".toLowerCase(), buildroadfunction.get(1), new Numeral(1),
 				new Identifier("circle"));
 
-		env.performEntityAction(ENTITY, action);
+		env.performEntityAction(MUNICIPALITY, action);
 
 	}
 
@@ -159,7 +158,7 @@ public class TestEnvironmentStates {
 
 		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
 		parameters.put(PROJECT, PROJECTNAME);
-		parameters.put("stakeholder", new Identifier("MUNICIPALITY"));
+		parameters.put("stakeholder", new ParameterList(new Identifier(MUNICIPALITY)));
 		// any slot so not specified.
 		env.init(parameters);
 
@@ -175,7 +174,7 @@ public class TestEnvironmentStates {
 	 * @throws PerceiveException
 	 */
 	private ParameterList findRoadFunction() throws PerceiveException {
-		LinkedList<Percept> percepts = env.getAllPerceptsFromEntity(ENTITY);
+		LinkedList<Percept> percepts = env.getAllPerceptsFromEntity(MUNICIPALITY);
 
 		// find the FUNCTIONS percept
 		Percept function = null;

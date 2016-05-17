@@ -21,11 +21,13 @@ import nl.tytech.core.util.SettingsManager;
 import nl.tytech.data.engine.event.LogicEventType;
 import nl.tytech.data.engine.event.ParticipantEventType;
 import nl.tytech.data.engine.item.Stakeholder;
-import nl.tytech.data.engine.item.Stakeholder.Type;
 
 /**
  * the 'participant' - a single stakeholder connection. Handles events coming in
- * for this stakeholder
+ * for this stakeholder.
+ * 
+ * A TygronEntity becomes an EIS entity only when the initial percepts have come
+ * in, and there is a stakeholder with the {@link #intendedStakeholderName}.
  * 
  * @author W.Pasman
  *
@@ -40,24 +42,32 @@ public class TygronEntity {
 	private EntityEventHandler eventHandler;
 	private Stakeholder stakeholder;
 	private EisEnv environment;
-	private Type intendedStakeholder;
+	/**
+	 * The name that this entity should represent. At construction time we do
+	 * not yet know if such a stakeholder actually exists in the project.
+	 */
+	private String intendedStakeholderName;
 
 	private final static Translator translator = Translator.getInstance();
 
 	/**
 	 * Create new Tygron entity. It will report to env when the entity is ready
-	 * to run (initial percepts have been prepared).
+	 * to run. This happens when initial percepts have been prepared and the
+	 * name matches one of the actual stakeholder names
 	 * 
 	 * @param env
 	 *            the environment to report back to.
-	 * @param stakeholder
-	 *            stakeholder type that this entity represents
+	 * @param intendedStakeholder
+	 *            the intended stakeholder name. If null, any name is ok.
 	 * @param slotID
 	 *            the slot ID of the team.
 	 */
-	public TygronEntity(EisEnv env, Stakeholder.Type stakeholdertype, Integer slotID) {
+	public TygronEntity(EisEnv env, String intendedStakeholder, Integer slotID) {
+		if (env == null) {
+			throw new NullPointerException("env=null");
+		}
 		this.environment = env;
-		this.intendedStakeholder = stakeholdertype;
+		this.intendedStakeholderName = intendedStakeholder;
 		eventHandler = new EntityEventHandler(this);
 		getSlotConnection(slotID);
 	}
@@ -69,10 +79,7 @@ public class TygronEntity {
 	 * @throws EntityException
 	 */
 	public void notifyReady(String entity) throws EntityException {
-		stakeholder = getStakeholder(intendedStakeholder);
-		if (stakeholder == null) {
-			throw new IllegalArgumentException("Stakeholder of type " + intendedStakeholder + " is not available");
-		}
+		connectStakeholder();
 		slotConnection.fireServerEvent(true, ParticipantEventType.STAKEHOLDER_SELECT, stakeholder.getID(),
 				joinedConfirm.client.getClientToken());
 		slotConnection.fireServerEvent(true, LogicEventType.SETTINGS_ALLOW_INTERACTION, true);
@@ -81,27 +88,40 @@ public class TygronEntity {
 	}
 
 	/**
-	 * Select given stakeholder.
+	 * Connect with the stakeholder that has the
+	 * {@link #intendedStakeholderName}.
 	 * 
-	 * @param intendedStakeHolder
-	 *            the stakeholder to use. Or null if any stakeholder is ok.
-	 * @return stakeholder, or null if requested type is not available.
+	 * @throws EntityException
+	 *             when this entity can not be connected, eg when the requested
+	 *             stakeholder name does not exist.
+	 * 
 	 */
-	private Stakeholder getStakeholder(Stakeholder.Type intendedStakeHolder) {
+	private void connectStakeholder() throws EntityException {
 
 		ItemMap<Stakeholder> stakeholders = EventManager.getItemMap(MapLink.STAKEHOLDERS);
 
-		if (intendedStakeHolder == null) {
+		// safety check
+		if (stakeholders.size() == 0) {
+			throw new EntityException("The project does not contain any stakeholders");
+		}
+
+		if (intendedStakeholderName == null) {
 			// pick the first
-			return stakeholders.toList(0).get(0);
+			stakeholder = stakeholders.toList(0).get(0);
 		}
 
 		for (Stakeholder holder : stakeholders) {
-			if (holder.getType().equals(intendedStakeHolder)) {
-				return holder;
+			if (intendedStakeholderName.equalsIgnoreCase(holder.getName())) {
+				stakeholder = holder;
+				return;
 			}
 		}
-		return null;
+		String names = stakeholders.get(0).getName();
+		for (Stakeholder holder : stakeholders) {
+			names = names + "," + holder.getName();
+		}
+		throw new EntityException(
+				"Stakeholder with name " + intendedStakeholderName + " is not available. Available are:" + names);
 	}
 
 	/**

@@ -1,24 +1,26 @@
 package tygronenv.configuration;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import eis.eis2java.exception.NoTranslatorException;
 import eis.eis2java.exception.TranslationException;
 import eis.eis2java.translation.Translator;
 import eis.iilang.Identifier;
 import eis.iilang.Parameter;
-import nl.tytech.data.engine.item.Stakeholder;
-import nl.tytech.data.engine.item.Stakeholder.Type;
+import eis.iilang.ParameterList;
 
 /**
  * The environment configuration as specified in the init param
  *
  */
 public class Configuration {
-	private Type stakeholder = null;
+	private Set<String> stakeholders = new HashSet<String>();
 	private String project = null;
 	private Integer slot = null;
+	private final Translator translator = Translator.getInstance();
 
 	/**
 	 * Construct configuration directly from set of Parameters as in the MAS
@@ -43,12 +45,11 @@ public class Configuration {
 	 * @throws NoTranslatorException
 	 */
 	private void parseParameters(Map<String, Parameter> parameters) throws TranslationException, NoTranslatorException {
-		Translator translator = Translator.getInstance();
 		for (Entry<String, Parameter> entry : parameters.entrySet()) {
 			ParamEnum param = translator.translate2Java(new Identifier(entry.getKey()), ParamEnum.class);
 			switch (param) {
 			case STAKEHOLDER:
-				setStakeholder(translator.translate2Java(entry.getValue(), Stakeholder.Type.class));
+				setStakeholders(paramlist2Set(entry.getValue()));
 				break;
 			case PROJECT:
 				setProject(translator.translate2Java(entry.getValue(), String.class));
@@ -62,20 +63,49 @@ public class Configuration {
 		}
 	}
 
+	/**
+	 * Translate param list to set. We cant use a standard translator: #3919
+	 * 
+	 * @param value
+	 * @return
+	 * @throws TranslationException
+	 */
+	private Set<String> paramlist2Set(Parameter param) throws TranslationException {
+		if (!(param instanceof ParameterList)) {
+			throw new TranslationException("Expected ParameterList but got " + param);
+		}
+		Set<String> set = new HashSet<String>();
+		for (Parameter p : ((ParameterList) param)) {
+			set.add(translator.translate2Java(p, String.class));
+		}
+		return set;
+	}
+
 	private void checkSanity() {
 		if (project == null) {
 			throw new IllegalStateException("Invalid configuration: map is mandatory");
 		}
 	}
 
-	public void setStakeholder(Stakeholder.Type holder) {
-		if (holder == null)
-			throw new IllegalStateException("stakeholder must be provided");
-		stakeholder = holder;
+	/**
+	 * Set the new stakeholders
+	 * 
+	 * @param newstakeholders
+	 *            set of strings, each string being the name (not the type) of a
+	 *            stakeholder
+	 */
+	public void setStakeholders(Set<String> newstakeholders) {
+		if (newstakeholders == null)
+			throw new IllegalStateException("stakeholders must be provided");
+		this.stakeholders = newstakeholders;
 	}
 
-	public Stakeholder.Type getStakeholder() {
-		return stakeholder;
+	/**
+	 * @return Set of strings. Each string the name (not type) of a requested
+	 *         stakeholders.
+	 */
+	public Set<String> getStakeholders() {
+		return stakeholders;
 	}
 
 	/**

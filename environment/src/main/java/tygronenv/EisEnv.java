@@ -1,5 +1,6 @@
 package tygronenv;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -41,7 +42,12 @@ import tygronenv.translators.Stakeholder2J;
 public class EisEnv extends EIDefaultImpl {
 
 	private ServerConnection serverConnection = null;
-	private TygronEntity entity = null;
+
+	/**
+	 * Map with {@link TygronEntity}s. The key String is equal to
+	 * {@link TygronEntity#getName}.
+	 */
+	private Map<String, TygronEntity> entities = new HashMap<String, TygronEntity>();
 
 	/**
 	 * General initialization: translators,
@@ -52,7 +58,7 @@ public class EisEnv extends EIDefaultImpl {
 
 	@Override
 	protected LinkedList<Percept> getAllPerceptsFromEntity(String e) throws PerceiveException, NoEnvironmentException {
-		return entity.getPercepts();
+		return entities.get(e).getPercepts();
 	}
 
 	@Override
@@ -80,7 +86,7 @@ public class EisEnv extends EIDefaultImpl {
 	@Override
 	protected Percept performEntityAction(String e, Action action) throws ActException {
 		try {
-			entity.performAction(action);
+			entities.get(e).performAction(action);
 		} catch (TranslationException | IllegalArgumentException e1) {
 			throw new ActException("Failed to execute action " + action, e1);
 		}
@@ -93,24 +99,27 @@ public class EisEnv extends EIDefaultImpl {
 		Configuration config;
 		try {
 			config = new Configuration(parameters);
-			serverConnection = new ServerConnection(config);
-			setState(EnvironmentState.RUNNING);
-
-			entity = new TygronEntity(this, config.getStakeholder(), serverConnection.getSession().getTeamSlot());
-			// entity will register itself with EIS
-
-		} catch (Exception e) {
-			throw new ManagementException("Problem with initialization of environment", e);
+		} catch (TranslationException e) {
+			throw new ManagementException("problem with the init settings", e);
 		}
+		serverConnection = new ServerConnection(config);
+		setState(EnvironmentState.RUNNING);
+
+		for (String stakeholder : config.getStakeholders()) {
+			TygronEntity entity = new TygronEntity(this, stakeholder, serverConnection.getSession().getTeamSlot());
+			// These will report themselves to EIS when they are ready.
+			entities.put(stakeholder, entity);
+		}
+
 	}
 
 	@Override
 	public void kill() throws ManagementException {
 		super.kill();
-		if (entity != null) {
+		for (TygronEntity entity : entities.values()) {
 			entity.close();
-			entity = null;
 		}
+		entities = new HashMap<>();
 		if (serverConnection != null) {
 			serverConnection.disconnect();
 			serverConnection = null;
