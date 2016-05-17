@@ -152,7 +152,6 @@ public class Login {
 
 	private void setCredentials(String name, String pass) throws LoginException {
 		this.username = name;
-		System.out.println("reset login credentials:" + username + "," + pass);
 		ServicesManager.setSessionLoginCredentials(username, pass);
 		hashedPass = ServicesManager.fireServiceEvent(UserServiceEventType.GET_MY_HASH_KEY);
 		if (hashedPass == null) {
