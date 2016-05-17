@@ -41,8 +41,13 @@ If the server runs a newer version of the software than supported by the client,
 A password is needed to make the connection.
 If the SDK has not yet stored your password, it will prompt for your password. If you enable the "save password" checkbox, your password will be saved and you will not need to re-enter your password the next time. The password is saved in a Java Preferences object for the class "Login".
 
-To avoid a login prompt or to change your stored password, you can invoke the main() function in the Login class. This function takes the username and password as arguments, and will save them. 
+The saved password expires after a week. After expiration, the SDK login will fail with an LoginException "Failed to connect with \textless user\textgreater". You can fix this by resetting your password manually as explained in the next section. 
 
+\subsection{Changing password}
+The function main() in the Login class can be used to (re)set or change the password. 
+This function takes the username and password as arguments, and will save them. 
+
+By calling this function before using the SDK, this  login dialog prompt can be avoided. 
 
 \subsection{Init parameters}
 The init function takes the following parameters. Currently the environment always runs in planning mode.

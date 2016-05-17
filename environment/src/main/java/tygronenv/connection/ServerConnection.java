@@ -40,20 +40,13 @@ public class ServerConnection {
 	 * @throws ManagementException
 	 */
 	public ServerConnection(Configuration config) throws ManagementException {
-
+		User user;
 		Login login;
 		try {
 			login = new Login();
-			login.doLogin();
+			user = login.doLogin();
 		} catch (LoginException e) {
 			throw new ManagementException("login failed", e);
-		}
-
-		User user = ServicesManager.getMyUserAccount();
-
-		if (user == null) {
-			throw new ManagementException(
-					"failed to attach user" + login.getUserName() + ". Maybe wrong password or the password expired? ");
 		}
 
 		if (user.getMaxAccessLevel().ordinal() < AccessLevel.EDITOR.ordinal()) {
