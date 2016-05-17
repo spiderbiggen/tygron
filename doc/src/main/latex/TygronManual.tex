@@ -50,10 +50,15 @@ The init function takes the following parameters. Currently the environment alwa
 \begin{tabularx}{\textwidth}{lX}
  name & description. \\
  MAP & The name of the map to use.  Mandatory. If the map does not exist, a new empty map will be created. \\
- STAKEHOLDER & The stakeholder to use. Optional. If not set, an unspecified available stakeholder will be selected. \\
+ STAKEHOLDER & List of stakeholders (identifiers like "MUNICIPALITY") to request. Optional. If not set, an unspecified available stakeholder will be selected. \\
  SLOT &  The slot number to use.  Optional.  \\
 \end{tabularx}\\
 
+
+\subsection{Entities}
+The entities appear slightly after init has been called. How quick depends on network and server speeds.
+Entities get a name corresponding to the stakeholder type, e.g. "Municipality". The type of all entities is "stakeholder".
+Only entites matching the requested STAKEHOLDER init parameter will appear.
 
 %%%----------------------------------------------------------
 \section{Percepts}
