@@ -41,7 +41,9 @@ If the server runs a newer version of the software than supported by the client,
 A password is needed to make the connection.
 If the SDK has not yet stored your password, it will prompt for your password. If you enable the "save password" checkbox, your password will be saved and you will not need to re-enter your password the next time. The password is saved in a Java Preferences object for the class "Login".
 
-The saved password expires after a week. After expiration, the SDK login will fail with an LoginException "Failed to connect with \textless user\textgreater". You can fix this by resetting your password manually as explained in the next section. 
+The saved password expires after a week. After expiration, the SDK login will fail with an LoginException "Failed to connect with \textless user\textgreater". You can fix this by resetting your password manually as explained in the next section. E.g., 
+
+\texttt{ java -cp tygronenv-...ncies.jar login.Login name pass}
 
 \subsection{Changing password}
 The function main() in the Login class can be used to (re)set or change the password. 
