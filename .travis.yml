@@ -1,0 +1,24 @@
+sudo: required
+dist: trusty
+language: java
+before_install: 
+- echo -ne '\n' | sudo add-apt-repository ppa:fkrull/deadsnakes
+- sudo apt-get update
+- sudo apt-get install python2.7
+# https://stackoverflow.com/questions/12076326/how-to-install-maven2-on-redhat-linux
+- wget http://mirror.olnevhost.net/pub/apache/maven/binaries/apache-maven-3.2.1-bin.tar.gz
+- tar xvf apache-maven-3.2.1-bin.tar.gz
+- export M3_HOME=/usr/local/apache-maven/apache-maven-3.2.1
+- export M3=$M3_HOME/bin
+- export PATH=$M3:$PATH
+- mvn -version
+install: mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -X
+script:
+# test the code
+- java -cp environment/target/tygronenv-*-jar-with-dependencies.jar login.Login $email $password
+- mvn test
+# test checkstyle only on changed lines
+- git diff | python checkstylediff.py
+- mvn checkstyle:checkstyle
+jdk:
+- oraclejdk8
