@@ -21,7 +21,8 @@ public class J2Zone implements Java2Parameter<Zone>{
 				, functionId(z)
 				)};
 	}
-	public Numeral[] functionId(Zone z){
+	
+	public ArrayList<Numeral> functionId(Zone z){
 		ArrayList<Numeral> functionid = new ArrayList<>();
 		for(Category category : z.getAllowedCategories()){
 			for (Function function : z.<Function> getMap(MapLink.FUNCTIONS).values()) {
@@ -29,7 +30,7 @@ public class J2Zone implements Java2Parameter<Zone>{
 	            	functionid.add(new Numeral(function.getID()))
 	            }
 	        }
-		}
+		} return functionid;
 	}
 	
 	public double size(Zone z){
