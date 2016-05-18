@@ -8,6 +8,8 @@ import re
 import os
 import fileinput
 
+# this has to be a magic number, otherwise all .java files need to be
+# checked to see what the max line number is
 MAX_LINE_AMOUNT = 20000;
 
 # name of the file that is outputted
