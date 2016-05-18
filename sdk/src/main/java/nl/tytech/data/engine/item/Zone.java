@@ -35,7 +35,7 @@ public class Zone extends UniqueNamedItem implements PolygonItem {
 
     private static final long serialVersionUID = 6586583895720453036L;
 
-    public static final int DEFAULT_MAX_FLOORS = 100;
+    public static final int DEFAULT_MAX_FLOORS = 100; 
 
     @XMLValue
     private TColor color = TColor.WHITE;
