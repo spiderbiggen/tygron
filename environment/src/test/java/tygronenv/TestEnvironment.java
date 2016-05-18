@@ -19,7 +19,8 @@ import eis.iilang.Parameter;
 public class TestEnvironment {
 
 	private EisEnv env;
-	private static Identifier MAP = new Identifier("testmap");
+	private static String PROJECT = "project";
+	private static Identifier PROJECTNAME = new Identifier("testmap");
 
 	@Before
 	public void before() {
@@ -35,7 +36,7 @@ public class TestEnvironment {
 	@Test
 	public void testBasicConnect() throws ManagementException {
 		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
-		parameters.put("map", MAP);
+		parameters.put(PROJECT, PROJECTNAME);
 		// any stakeholder so not specified.
 		// any slot so not specified.
 		env.init(parameters);
@@ -44,7 +45,7 @@ public class TestEnvironment {
 	@Test
 	public void testConnectAndKill() throws ManagementException {
 		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
-		parameters.put("map", MAP);
+		parameters.put(PROJECT, PROJECTNAME);
 		// any stakeholder so not specified.
 		// any slot so not specified.
 		env.init(parameters);
@@ -53,7 +54,7 @@ public class TestEnvironment {
 	@Test
 	public void testGetStakeHolder() throws ManagementException {
 		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
-		parameters.put("map", MAP);
+		parameters.put(PROJECT, PROJECTNAME);
 		parameters.put("stakeholder", new Identifier("MUNICIPALITY"));
 		// any slot so not specified.
 		env.init(parameters);
@@ -62,7 +63,7 @@ public class TestEnvironment {
 	@Test(expected = ManagementException.class)
 	public void testGetWrongStakeHolder() throws ManagementException {
 		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
-		parameters.put("map", MAP);
+		parameters.put(PROJECT, PROJECTNAME);
 		parameters.put("stakeholder", new Identifier("BADSTAKEHOLDER"));
 		// any slot so not specified.
 		env.init(parameters);
@@ -121,7 +122,7 @@ public class TestEnvironment {
 		});
 
 		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
-		parameters.put("map", MAP);
+		parameters.put(PROJECT, PROJECTNAME);
 		parameters.put("stakeholder", new Identifier("MUNICIPALITY"));
 		env.init(parameters);
 

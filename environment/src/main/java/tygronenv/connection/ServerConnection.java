@@ -60,9 +60,9 @@ public class ServerConnection {
 			throw new ManagementException("You need to have at least EDITOR access level");
 		}
 
-		project = factory.getProject(config.getMap());
+		project = factory.getProject(config.getProject());
 		if (project == null) {
-			project = factory.createProject(config.getMap());
+			project = factory.createProject(config.getProject());
 			createdProject = true;
 		}
 
