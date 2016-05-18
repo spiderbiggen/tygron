@@ -9,18 +9,32 @@ import eis.iilang.Parameter;
 import nl.tytech.data.engine.item.Indicator;
 import nl.tytech.data.engine.serializable.MapType;
 
+
+/**
+ * Translates {@link Indicator} into indicator(ID, Current, Target).
+ * 
+ * @author Stefan
+ *
+ */
 public class J2Indicator implements Java2Parameter<Indicator> {
 	
 	private final Translator translator = Translator.getInstance();
 	
 	@Override
 	public Parameter[] translate(Indicator o) throws TranslationException {
-		//Not sure on the differences with getValue, getExactNumberValue
-		//Not sure if MAQUETTE OR CURRENT IS BETTER
+		//getExactNumberValue gives the actual current value of the indicator in the sense that
+		//if you have a budget indicator and currently 1,000,000 euros
+		//it will give back 1,000,000 (regardless of the target value).
+		
+		//The Current value returned can't be null.
+		Double value = o.getExactNumberValue(MapType.MAQUETTE);
+		if (value == null) {
+			value = 0.0;
+		}
 		
 		return new Parameter[] {new Function("indicator",
 				new Numeral(o.getID()),
-				new Numeral(o.getAbsoluteValue(MapType.MAQUETTE)),
+				new Numeral(value),
 				new Numeral(o.getTarget()))};
 	}
 	
