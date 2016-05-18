@@ -1,3 +1,8 @@
+# By Levi van Aanholt 2016
+# A script that takes piped input from git diff and outputs an xml file with all the lines that need to be supressed for Checkstyle.
+# Checkstyle wants a suppression file where all the files that should be supressed are defined, this script provides this
+# Use by running git diff | python checkstylediff.py
+
 import sys
 import re
 import os
@@ -5,6 +10,7 @@ import fileinput
 
 MAX_LINE_AMOUNT = 20000;
 
+# name of the file that is outputted
 outputfile = "suppression.xml"
 
 info = "<?xml version="+'"'+"1.0"+'"'+"?><!DOCTYPE suppressions PUBLIC"+'"-//Puppy Crawl//DTD Suppressions 1.1//EN"'+'"http://www.puppycrawl.com/dtds/suppressions_1_1.dtd"'+">"
@@ -20,56 +26,73 @@ def suppressfile(file, changes):
 	start = "<suppress checks="+'"'+".*"+'"'
 	files = "files="+file
 	lines = ""
+	# if there are changes
 	if changes:
-		print(changes)
+		# create a list of numbers where all not supressed line numbers are omitted
 		for i in changes:
 			lines_to_check = range(i[0], i[0]+i[1])
 			supressed_lines = [x for x in supressed_lines if x not in lines_to_check]
 		segments = []
 		segment = (supressed_lines[0],supressed_lines[0])
 		pos = 0
+		# from the number list derive which lines are supressed
 		for i in supressed_lines:
+			# if the last supressed entry is reached
 			if len(supressed_lines) <= pos + 1:
 				segments.append((segment[0], MAX_LINE_AMOUNT))
+			# if the next number in the list is expected number + 1
 			elif i + 1 == supressed_lines[pos + 1]:
 				segment = (segment[0], i+1)
+			# there are some lines that are not supressed, our supression segment must be added
 			else: 
 				segments.append(segment)
 				segment = (supressed_lines[pos + 1],supressed_lines[pos + 1])
 			pos = pos + 1
 				
-		#lines = ""
 		for i in segments:
 			lines += str(i[0])+"-"+str(i[1])+" "
 		lines = 'lines="'+lines+'"'
 	return start +" "+ files +" "+ lines +"/>"
 	
-
+# the program takes the piped input and processes it line for line
 for line in sys.stdin:
+	# the current file the changes are in
 	if re.findall("diff --git", line):
+		# when the first file is found
 		if not currentfile:
+			# the changed file name
 			currentfile = re.findall("\sb/.*\s", line)[0].replace(" b/","").replace(" ","").replace("\n","")
+		# the changed file name
 		newfile = re.findall("\sb/.*\s", line)[0].replace(" b/","").replace(" ","").replace("\n","")
+		# if these are not equal then git diff is talking about a different file and the registered changes have to be put in
+		# the list
 		if(newfile != currentfile):
 			changed_files.append((currentfile, changes_in_file))
 			changes_in_file = []
 		currentfile = newfile
+	# the line changes in the file
 	elif re.findall("@@\s.*\s@@",line):
 		changed = re.findall("\+.*\s", re.findall("@@\s.*\s@@",line)[0])[0]
 		changes_in_file.append([int(x) for x in changed.replace("+","").split(",")])
-		
+
+# when finished add the last file changes in the list
 changed_files.append((currentfile,changes_in_file))
 
 
 java_files = []
+# take all .java files that are in the directory
 for root, dirs, files in os.walk("./"):
 	for file in files:
 		if file.endswith(".java"):
 			java_files.append(os.path.join(root, file))
+# make the file names the same convention as the files read in git diff
 java_files = [x.replace("./","").replace("\\","/") for x in java_files]
+# all files that are not changed can be fully supressed and have no changes
 suppressed_files = [(file,False) for file in [y for y in java_files] if not(file in [y[0] for y in changed_files])]
+# add both file lists together
 changed_files.extend(suppressed_files)
 
+# run the supressfile function on all these files
 content = "".join([suppressfile(x[0],x[1])+"\n" for x in changed_files])
 		
 end = "</suppression>"
