@@ -22,6 +22,7 @@ import nl.tytech.data.engine.item.Building;
 import nl.tytech.data.engine.item.Function;
 import nl.tytech.data.engine.item.Setting;
 import nl.tytech.data.engine.item.Stakeholder;
+import tygronenv.translators.J2ExtBuilding;
 
 /**
  * Listen to entity events and store them till they are needed. Thread safe
@@ -94,6 +95,7 @@ public class EntityEventHandler implements EventListenerInterface {
 				break;
 			case BUILDINGS:
 				createPercepts(event.<ItemMap<Building>> getContent(MapLink.COMPLETE_COLLECTION), type);
+				createExtPercepts(event.<ItemMap<J2ExtBuilding.ExtBuilding>> getContent(MapLink.COMPLETE_COLLECTION), type);
 				break;
 			case SETTINGS:
 				createPercepts(event.<ItemMap<Setting>> getContent(MapLink.COMPLETE_COLLECTION), type);
@@ -109,6 +111,32 @@ public class EntityEventHandler implements EventListenerInterface {
 		}
 	}
 
+    /**
+     * Create percepts contained in a ClientItemMap array and add them to the
+     * {@link #collectedPercepts}.
+     *
+     * @param itemMap
+     *            list of ClientItemMap elements.
+     * @param type
+     *            the type of elements in the map.
+     */
+    private <T extends Item> void createExtPercepts(ItemMap<T> itemMap, EventTypeEnum type) {
+        ArrayList<T> items = new ArrayList<T>(itemMap.values());
+        List<Percept> percepts = new ArrayList<Percept>();
+        Parameter[] parameters = null;
+        try {
+            parameters = translator.translate2Parameter(items);
+        } catch (TranslationException e) {
+            e.printStackTrace();
+        }
+        if (parameters != null) {
+            Percept p = new Percept("extended" + type.name().toLowerCase(), parameters);
+            percepts.add(p);
+        }
+        addPercepts(type, percepts);
+
+    }
+
 	/**
 	 * Create percepts contained in a ClientItemMap array and add them to the
 	 * {@link #collectedPercepts}.
@@ -118,7 +146,6 @@ public class EntityEventHandler implements EventListenerInterface {
 	 * @param type
 	 *            the type of elements in the map.
 	 */
-
 	private <T extends Item> void createPercepts(ItemMap<T> itemMap, EventTypeEnum type) {
 		ArrayList<T> items = new ArrayList<T>(itemMap.values());
 		List<Percept> percepts = new ArrayList<Percept>();
