@@ -115,11 +115,6 @@ public class EntityEventHandler implements EventListenerInterface {
 		}
 	}
 
-//	private <T extends Item> void createIndicatorPercept(ItemMap<T> content, EventTypeEnum type) {
-//		ArrayList<T> indicators = new ArrayList<T>(content.values());
-//		List<Percept> percepts 
-//	}
-
 	/**
 	 * Create percepts contained in a ClientItemMap array and add them to the
 	 * {@link #collectedPercepts}.
@@ -129,7 +124,6 @@ public class EntityEventHandler implements EventListenerInterface {
 	 * @param type
 	 *            the type of elements in the map.
 	 */
-
 	private <T extends Item> void createPercepts(ItemMap<T> itemMap, EventTypeEnum type) {
 		ArrayList<T> items = new ArrayList<T>(itemMap.values());
 		List<Percept> percepts = new ArrayList<Percept>();

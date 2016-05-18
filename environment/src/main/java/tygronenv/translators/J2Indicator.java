@@ -13,13 +13,16 @@ import nl.tytech.data.engine.serializable.MapType;
 /**
  * Translates {@link Indicator} into indicator(ID, Current, Target).
  * 
- * @author Stefan
+ * @author Stefan de Vringer
  *
  */
 public class J2Indicator implements Java2Parameter<Indicator> {
 	
 	private final Translator translator = Translator.getInstance();
 	
+	/**
+	 * Translate the indicator into a parameter.
+	 */
 	@Override
 	public Parameter[] translate(Indicator o) throws TranslationException {
 		//getExactNumberValue gives the actual current value of the indicator in the sense that
@@ -38,6 +41,9 @@ public class J2Indicator implements Java2Parameter<Indicator> {
 				new Numeral(o.getTarget()))};
 	}
 	
+	/**
+	 * Get the class which is translated from.
+	 */
 	@Override
 	public Class<? extends Indicator> translatesFrom() {
 		return Indicator.class;
