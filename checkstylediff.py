@@ -56,16 +56,19 @@ def suppressfile(file, changes):
 		lines = 'lines="'+lines+'"'
 	return start +" "+ files +" "+ lines +"/>"
 	
+currentfile = ""
 # the program takes the piped input and processes it line for line
 for line in sys.stdin:
 	# the current file the changes are in
-	if re.findall("diff --git", line):
+	checkfile = re.findall("\sb/.*\\n", line)
+	if re.findall("diff --git", line) and checkfile and re.findall("\.java", checkfile[0]):
 		# when the first file is found
 		if not currentfile:
 			# the changed file name
-			currentfile = re.findall("\sb/.*\s", line)[0].replace(" b/","").replace(" ","").replace("\n","")
+			currentfile = re.findall("\sb/.*\\n", line)[0].replace(" b/","").replace(" ","").replace("\n","")
 		# the changed file name
-		newfile = re.findall("\sb/.*\s", line)[0].replace(" b/","").replace(" ","").replace("\n","")
+		print(line)
+		newfile = re.findall("\sb/.*\\n", line)[0].replace(" b/","").replace(" ","").replace("\n","")
 		# if these are not equal then git diff is talking about a different file and the registered changes have to be put in
 		# the list
 		if(newfile != currentfile):
@@ -78,7 +81,8 @@ for line in sys.stdin:
 		changes_in_file.append([int(x) for x in changed.replace("+","").split(",")])
 
 # when finished add the last file changes in the list
-changed_files.append((currentfile,changes_in_file))
+if currentfile:
+	changed_files.append((currentfile,changes_in_file))
 
 
 java_files = []
