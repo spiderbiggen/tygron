@@ -1,24 +1,16 @@
-sudo: required
-dist: trusty
 language: java
-before_install: 
-- echo -ne '\n' | sudo add-apt-repository ppa:fkrull/deadsnakes
-- sudo apt-get update
-- sudo apt-get install python2.7
-# https://stackoverflow.com/questions/12076326/how-to-install-maven2-on-redhat-linux
-- wget http://mirror.olnevhost.net/pub/apache/maven/binaries/apache-maven-3.2.1-bin.tar.gz
-- tar xvf apache-maven-3.2.1-bin.tar.gz
-- export M3_HOME=/usr/local/apache-maven/apache-maven-3.2.1
-- export M3=$M3_HOME/bin
-- export PATH=$M3:$PATH
-- mvn -version
-install: mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -X
+before_install:
+# download jython to use the python scripts for checkstyle
+- wget http://search.maven.org/remotecontent?filepath=org/python/jython-standalone/2.7.0/jython-standalone-2.7.0.jar -O jython-standalone-2.7.0.jar
+install: mvn -pl "!doc" install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 script:
-# test the code
+- ls
+# test checkstyle only on changed lines using this python script
+- git diff | java -jar jython-standalone-2.7.0.jar checkstylediff.py
+# add login credentials in registry
 - java -cp environment/target/tygronenv-*-jar-with-dependencies.jar login.Login $email $password
+# test the code
 - mvn test
-# test checkstyle only on changed lines
-- git diff | python checkstylediff.py
 - mvn checkstyle:checkstyle
 jdk:
 - oraclejdk8
