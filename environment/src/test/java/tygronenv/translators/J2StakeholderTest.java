@@ -1,4 +1,4 @@
-package tygronenv;
+package tygronenv.translators;
 
 
 import static org.mockito.Mockito.mock;
@@ -35,8 +35,6 @@ public class J2StakeholderTest {
         stakeholder = mock(Stakeholder.class);
         
         List<Indicator> list = new LinkedList<Indicator>();
-        indicator = mock(Indicator.class);
-        list.add(indicator);
         
         when(stakeholder.getMyIndicators()).thenReturn(list);
         
