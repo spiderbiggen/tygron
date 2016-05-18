@@ -25,7 +25,7 @@ public class ParamEnum2J implements Parameter2Java<ParamEnum> {
 			}
 		}
 
-		throw new TranslationException();
+		throw new TranslationException("Unknown init parameter " + parameter);
 	}
 
 	@Override
