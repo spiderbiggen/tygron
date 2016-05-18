@@ -15,7 +15,6 @@ import login.Login;
 import nl.tytech.core.client.event.EventManager;
 import nl.tytech.core.client.net.ServicesManager;
 import nl.tytech.core.client.net.SlotConnection;
-import nl.tytech.core.net.Network;
 import nl.tytech.core.net.Network.AppType;
 import nl.tytech.core.net.Network.SessionType;
 import nl.tytech.core.net.event.IOServiceEventType;
@@ -55,11 +54,12 @@ public class ExampleTest {
 
 	private static Integer stakeholderID = 0;
 
+	private static Login login;
+
 	@Test
 	public void test01Setup() throws Exception {
-		// setup settings
-		SettingsManager.setup(SettingsManager.class, Network.AppType.EDITOR);
-		SettingsManager.setServerIP(SERVER);
+		login = new Login();
+		login.doLogin();
 	}
 
 	@Test
@@ -67,12 +67,6 @@ public class ExampleTest {
 
 		String result = ServicesManager.testServerAPIConnection();
 		assertNull(result, result);
-
-		/**
-		 * Enter user password
-		 */
-
-		Login login = new Login();
 
 		User user = ServicesManager.getMyUserAccount();
 

@@ -9,6 +9,7 @@ import eis.eis2java.translation.Java2Parameter;
 import eis.eis2java.translation.Parameter2Java;
 import eis.eis2java.translation.Translator;
 import eis.exceptions.ActException;
+import eis.exceptions.EntityException;
 import eis.exceptions.ManagementException;
 import eis.exceptions.NoEnvironmentException;
 import eis.exceptions.PerceiveException;
@@ -39,7 +40,6 @@ import tygronenv.translators.Stakeholder2J;
 @SuppressWarnings("serial")
 public class EisEnv extends EIDefaultImpl {
 
-	private static final String ENTITY = "entity";
 	private ServerConnection serverConnection = null;
 	private TygronEntity entity = null;
 
@@ -96,9 +96,8 @@ public class EisEnv extends EIDefaultImpl {
 			serverConnection = new ServerConnection(config);
 			setState(EnvironmentState.RUNNING);
 
-			entity = new TygronEntity(config.getStakeholder(), serverConnection.getSession().getTeamSlot());
-
-			addEntity(ENTITY);
+			entity = new TygronEntity(this, config.getStakeholder(), serverConnection.getSession().getTeamSlot());
+			// entity will register itself with EIS
 
 		} catch (Exception e) {
 			throw new ManagementException("Problem with initialization of environment", e);
@@ -123,6 +122,17 @@ public class EisEnv extends EIDefaultImpl {
 	@Override
 	public boolean isStateTransitionValid(EnvironmentState oldState, EnvironmentState newState) {
 		return true;
+	}
+
+	/**
+	 * Entity with given name is ready for use. Report to EIS
+	 * 
+	 * @param entity
+	 *            the identifier of the entity
+	 * @throws EntityException
+	 */
+	public void entityReady(String entity) throws EntityException {
+		addEntity(entity, "stakeholder");
 	}
 
 	/************************* SUPPORT FUNCTIONS ****************************/
