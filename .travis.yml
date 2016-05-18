@@ -10,7 +10,7 @@ script:
 # test the code
 - mvn test
 # test checkstyle only on changed lines using this python script
-- git diff | java -jar jython-standalone-2.7.0.jar checkstylediff.py
+- git diff master HEAD | java -jar jython-standalone-2.7.0.jar checkstylediff.py
 - mvn checkstyle:checkstyle
 jdk:
 - oraclejdk8
