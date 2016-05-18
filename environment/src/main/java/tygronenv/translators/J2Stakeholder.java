@@ -5,7 +5,6 @@ import eis.eis2java.translation.Java2Parameter;
 import eis.iilang.Identifier;
 import eis.iilang.Numeral;
 import eis.iilang.Parameter;
-import eis.iilang.ParameterList;
 import nl.tytech.data.engine.item.Stakeholder;
 
 public class J2Stakeholder implements Java2Parameter<Stakeholder> {
