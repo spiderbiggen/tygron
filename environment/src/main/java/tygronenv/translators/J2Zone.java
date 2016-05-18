@@ -19,15 +19,10 @@ public class J2Zone implements Java2Parameter<Zone>{
 		return new Parameter[] { new Function("Zone", new Numeral(z.getID()), new Identifier(z.getName()), new Numeral(z.getMaxAllowedFloors()), 
 				//new Numeral(z.getSize()), 
 				translator.translate2Parameter(z.getAllowedCategories())[0]
-				//, new Numeral(functionID)
+				//, new Numeral(FunctionID)
 				)};
 	}
 	
-	public Parameter[] translate(Building b) throws TranslationException {
-		return new Parameter[] { new Function("building", new Numeral(b.getID()), new Identifier(b.getName()),
-				translator.translate2Parameter(b.getCategories())[0],
-				translator.translate2Parameter(b.getTimeState())[0]) };
-	}
 
 	@Override
 	public Class<? extends Zone> translatesFrom() {
