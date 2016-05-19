@@ -12,8 +12,15 @@ script:
 # test checkstyle only on changed lines using this python script
 - git diff master HEAD | java -jar jython-standalone-2.7.0.jar checkstylediff.py
 - mvn checkstyle:checkstyle
-# run cobertura only in environment build fails when coverage is too low
+#check pmd and checkstyle only for environment
 - cd environment
+- mvn pmd:pmd
+- mvn findbugs:findbugs
+- cd target
+- echo "*PMD-Results*" && cat "java-basic.xml" && cat "java-imports.xml" && cat "java-unusedcode.xml" && echo "PMD-Results END"
+- echo "*FINDBUGS-Results*" && cat "findbugsXml.xml" && echo "FINDBUGS-Results END"
+- cd ..
+# run cobertura only in environment build fails when coverage is too low
 - mvn cobertura:check
 jdk:
 - oraclejdk8
