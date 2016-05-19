@@ -13,10 +13,11 @@ import nl.tytech.data.engine.item.Indicator;
 import nl.tytech.data.engine.item.Stakeholder;
 
 /**
- * Translator class from Stakeholder class into IndicatorLink Parameter.
+ * Translator class from Stakeholder class into IndicatorLink and stakeholder percept.
  * IndicatorLink(<stakeholderID>, [(<indicatorID>, <indicatorName>, 
  * <indicatorWeight>), ..])
- * @author Haoming
+ * stakeholder(<ID>, <Name>, <StartBudget>, <YearlyIncome>)
+ * @author Haoming - Danshal & Rico - WhySoSerious
  *
  */
 public class J2Stakeholder implements Java2Parameter<Stakeholder> {
@@ -27,18 +28,23 @@ public class J2Stakeholder implements Java2Parameter<Stakeholder> {
     public J2Stakeholder() {
         super();
     }
-
+    
     /**
-     * Method to translate the stakeholder into an indicatorLink percept.
-     */
+	 * Translate the stakeholder object in the form of:
+	 * stakeholder/4 - stakeholders([<ID>, <Name>, <Budget>, <Income>]) and
+	 * indicatorlink/2 indicatorLink([<ID>,[indicatorWeights(<IndID>,<IndName>,<IndWeight>]])
+	 */
 	@Override
 	public Parameter[] translate(final Stakeholder stakeholder) throws TranslationException {
-		return new Parameter[] { new Function("indicatorLink", new Numeral(stakeholder.getID()), 
+		return new Parameter[] { new Function("stakeholder", new Numeral(stakeholder.getID()),
+				new Identifier(stakeholder.getName()),
+				new Numeral(stakeholder.getStartBudget()),
+				new Numeral(stakeholder.getYearlyIncome())), new Function("indicatorLink", new Numeral(stakeholder.getID()), 
 		        indicator(stakeholder.getMyIndicators(), stakeholder)) };
 	}
-
+	
 	/**
-	 * Method which returns the class it translates.
+	 * Class from which it is translated.
 	 */
 	@Override
 	public Class<? extends Stakeholder> translatesFrom() {

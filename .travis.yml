@@ -8,3 +8,4 @@ script:
 - mvn test
 jdk:
 - oraclejdk8
+
