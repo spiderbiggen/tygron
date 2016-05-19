@@ -33,12 +33,8 @@ public class J2Stakeholder implements Java2Parameter<Stakeholder> {
      */
 	@Override
 	public Parameter[] translate(final Stakeholder stakeholder) throws TranslationException {
-	    List<Indicator> indicatorList = stakeholder.getMyIndicators();
-	    if (indicatorList.isEmpty()) {
-	        return new Parameter[] { new Identifier(stakeholder.getName()) };
-	    }
 		return new Parameter[] { new Function("indicatorLink", new Numeral(stakeholder.getID()), 
-		        indicator(indicatorList, stakeholder)) };
+		        indicator(stakeholder.getMyIndicators(), stakeholder)) };
 	}
 
 	/**
