@@ -18,19 +18,27 @@ import nl.tytech.data.engine.serializable.MapType;
  *
  */
 public class J2IndicatorTest {
-	J2Indicator translator = new J2Indicator();
-	Indicator indicator;
+	/**
+	 *translator the J2Indicator to test.
+	 */
+	private J2Indicator translator;
+	/**
+	 *the indicator to translate.
+	 */
+	private Indicator indicator;
 	
 	/**
 	 * Initialise before every test.
 	 */
 	@Before
 	public void init() {
+		translator = new J2Indicator();
 		indicator = mock(Indicator.class);
 	}
 	
 	/**
-	 * Test whether the translation method asks for the correct properties of the indicator.
+	 * Test whether the translation method asks for
+	 * the correct properties of the indicator.
 	 * @throws TranslationException thrown if the translate method fails.
 	 */
 	@Test
