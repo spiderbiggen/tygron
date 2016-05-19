@@ -29,7 +29,7 @@ public class J2Stakeholder implements Java2Parameter<Stakeholder> {
 	    if (o.getMyIndicators().isEmpty()) {
 	        return new Parameter[] { new Identifier(o.getName()) };
 	    }
-		return new Parameter[] { new Function("IndicatorLink", new Numeral(o.getID()), 
+		return new Parameter[] { new Function("indicatorLink", new Numeral(o.getID()), 
 		        indicator(o.getMyIndicators(), o)) };
 	}
 
@@ -50,7 +50,7 @@ public class J2Stakeholder implements Java2Parameter<Stakeholder> {
 	public ParameterList indicator(List<Indicator> indicatorList, Stakeholder s) {
 	    ParameterList pList = new ParameterList();
 	    for (Indicator ind : indicatorList) {
-	        pList.add(new Function("IndicatorWeights",  new Numeral(ind.getID()), 
+	        pList.add(new Function("indicatorWeights",  new Numeral(ind.getID()), 
 	                new Identifier(ind.getName()), new Numeral(s.getCurrentIndicatorWeight(ind))));
 	    }
 	    return pList;
