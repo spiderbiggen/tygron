@@ -3,8 +3,7 @@ script:
 - java -cp environment/target/tygronenv-*-jar-with-dependencies.jar login.Login $email $password
 - mvn test
 - mvn site
-- cd environment
+- cd environment/target
 - ls
-- cat pmd-report.txt
 jdk:
 - oraclejdk8
