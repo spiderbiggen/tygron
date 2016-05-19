@@ -24,6 +24,8 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
+
+
 /**
  * ROTerrain
  * <p>
@@ -203,12 +205,12 @@ public class Zone extends UniqueNamedItem implements PolygonItem {
     /**
      * @return list of functions id's allowed for this zone.
      */
-    public boolean getfunctions() {
-    	ArrayList<Numeral> functions = new ArrayList<>();
-    	for (Catergory category : this.allowedfunctions){
+    public ArrayList<Function> getfunctions() {
+    	ArrayList<Function> functions = new ArrayList<>();
+    	for (Category category : this.allowedFunctions){
     		for (Function function : this.<Function> getMap(MapLink.FUNCTIONS).values()) {
     			if (function.getCategories().contains(category) && !functions.contains(function.getID())) {
-    				functions.add(function.getID());
+    				functions.add(function);
     			}
     		}
     	}
