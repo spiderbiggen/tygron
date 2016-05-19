@@ -16,12 +16,14 @@ import nl.tytech.core.event.Event.EventTypeEnum;
 import nl.tytech.core.event.EventListenerInterface;
 import nl.tytech.core.net.Network;
 import nl.tytech.core.net.serializable.MapLink;
+import nl.tytech.core.structure.ClientItemMap;
 import nl.tytech.core.structure.ItemMap;
 import nl.tytech.data.core.item.Item;
 import nl.tytech.data.engine.item.Building;
 import nl.tytech.data.engine.item.Function;
 import nl.tytech.data.engine.item.Setting;
 import nl.tytech.data.engine.item.Stakeholder;
+import tygronenv.translators.J2Building;
 import tygronenv.translators.J2ExtBuilding;
 
 /**
@@ -94,8 +96,7 @@ public class EntityEventHandler implements EventListenerInterface {
 				createPercepts(event.<ItemMap<Function>> getContent(MapLink.COMPLETE_COLLECTION), type);
 				break;
 			case BUILDINGS:
-				createPercepts(event.<ItemMap<Building>> getContent(MapLink.COMPLETE_COLLECTION), type);
-				createExtPercepts(event.<ItemMap<J2ExtBuilding.ExtBuilding>> getContent(MapLink.COMPLETE_COLLECTION), type);
+				createBuildingPercepts(event.<ItemMap<Building>> getContent(MapLink.COMPLETE_COLLECTION), type);
 				break;
 			case SETTINGS:
 				createPercepts(event.<ItemMap<Setting>> getContent(MapLink.COMPLETE_COLLECTION), type);
@@ -103,7 +104,6 @@ public class EntityEventHandler implements EventListenerInterface {
 			default:
 				System.out.println("WARNING. EntityEventHandler received unknown event:" + event);
 				return;
-
 			}
 		} else if (type == Network.ConnectionEvent.FIRST_UPDATE_FINISHED) {
 			// entity is ready to run! Report to EIS
@@ -112,29 +112,44 @@ public class EntityEventHandler implements EventListenerInterface {
 	}
 
     /**
-     * Create percepts contained in a ClientItemMap array and add them to the
+     * Create percepts pertaining to buildings contained in a ClientItemMap array and add them to the
      * {@link #collectedPercepts}.
      *
-     * @param itemMap
-     *            list of ClientItemMap elements.
-     * @param type
-     *            the type of elements in the map.
+     * @param event
+     *            The event that was updated.
      */
-    private <T extends Item> void createExtPercepts(ItemMap<T> itemMap, EventTypeEnum type) {
-        ArrayList<T> items = new ArrayList<T>(itemMap.values());
-        List<Percept> percepts = new ArrayList<Percept>();
-        Parameter[] parameters = null;
+    private <T extends Building> void createBuildingPercepts(ItemMap<T> itemMap, EventTypeEnum type) {
+
+        List<Percept> percepts = new ArrayList<>();
+        String typeString = type.name().toLowerCase();
         try {
-            parameters = translator.translate2Parameter(items);
+            percepts.add(createBuildingPercept(new ArrayList<>(itemMap.values()), typeString));
         } catch (TranslationException e) {
             e.printStackTrace();
+            percepts.add(new Percept(typeString));
         }
-        if (parameters != null) {
-            Percept p = new Percept("extended" + type.name().toLowerCase(), parameters);
-            percepts.add(p);
+        try {
+            translator.registerJava2ParameterTranslator(new J2ExtBuilding());
+            percepts.add(createBuildingPercept(new ArrayList<>(itemMap.values()), "extended" + typeString));
+            translator.registerJava2ParameterTranslator(new J2Building());
+        } catch (TranslationException e) {
+            e.printStackTrace();
+            percepts.add(new Percept("extended" + typeString));
         }
         addPercepts(type, percepts);
+    }
 
+    /**
+     * Method to create A Building percept based on the given \<T\>
+     * @param items all items that should be put in the percept
+     * @param type Lowercase string representation of the event type
+     * @param <T>
+     * @return
+     * @throws TranslationException
+     */
+    private <T extends Building> Percept createBuildingPercept(List<T> items, String type) throws TranslationException {
+        Parameter[] parameters = translator.translate2Parameter(items);
+        return new Percept(type, parameters);
     }
 
 	/**
