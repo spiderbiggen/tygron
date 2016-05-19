@@ -20,17 +20,25 @@ import nl.tytech.data.engine.item.Stakeholder;
  *
  */
 public class J2Stakeholder implements Java2Parameter<Stakeholder> {
+    
+    /**
+     * Constructor method
+     */
+    public J2Stakeholder() {
+        super();
+    }
 
     /**
      * Method to translate the stakeholder into an indicatorLink percept.
      */
 	@Override
-	public Parameter[] translate(Stakeholder o) throws TranslationException {
-	    if (o.getMyIndicators().isEmpty()) {
-	        return new Parameter[] { new Identifier(o.getName()) };
+	public Parameter[] translate(final Stakeholder stakeholder) throws TranslationException {
+	    List<Indicator> indicatorList = stakeholder.getMyIndicators();
+	    if (indicatorList.isEmpty()) {
+	        return new Parameter[] { new Identifier(stakeholder.getName()) };
 	    }
-		return new Parameter[] { new Function("indicatorLink", new Numeral(o.getID()), 
-		        indicator(o.getMyIndicators(), o)) };
+		return new Parameter[] { new Function("indicatorLink", new Numeral(stakeholder.getID()), 
+		        indicator(indicatorList, stakeholder)) };
 	}
 
 	/**
@@ -47,11 +55,11 @@ public class J2Stakeholder implements Java2Parameter<Stakeholder> {
 	 * @param s Stakeholder that has these indicators.
 	 * @return ParameterList with indicatorWeights.
 	 */
-	public ParameterList indicator(List<Indicator> indicatorList, Stakeholder s) {
+	public ParameterList indicator(final List<Indicator> indicatorList, final Stakeholder stakeholder) {
 	    ParameterList pList = new ParameterList();
 	    for (Indicator ind : indicatorList) {
 	        pList.add(new Function("indicatorWeights",  new Numeral(ind.getID()), 
-	                new Identifier(ind.getName()), new Numeral(s.getCurrentIndicatorWeight(ind))));
+	                new Identifier(ind.getName()), new Numeral(stakeholder.getCurrentIndicatorWeight(ind))));
 	    }
 	    return pList;
 	}
