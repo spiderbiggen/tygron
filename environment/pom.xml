@@ -154,6 +154,32 @@
 					<altDeploymentRepository>internal.repo::default::file://${project.build.directory}/mvn-repo</altDeploymentRepository>
 				</configuration>
 			</plugin>
+			
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+				<version>2.7</version>
+				<configuration>
+				         <formats>
+            <format>xml</format>
+            <format>html</format>
+          </formats>
+					<forceMojoExecution>false</forceMojoExecution>
+					<check>
+                        <lineRate>75</lineRate>
+                        <haltOnFailure>true</haltOnFailure>
+					</check>
+				</configuration>
+				<executions>
+				<execution>
+					<phase>verify</phase>
+					<goals>
+					<goal>clean</goal>
+					<goal>check</goal>
+					</goals>
+				</execution>
+				</executions>
+			</plugin>
 
 			<plugin>
 				<groupId>com.github.github</groupId>
@@ -193,5 +219,4 @@
 
 		</plugins>
 	</build>
-
 </project>
