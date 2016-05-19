@@ -6,12 +6,10 @@ script:
 #check pmd only for environment
 - cd environment
 - mvn pmd:pmd
+- mvn findbugs:findbugs
 - cd target
-- echo "PMD-Results"
-- cat java-basic.xml
-- cat java-imports.xml
-- cat java-unusedcode.xml
-- echo "PMD-Results END"
+- echo "*PMD-Results*" && cat "java-basic.xml" && cat "java-imports.xml" && cat "java-unusedcode.xml" && echo "PMD-Results END"
+- echo "*FINDBUGS-Results*" && cat "findbugsXml.xml" && echo "FINDBUGS-Results END"
 - cd ../..
 jdk:
 - oraclejdk8
