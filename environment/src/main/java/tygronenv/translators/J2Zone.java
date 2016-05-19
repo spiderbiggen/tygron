@@ -23,17 +23,10 @@ public class J2Zone implements Java2Parameter<Zone>{
 		return new Parameter[] { new Function("Zone", new Numeral(z.getID()), new Identifier(z.getName()), new Numeral(z.getMaxAllowedFloors()) 
 				, new Numeral(size(z))
 				, translator.translate2Parameter(z.getAllowedCategories())[0]
-				, getfunctionids();
+				, z.getfunctions();
 				)};
 	}
 	
-	public ArrayList<Numeral> getfunctionids(){
-		ArrayList<Numeral> ids = new ArrayList<>();
-		for(Function function : z.getfunctions()){
-			ids.add(new Numeral(function.detID()));
-		}
-		return ids;
-	}
 	public double size(Zone z){
 		return z.getMultiPolygon().getArea();
 	}

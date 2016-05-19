@@ -203,12 +203,12 @@ public class Zone extends UniqueNamedItem implements PolygonItem {
     /**
      * @return list of functions id's allowed for this zone.
      */
-    public ArrayList<Function> getfunctions() {
-    	ArrayList<Function> functions = new ArrayList<>();
+    public boolean getfunctions() {
+    	ArrayList<Numeral> functions = new ArrayList<>();
     	for (Catergory category : this.allowedfunctions){
     		for (Function function : this.<Function> getMap(MapLink.FUNCTIONS).values()) {
-    			if (function.getCategories().contains(category) && !functions.contains(function)) {
-    				functions.add(function);
+    			if (function.getCategories().contains(category) && !functions.contains(function.getID())) {
+    				functions.add(function.getID());
     			}
     		}
     	}
