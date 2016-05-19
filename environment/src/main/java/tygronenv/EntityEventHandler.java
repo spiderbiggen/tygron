@@ -106,6 +106,8 @@ public class EntityEventHandler implements EventListenerInterface {
 		} else if (type == Network.ConnectionEvent.FIRST_UPDATE_FINISHED) {
 			// entity is ready to run! Report to EIS
 			entity.notifyReady(ENTITY);
+			
+			// remove stakeholders from the listener, so we don't get new percepts of type stakeholders
 			EventManager.removeListener(this, MapLink.STAKEHOLDERS);
 		}
 	}
