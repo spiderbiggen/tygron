@@ -2,9 +2,15 @@ install: mvn -pl "!doc" install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 script: 
 - java -cp environment/target/tygronenv-*-jar-with-dependencies.jar login.Login $email $password
 - mvn test
-- mvn pmd:pmd
-- mvn site
+#check pmd only for environment
 - cd environment
-- ls
+- mvn pmd:pmd
+- cd target
+- echo "PMD-Results"
+- cat java-basic.xml
+- cat java-imports.xml
+- cat java-unusedcode.xml
+- echo "PMD-Results END"
+- cd ../..
 jdk:
 - oraclejdk8
