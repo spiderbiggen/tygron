@@ -73,8 +73,11 @@ public class TestEnvironmentStates {
 		joinAsMunicipality();
 
 		LinkedList<Percept> percepts = env.getAllPerceptsFromEntity(ENTITY);
-		Percept expectedPercept = new Percept("stakeholders",
-				new ParameterList(new Parameter[] { new Identifier("Municipality"), new Identifier("Inhabitants") }));
+		Percept expectedPercept = new Percept("stakeholders", new ParameterList(
+				new ParameterList(new Parameter[] { new Numeral(0), new Identifier("Municipality"),
+						new Numeral(0.0), new Numeral(0)}), 
+				new ParameterList(new Parameter[] { new Numeral(1), new Identifier("Inhabitants"),
+						new Numeral(0.0), new Numeral(0)} )));
 		assertTrue(percepts.contains(expectedPercept));
 
 	}
