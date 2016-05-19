@@ -23,6 +23,9 @@ import nl.tytech.locale.TLanguage;
  */
 public class ProjectFactory {
 
+	private static final String DOMAIN = "tudelft"; //TODO see if this can be gotten from the mas files.
+    private String domain = DOMAIN;
+
 	/**
 	 * Join existing project.
 	 * 
@@ -33,7 +36,8 @@ public class ProjectFactory {
 	 * @throws ManagementException
 	 */
 	public ProjectData getProject(String name) throws ManagementException {
-		ProjectData[] projects = ServicesManager.fireServiceEvent(IOServiceEventType.GET_MY_STARTABLE_PROJECTS);
+        //domain == arg2 // TODO: Add method overload with second parameter for domain.
+		ProjectData[] projects = ServicesManager.fireServiceEvent(IOServiceEventType.GET_DOMAIN_STARTABLE_PROJECTS, domain);
 		if (projects != null) {
 			for (ProjectData existing : projects) {
 				if (existing.getFileName().equals(name)) {
