@@ -9,9 +9,7 @@ import eis.iilang.Function;
 import eis.iilang.Identifier;
 import eis.iilang.Numeral;
 import eis.iilang.Parameter;
-import nl.tytech.core.net.serializable.MapLink;
 import nl.tytech.data.engine.item.Zone;
-import nl.tytech.data.engine.serializable.Category;
 /**
  * Translate {@link Zone} into zones(ID, name, maxFloors, size, [categories], [FunctionIDs]).
  * 
@@ -37,23 +35,18 @@ public class J2Zone implements Java2Parameter<Zone>{
 				)};
 	}
 	
+	
+	
 	/**
      * @return list of functions id's allowed for this zone.
      */
-    public Numeral[] getfunctionsID(Zone z) {
+    public ArrayList<Numeral> getfunctionsID(Zone z) {
     	ArrayList<Numeral> FunctionIds = new ArrayList<Numeral>();
     	ArrayList<nl.tytech.data.engine.item.Function> functions = z.getfunctions();
-    	int length = FunctionIds.size();
-    	Numeral[] numerals = new Numeral[length];
-    	int pos = 0;
     	for (nl.tytech.data.engine.item.Function function: functions){
     		FunctionIds.add(new Numeral(function.getID()));
-    		numerals[pos] = new Numeral(function.getID());
-    		pos++;
     	}
-    	
-    	
-    	return numerals;
+    	return FunctionIds;
     }
 	
     /**
