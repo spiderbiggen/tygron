@@ -21,11 +21,14 @@ public class J2ExtBuilding implements Java2Parameter<Building> {
 
     @Override
     public Parameter[] translate(Building b) throws TranslationException {
-        return new Parameter[] { new Function("extbuilding", new Numeral(b.getID()), new Identifier(b.getName()),
-                translator.translate2Parameter(b.getCategories())[0],
-                new Numeral(b.getFloors())),
-                new Numeral(b.getOwnerID()),
-                new Numeral(b.getConstructionYear())
+        return new Parameter[] {
+                new Function("extbuilding",
+                        new Numeral(b.getID()),
+                        new Identifier(b.getName()),
+                        new Numeral(b.getOwnerID()),
+                        new Numeral(b.getConstructionYear()),
+                        translator.translate2Parameter(b.getCategories())[0],
+                        new Numeral(b.getFloors()))
         };
     }
 
