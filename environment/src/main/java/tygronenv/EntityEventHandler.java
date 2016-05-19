@@ -115,8 +115,10 @@ public class EntityEventHandler implements EventListenerInterface {
      * Create percepts pertaining to buildings contained in a ClientItemMap array and add them to the
      * {@link #collectedPercepts}.
      *
-     * @param event
-     *            The event that was updated.
+	 * @param itemMap
+	 *            list of ClientItemMap elements.
+	 * @param type
+	 *            the type of elements in the map.
      */
     private <T extends Building> void createBuildingPercepts(ItemMap<T> itemMap, EventTypeEnum type) {
 
@@ -126,16 +128,17 @@ public class EntityEventHandler implements EventListenerInterface {
             percepts.add(createBuildingPercept(new ArrayList<>(itemMap.values()), typeString));
         } catch (TranslationException e) {
             e.printStackTrace();
-            percepts.add(new Percept(typeString));
         }
+        String extTypeString = "ext" + typeString;
         try {
+            // Set translator to the extended building translator to get more info in the percept
             translator.registerJava2ParameterTranslator(new J2ExtBuilding());
-            percepts.add(createBuildingPercept(new ArrayList<>(itemMap.values()), "extended" + typeString));
-            translator.registerJava2ParameterTranslator(new J2Building());
+            percepts.add(createBuildingPercept(new ArrayList<>(itemMap.values()), extTypeString));
         } catch (TranslationException e) {
             e.printStackTrace();
-            percepts.add(new Percept("extended" + typeString));
         }
+        // Reset translator to use the standard building translator.
+        translator.registerJava2ParameterTranslator(new J2Building());
         addPercepts(type, percepts);
     }
 
@@ -143,8 +146,8 @@ public class EntityEventHandler implements EventListenerInterface {
      * Method to create A Building percept based on the given \<T\>
      * @param items all items that should be put in the percept
      * @param type Lowercase string representation of the event type
-     * @param <T>
-     * @return
+     * @param <T> The type of the items in the list. Should extend {@link Building}
+     * @return a new {@link Percept} containing all the info from The items
      * @throws TranslationException
      */
     private <T extends Building> Percept createBuildingPercept(List<T> items, String type) throws TranslationException {
