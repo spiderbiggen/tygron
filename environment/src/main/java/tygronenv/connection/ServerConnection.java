@@ -60,7 +60,11 @@ public class ServerConnection {
 			throw new ManagementException("You need to have at least EDITOR access level");
 		}
 
-		project = factory.getProject(config.getProject());
+		if(config.getDomain() != null) {
+			project = factory.getProject(config.getProject(), config.getDomain());
+		} else {
+			project = factory.getProject(config.getProject());
+		}
 		if (project == null) {
 			project = factory.createProject(config.getProject());
 			createdProject = true;
