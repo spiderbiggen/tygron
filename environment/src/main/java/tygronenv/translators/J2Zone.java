@@ -13,15 +13,21 @@ import nl.tytech.core.net.serializable.MapLink;
 import nl.tytech.data.engine.item.Zone;
 import nl.tytech.data.engine.serializable.Category;
 /**
- * Translate {@link Zone} into zones(ID, name, maxFloors, size, [categories]).
+ * Translate {@link Zone} into zones(ID, name, maxFloors, size, [categories], [FunctionIDs]).
  * 
- * @author T.Brunner 
+ * @author T.Brunner, J.N de Vries 
  *
  */
 public class J2Zone implements Java2Parameter<Zone>{
 
 	private final Translator translator = Translator.getInstance();
 
+	/**
+	 * @return a parameter for the zone, 
+	 * containing zone id, zone name, maximum allowed floor size, 
+	 * the total size of the zone, the allowed categories 
+	 * and the allowed function IDs within the zone.
+	 */
 	@Override
 	public Parameter[] translate(Zone z) throws TranslationException {
 		return new Parameter[] { new Function("Zone", new Numeral(z.getID()), new Identifier(z.getName()), new Numeral(z.getMaxAllowedFloors()) 
@@ -50,6 +56,9 @@ public class J2Zone implements Java2Parameter<Zone>{
     	return numerals;
     }
 	
+    /**
+     * @return size of this zone.
+     */
 	public double size(Zone z){
 		return z.getMultiPolygon().getArea();
 	}
