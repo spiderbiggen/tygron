@@ -23,6 +23,7 @@ public class J2Zone implements Java2Parameter<Zone>{
 		return new Parameter[] { new Function("Zone", new Numeral(z.getID()), new Identifier(z.getName()), new Numeral(z.getMaxAllowedFloors()) 
 				, new Numeral(size(z))
 				, translator.translate2Parameter(z.getAllowedCategories())[0]
+				, z.getfunctions();
 				)};
 	}
 	

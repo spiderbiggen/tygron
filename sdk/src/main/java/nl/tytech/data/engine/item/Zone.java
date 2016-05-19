@@ -199,6 +199,21 @@ public class Zone extends UniqueNamedItem implements PolygonItem {
             addAllowedCategory(category);
         }
     }
+    
+    /**
+     * @return list of functions id's allowed for this zone.
+     */
+    public boolean getfunctions() {
+    	ArrayList<Numeral> functions = new ArrayList<>();
+    	for (Catergory category : this.allowedfunctions){
+    		for (Function function : this.<Function> getMap(MapLink.FUNCTIONS).values()) {
+    			if (function.getCategories().contains(category) && !functions.contains(function.getID())) {
+    				functions.add(function.getID());
+    			}
+    		}
+    	}
+    	return functions;
+    }
 
     /**
      * @param color the color to set
