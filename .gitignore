@@ -28,3 +28,4 @@ hs_err_pid*
 .idea/*
 tygron_environment.iml
 /.settings/
+*.iml
