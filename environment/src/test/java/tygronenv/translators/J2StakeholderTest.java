@@ -21,9 +21,15 @@ import tygronenv.translators.J2Stakeholder;
  *
  */
 public class J2StakeholderTest {
+    /**
+     * Translator for the stakeholder class to indicatorLink.
+     */
     private J2Stakeholder translator;
+    
+    /**
+     * Stakeholder instance to translate.
+     */
     private Stakeholder stakeholder;
-    private Indicator indicator;
     
     /**
      * Initialization method called before every test.
@@ -34,14 +40,15 @@ public class J2StakeholderTest {
         
         stakeholder = mock(Stakeholder.class);
         
-        List<Indicator> list = new LinkedList<Indicator>();
+        final List<Indicator> list = new LinkedList<Indicator>();
         
         when(stakeholder.getMyIndicators()).thenReturn(list);
         
     }
     
     /**
-     * Test method which verifies that the mocked object calls the getMyIndicators method.
+     * Test method which verifies that the mocked object calls 
+     * the getMyIndicators method.
      * The other methods cannot be verified, since they are final methods.
      * That does not work with mockito.
      * @throws TranslationException thrown if translating fails.
