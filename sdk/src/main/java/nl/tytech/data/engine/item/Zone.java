@@ -24,8 +24,6 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
-
-
 /**
  * ROTerrain
  * <p>
@@ -37,7 +35,7 @@ public class Zone extends UniqueNamedItem implements PolygonItem {
 
     private static final long serialVersionUID = 6586583895720453036L;
 
-    public static final int DEFAULT_MAX_FLOORS = 100; 
+    public static final int DEFAULT_MAX_FLOORS = 100;
 
     @XMLValue
     private TColor color = TColor.WHITE;
@@ -201,7 +199,7 @@ public class Zone extends UniqueNamedItem implements PolygonItem {
             addAllowedCategory(category);
         }
     }
-    
+
     /**
      * @param color the color to set
      */
