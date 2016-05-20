@@ -32,8 +32,8 @@ import eis.iilang.Percept;
 public class TestEnvironmentStates {
 
 	private EisEnv env;
-	private static Identifier MAP = new Identifier("testmap");
-	private String entity; // will be set when entity becomes available.
+	private static String PROJECT = "project";
+	private static Identifier PROJECTNAME = new Identifier("testmap");
 
 	@Before
 	public void before() {
@@ -55,7 +55,7 @@ public class TestEnvironmentStates {
 
 		env.attachEnvironmentListener(envlistener);
 		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
-		parameters.put("map", MAP);
+		parameters.put(PROJECT, PROJECTNAME);
 		parameters.put("stakeholder", new Identifier("MUNICIPALITY"));
 		// any slot so not specified.
 		env.init(parameters);
@@ -73,8 +73,11 @@ public class TestEnvironmentStates {
 		joinAsMunicipality();
 
 		LinkedList<Percept> percepts = env.getAllPerceptsFromEntity(ENTITY);
-		Percept expectedPercept = new Percept("stakeholders",
-				new ParameterList(new Parameter[] { new Identifier("Municipality"), new Identifier("Inhabitants") }));
+		Percept expectedPercept = new Percept("stakeholders", new ParameterList(
+				new ParameterList(new Parameter[] { new Numeral(0), new Identifier("Municipality"),
+						new Numeral(0.0), new Numeral(0)}), 
+				new ParameterList(new Parameter[] { new Numeral(1), new Identifier("Inhabitants"),
+						new Numeral(0.0), new Numeral(0)} )));
 		assertTrue(percepts.contains(expectedPercept));
 
 	}
@@ -158,7 +161,7 @@ public class TestEnvironmentStates {
 		env.attachEnvironmentListener(listener);
 
 		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
-		parameters.put("map", MAP);
+		parameters.put(PROJECT, PROJECTNAME);
 		parameters.put("stakeholder", new Identifier("MUNICIPALITY"));
 		// any slot so not specified.
 		env.init(parameters);
