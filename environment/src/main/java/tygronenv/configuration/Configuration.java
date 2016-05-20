@@ -10,6 +10,7 @@ import eis.iilang.Identifier;
 import eis.iilang.Parameter;
 import nl.tytech.data.engine.item.Stakeholder;
 import nl.tytech.data.engine.item.Stakeholder.Type;
+import nl.tytech.data.engine.item.Strategy;
 
 /**
  * The environment configuration as specified in the init param
@@ -19,6 +20,7 @@ public class Configuration {
 	private Type stakeholder = null;
 	private String project = null;
 	private Integer slot = null;
+	private String domain = null;
 
 	/**
 	 * Construct configuration directly from set of Parameters as in the MAS
@@ -56,6 +58,9 @@ public class Configuration {
 			case SLOT:
 				setSlot(translator.translate2Java(entry.getValue(), Integer.class));
 				break;
+            case DOMAIN:
+                setDomain(translator.translate2Java(entry.getValue(), String.class));
+                break;
 			default:
 				break;
 			}
@@ -108,4 +113,11 @@ public class Configuration {
 		return slot;
 	}
 
+    public void setDomain(String domain) {
+        this.domain = domain;
+    }
+
+    public String getDomain() {
+        return domain;
+    }
 }

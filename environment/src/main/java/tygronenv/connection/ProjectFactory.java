@@ -23,6 +23,32 @@ import nl.tytech.locale.TLanguage;
  */
 public class ProjectFactory {
 
+	private static final String DOMAIN = "tudelft";
+
+	/**
+	 * Join existing project.
+	 *
+	 * @param name
+	 *            the project name to join/make.
+     * @param domain
+     *            the domain that you want to find projects on.
+	 * @return project with given name on the given domain, or null if no project with given name
+	 *         exists.
+	 * @throws ManagementException
+	 */
+	public ProjectData getProject(String name, String domain) throws ManagementException {
+		ProjectData[] projects = ServicesManager.fireServiceEvent(IOServiceEventType.GET_DOMAIN_STARTABLE_PROJECTS, domain);
+		if (projects != null) {
+			for (ProjectData existing : projects) {
+				if (existing.getFileName().equals(name)) {
+					return ServicesManager.fireServiceEvent(IOServiceEventType.GET_PROJECT_DATA, name);
+				}
+			}
+		}
+
+		return getProject(name);
+	}
+
 	/**
 	 * Join existing project.
 	 * 
@@ -33,16 +59,16 @@ public class ProjectFactory {
 	 * @throws ManagementException
 	 */
 	public ProjectData getProject(String name) throws ManagementException {
-		ProjectData[] projects = ServicesManager.fireServiceEvent(IOServiceEventType.GET_MY_STARTABLE_PROJECTS);
-		if (projects != null) {
-			for (ProjectData existing : projects) {
-				if (existing.getFileName().equals(name)) {
-					return ServicesManager.fireServiceEvent(IOServiceEventType.GET_PROJECT_DATA, name);
-				}
-			}
-		}
+        ProjectData[] projects = ServicesManager.fireServiceEvent(IOServiceEventType.GET_MY_STARTABLE_PROJECTS);
+        if (projects != null) {
+            for (ProjectData existing : projects) {
+                if (existing.getFileName().equals(name)) {
+                    return ServicesManager.fireServiceEvent(IOServiceEventType.GET_PROJECT_DATA, name);
+                }
+            }
+        }
 
-		return null;
+        return null;
 	}
 
 	/**
