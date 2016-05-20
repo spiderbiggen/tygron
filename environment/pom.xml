@@ -171,7 +171,7 @@
           </formats>
 					<forceMojoExecution>false</forceMojoExecution>
 					<check>
-                        <lineRate>75</lineRate>
+                        <totalLineRate>75</totalLineRate>
                         <haltOnFailure>true</haltOnFailure>
 					</check>
 				</configuration>
