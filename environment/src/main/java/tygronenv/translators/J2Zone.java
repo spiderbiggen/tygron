@@ -1,7 +1,5 @@
 package tygronenv.translators;
 
-import java.util.ArrayList;
-
 import eis.eis2java.exception.TranslationException;
 import eis.eis2java.translation.Java2Parameter;
 import eis.eis2java.translation.Translator;
