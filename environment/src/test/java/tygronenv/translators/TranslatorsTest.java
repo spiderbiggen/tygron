@@ -85,7 +85,7 @@ public class TranslatorsTest {
         Mockito.doReturn(floors).when(spyBuilding).getFloors();
         Mockito.doReturn(categories).when(spyBuilding).getCategories();
 
-        translatorfactory.registerJava2ParameterTranslator(new J2ExtBuilding());
+        translatorfactory.registerJava2ParameterTranslator(new J2Building());
         translatorfactory.registerJava2ParameterTranslator(new J2Category());
 
         Parameter[] params = translatorfactory.translate2Parameter(spyBuilding);
@@ -96,6 +96,7 @@ public class TranslatorsTest {
         paramCategories.add(new Identifier(cat1.name()));
         paramCategories.add(new Identifier(cat2.name()));
 
+		assertEquals("building", func.getName());
         assertEquals(new Numeral(buildingID), parameters.get(0));
         assertEquals(new Identifier(name), parameters.get(1));
         assertEquals(new Numeral(ownerID), parameters.get(2));
