@@ -172,7 +172,7 @@
 					<forceMojoExecution>false</forceMojoExecution>
 					<check>
                         <lineRate>75</lineRate>
-                        <haltOnFailure>true</haltOnFailure>
+                        <haltOnFailure>false</haltOnFailure>
 					</check>
 				</configuration>
 				<executions>
