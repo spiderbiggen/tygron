@@ -172,7 +172,6 @@
 					<forceMojoExecution>false</forceMojoExecution>
 					<check>
                         <totalLineRate>75</totalLineRate>
-                        <totalBranchRate>75</totalBranchRate>
                         <haltOnFailure>true</haltOnFailure>
 					</check>
 				</configuration>
