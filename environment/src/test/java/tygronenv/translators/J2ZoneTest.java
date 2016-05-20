@@ -39,15 +39,9 @@ import nl.tytech.data.engine.serializable.Category;
      public void init() {
          translator = new J2Zone();
          
-         z = mock(Zone.class);
-         MultiPolygon mp = mock(MultiPolygon.class);
+        z = mock(Zone.class);
+        MultiPolygon mp = mock(MultiPolygon.class);
 
-  		Function f = mock(Function.class);
-  		
-  		ArrayList<nl.tytech.data.engine.item.Function> func = new ArrayList<nl.tytech.data.engine.item.Function>();
-  		func.add(f);
-  		
- 		when(z.getfunctions()).thenReturn(func);
  		when(z.getMultiPolygon()).thenReturn(mp);
  		when(mp.getArea()).thenReturn(5.0);
      }

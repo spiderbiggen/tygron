@@ -203,21 +203,6 @@ public class Zone extends UniqueNamedItem implements PolygonItem {
     }
     
     /**
-     * @return list of functions id's allowed for this zone.
-     */
-    public ArrayList<Function> getfunctions() {
-    	ArrayList<Function> functions = new ArrayList<>();
-    	for (Category category : this.allowedFunctions){
-    		for (Function function : this.<Function> getMap(MapLink.FUNCTIONS).values()) {
-    			if (function.getCategories().contains(category) && !functions.contains(function.getID())) {
-    				functions.add(function);
-    			}
-    		}
-    	}
-    	return functions;
-    }
-
-    /**
      * @param color the color to set
      */
     public final void setColor(TColor color) {

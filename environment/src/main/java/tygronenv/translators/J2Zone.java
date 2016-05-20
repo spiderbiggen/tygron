@@ -31,23 +31,8 @@ public class J2Zone implements Java2Parameter<Zone>{
 		return new Parameter[] { new Function("Zone", new Numeral(z.getID()), new Identifier(z.getName()), new Numeral(z.getMaxAllowedFloors()) 
 				, new Numeral(size(z))
 				, translator.translate2Parameter(z.getAllowedCategories())[0]
-				, translator.translate2Parameter(getfunctionsID(z))[0]
 				)};
 	}
-	
-	
-	
-	/**
-     * @return list of functions id's allowed for this zone.
-     */
-    public ArrayList<Numeral> getfunctionsID(Zone z) {
-    	ArrayList<Numeral> FunctionIds = new ArrayList<Numeral>();
-    	ArrayList<nl.tytech.data.engine.item.Function> functions = z.getfunctions();
-    	for (nl.tytech.data.engine.item.Function function: functions){
-    		FunctionIds.add(new Numeral(function.getID()));
-    	}
-    	return FunctionIds;
-    }
 	
     /**
      * @return size of this zone.
