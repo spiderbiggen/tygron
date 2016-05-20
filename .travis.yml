@@ -27,3 +27,6 @@ script:
 - mvn cobertura:check
 jdk:
 - oraclejdk8
+
+notifications:
+  slack: $slack_token
