@@ -57,6 +57,7 @@ def suppressfile(file, changes):
 	return start +" "+ files +" "+ lines +"/>"
 	
 currentfile = ""
+parsefunc = lambda x: x.replace(" b/","").replace(" ","").replace("\n","").replace("/","[\\\/]")
 # the program takes the piped input and processes it line for line
 for line in sys.stdin:
 	# the current file the changes are in
@@ -65,9 +66,9 @@ for line in sys.stdin:
 		# when the first file is found
 		if not currentfile:
 			# the changed file name
-			currentfile = re.findall("\sb/.*\\n", line)[0].replace(" b/","").replace(" ","").replace("\n","").replace("/","[\\\/]")
+			currentfile = parsefunc(checkfile[0])
 		# the changed file name
-		newfile = re.findall("\sb/.*\\n", line)[0].replace(" b/","").replace(" ","").replace("\n","").replace("/","[\\\/]")
+		newfile = parsefunc(checkfile[0])
 		# if these are not equal then git diff is talking about a different file and the registered changes have to be put in
 		# the list
 		if(newfile != currentfile):
@@ -98,24 +99,19 @@ java_files = [x.replace("./","").replace("\\","[\\\/]") for x in java_files]
 # all files that are not changed can be fully suppressed and have no changes
 suppressed_files = [(file,False) for file in [y for y in java_files] if not(file in [y[0] for y in changed_files])]
 
-if changed_files:
-	print("*The current files are checkstyle*")
-else:
+if not changed_files:
 	print("*There are no checkstyled lines*")
 for changed_file in changed_files:
 	lines_to_check = []
 	for i in changed_file[1]:
-		lines_to_check = lines_to_check.append(range(i[0], i[0]+i[1]))
-	print("Checkstyled lines for "+changed_file[0]+":"+str(lines_to_check))
+		lines_to_check.extend(range(i[0], i[0]+i[1]))
+	print("Checkstyled lines for "+changed_file[0]+": "+str(lines_to_check))
 
 # add both file lists together
 changed_files.extend(suppressed_files)
-
-
 
 # run the suppressfile function on all these files
 content = "".join([suppressfile(x[0],x[1])+"\n" for x in changed_files])
 		
 end = "</suppressions>"
 open(outputfile, "w").write(info+"\n"+start+"\n"+content+end)
-
