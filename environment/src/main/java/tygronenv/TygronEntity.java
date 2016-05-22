@@ -41,7 +41,6 @@ public class TygronEntity {
 	private Stakeholder stakeholder;
 	private EisEnv environment;
 	private Type intendedStakeholder;
-	public int yeah = 5;
 
 	private final static Translator translator = Translator.getInstance();
 

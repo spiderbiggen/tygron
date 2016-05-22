@@ -52,7 +52,7 @@ def suppressfile(file, changes):
 			pos = pos + 1
 				
 		for i in segments:
-			lines += str(i[0])+"-"+str(i[1])+" "
+			lines += str(i[0])+"-"+str(i[1])+","
 		lines = 'lines="'+lines+'"'
 	return start +" "+ files +" "+ lines +"/>"
 	
@@ -67,7 +67,6 @@ for line in sys.stdin:
 			# the changed file name
 			currentfile = re.findall("\sb/.*\\n", line)[0].replace(" b/","").replace(" ","").replace("\n","").replace("/","[\\\/]")
 		# the changed file name
-		print(line)
 		newfile = re.findall("\sb/.*\\n", line)[0].replace(" b/","").replace(" ","").replace("\n","").replace("/","[\\\/]")
 		# if these are not equal then git diff is talking about a different file and the registered changes have to be put in
 		# the list
@@ -78,12 +77,15 @@ for line in sys.stdin:
 	# the line changes in the file
 	elif re.findall("@@\s.*\s@@",line):
 		changed = re.findall("\+.*\s", re.findall("@@\s.*\s@@",line)[0])[0]
-		changes_in_file.append([int(x) for x in changed.replace("+","").split(",")])
+		line_range = [int(x) for x in changed.replace("+","").split(",")]
+		# if there is only one number, then the range is 1 (one line)
+		if len(line_range) < 2:
+			line_range.append(1)
+		changes_in_file.append(line_range)
 
 # when finished add the last file changes in the list
 if currentfile:
 	changed_files.append((currentfile,changes_in_file))
-
 
 java_files = []
 # take all .java files that are in the directory

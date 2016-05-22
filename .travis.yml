@@ -13,7 +13,8 @@ script:
 # test the code
 - mvn test -Dcobertura.skip
 # test checkstyle only on changed lines using this python script
-- git diff upstream/context...HEAD | java -jar jython-standalone-2.7.0.jar checkstylediff.py
+- git diff upstream/context...HEAD -U0 -- *.java --minimal | java -jar jython-standalone-2.7.0.jar checkstylediff.py
+# checkstyle check is configured with these arguments
 - mvn checkstyle:check -Dcheckstyle.config.location="$PWD/sun_checks_custom.xml" -Dcheckstyle.suppressions.location="$PWD/suppressions.xml" -Dcheckstyle.suppressions.file.expression=checkstyle.supression.file
 #check pmd and checkstyle only for environment
 - cd environment
