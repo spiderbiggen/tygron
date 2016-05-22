@@ -1,6 +1,6 @@
 # By Levi van Aanholt 2016
-# A script that takes piped input from git diff and outputs an xml file with all the lines that need to be supressed for Checkstyle.
-# Checkstyle wants a suppression file where all the files that should be supressed are defined, this script provides this
+# A script that takes piped input from git diff and outputs an xml file with all the lines that need to be suppressed for Checkstyle.
+# Checkstyle wants a suppression file where all the files that should be suppressed are defined, this script provides this
 # Use by running git diff | python checkstylediff.py
 
 import sys
@@ -24,31 +24,31 @@ changes_in_file = []
 
 # This function takes the filename and the changes as a list of lists and prints the suppression for that file.
 def suppressfile(file, changes):
-	supressed_lines = range(1, MAX_LINE_AMOUNT)
+	suppressed_lines = range(1, MAX_LINE_AMOUNT)
 	start = "<suppress checks="+'"'+".*"+'"'
 	files = "files="+'"'+file+'"'
 	lines = ""
 	# if there are changes
 	if changes:
-		# create a list of numbers where all not supressed line numbers are omitted
+		# create a list of numbers where all not suppressed line numbers are omitted
 		for i in changes:
 			lines_to_check = range(i[0], i[0]+i[1])
-			supressed_lines = [x for x in supressed_lines if x not in lines_to_check]
+			suppressed_lines = [x for x in suppressed_lines if x not in lines_to_check]
 		segments = []
-		segment = (supressed_lines[0],supressed_lines[0])
+		segment = (suppressed_lines[0],suppressed_lines[0])
 		pos = 0
-		# from the number list derive which lines are supressed
-		for i in supressed_lines:
-			# if the last supressed entry is reached
-			if len(supressed_lines) <= pos + 1:
+		# from the number list derive which lines are suppressed
+		for i in suppressed_lines:
+			# if the last suppressed entry is reached
+			if len(suppressed_lines) <= pos + 1:
 				segments.append((segment[0], MAX_LINE_AMOUNT))
 			# if the next number in the list is expected number + 1
-			elif i + 1 == supressed_lines[pos + 1]:
+			elif i + 1 == suppressed_lines[pos + 1]:
 				segment = (segment[0], i+1)
-			# there are some lines that are not supressed, our supression segment must be added
+			# there are some lines that are not suppressed, our suppression segment must be added
 			else: 
 				segments.append(segment)
-				segment = (supressed_lines[pos + 1],supressed_lines[pos + 1])
+				segment = (suppressed_lines[pos + 1],suppressed_lines[pos + 1])
 			pos = pos + 1
 				
 		for i in segments:
@@ -95,12 +95,25 @@ for root, dirs, files in os.walk("./"):
 			java_files.append(os.path.join(root, file))
 # make the file names the same convention as the files read in git diff
 java_files = [x.replace("./","").replace("\\","[\\\/]") for x in java_files]
-# all files that are not changed can be fully supressed and have no changes
+# all files that are not changed can be fully suppressed and have no changes
 suppressed_files = [(file,False) for file in [y for y in java_files] if not(file in [y[0] for y in changed_files])]
+
+if changed_files:
+	print("*The current files are checkstyle*")
+else:
+	print("*There are no checkstyled lines*")
+for changed_file in changed_files:
+	lines_to_check = []
+	for i in changed_file[1]:
+		lines_to_check = lines_to_check.append(range(i[0], i[0]+i[1]))
+	print("Checkstyled lines for "+changed_file[0]+":"+str(lines_to_check))
+
 # add both file lists together
 changed_files.extend(suppressed_files)
 
-# run the supressfile function on all these files
+
+
+# run the suppressfile function on all these files
 content = "".join([suppressfile(x[0],x[1])+"\n" for x in changed_files])
 		
 end = "</suppressions>"

@@ -73,11 +73,6 @@
        <property name="message" value="Line has trailing spaces."/>
     </module>
 
-	<!-- Import supression file -->		
-	<module name="SuppressionFilter">
-    <property name="file" value="./suppressions.xml"/>
-	</module>
-
     <!-- Checks for Headers                                -->
     <!-- See http://checkstyle.sf.net/config_header.html   -->
     <!-- <module name="Header"> -->
