@@ -13,11 +13,11 @@ import fileinput
 MAX_LINE_AMOUNT = 20000;
 
 # name of the file that is outputted
-outputfile = "suppression.xml"
+outputfile = "suppressions.xml"
 
-info = "<?xml version="+'"'+"1.0"+'"'+"?><!DOCTYPE suppressions PUBLIC"+'"-//Puppy Crawl//DTD Suppressions 1.1//EN"'+'"http://www.puppycrawl.com/dtds/suppressions_1_1.dtd"'+">"
+info = "<?xml version="+'"'+"1.0"+'"'+"?><!DOCTYPE suppressions PUBLIC"+"\n"+'"-//Puppy Crawl//DTD Suppressions 1.0//EN"'+"\n"+'"http://www.puppycrawl.com/dtds/suppressions_1_0.dtd"'+">"+"\n"
 
-start = "<suppression>"
+start = "<suppressions>"
 changed_files = []
 currentfile = ""
 changes_in_file = []
@@ -26,7 +26,7 @@ changes_in_file = []
 def suppressfile(file, changes):
 	supressed_lines = range(1, MAX_LINE_AMOUNT)
 	start = "<suppress checks="+'"'+".*"+'"'
-	files = "files="+file
+	files = "files="+'"'+file+'"'
 	lines = ""
 	# if there are changes
 	if changes:
@@ -65,10 +65,10 @@ for line in sys.stdin:
 		# when the first file is found
 		if not currentfile:
 			# the changed file name
-			currentfile = re.findall("\sb/.*\\n", line)[0].replace(" b/","").replace(" ","").replace("\n","")
+			currentfile = re.findall("\sb/.*\\n", line)[0].replace(" b/","").replace(" ","").replace("\n","").replace("/","[\\\/]")
 		# the changed file name
 		print(line)
-		newfile = re.findall("\sb/.*\\n", line)[0].replace(" b/","").replace(" ","").replace("\n","")
+		newfile = re.findall("\sb/.*\\n", line)[0].replace(" b/","").replace(" ","").replace("\n","").replace("/","[\\\/]")
 		# if these are not equal then git diff is talking about a different file and the registered changes have to be put in
 		# the list
 		if(newfile != currentfile):
@@ -92,7 +92,7 @@ for root, dirs, files in os.walk("./"):
 		if file.endswith(".java"):
 			java_files.append(os.path.join(root, file))
 # make the file names the same convention as the files read in git diff
-java_files = [x.replace("./","").replace("\\","/") for x in java_files]
+java_files = [x.replace("./","").replace("\\","[\\\/]") for x in java_files]
 # all files that are not changed can be fully supressed and have no changes
 suppressed_files = [(file,False) for file in [y for y in java_files] if not(file in [y[0] for y in changed_files])]
 # add both file lists together
@@ -101,6 +101,6 @@ changed_files.extend(suppressed_files)
 # run the supressfile function on all these files
 content = "".join([suppressfile(x[0],x[1])+"\n" for x in changed_files])
 		
-end = "</suppression>"
+end = "</suppressions>"
 open(outputfile, "w").write(info+"\n"+start+"\n"+content+end)
 
