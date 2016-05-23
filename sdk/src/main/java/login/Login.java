@@ -43,7 +43,7 @@ public class Login {
 	public Login() throws LoginException {
 		SettingsManager.setup(SettingsManager.class, Network.AppType.EDITOR);
 		SettingsManager.setServerIP(SERVER);
-		String result = ServicesManager.testServerConnection();
+		String result = ServicesManager.testServerAPIConnection();
 		if (result != null) {
 			throw new LoginException("Server is actively refusing to connect:" + result);
 		}
@@ -152,7 +152,6 @@ public class Login {
 
 	private void setCredentials(String name, String pass) throws LoginException {
 		this.username = name;
-		System.out.println("reset login credentials:" + username + "," + pass);
 		ServicesManager.setSessionLoginCredentials(username, pass);
 		hashedPass = ServicesManager.fireServiceEvent(UserServiceEventType.GET_MY_HASH_KEY);
 		if (hashedPass == null) {
