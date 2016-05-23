@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import eis.iilang.*;
 import nl.tytech.data.engine.item.Building;
 import nl.tytech.data.engine.serializable.Category;
-import org.junit.AfterClass;
 import org.junit.Test;
 
 import com.vividsolutions.jts.geom.Coordinate;
