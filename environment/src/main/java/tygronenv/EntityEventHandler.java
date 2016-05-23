@@ -107,7 +107,6 @@ public class EntityEventHandler implements EventListenerInterface {
 				break;
 			default:
 				System.out.println("WARNING. EntityEventHandler received unknown event:" + event);
-				return;
 			}
 		} else if (type == Network.ConnectionEvent.FIRST_UPDATE_FINISHED) {
 			// entity is ready to run! Report to EIS

@@ -10,7 +10,7 @@ import eis.iilang.Parameter;
 import nl.tytech.data.engine.item.Building;
 
 /**
- * Translate {@link Building} into building(ID, name, [categories], timestate).
+ * Translate {@link Building} into building(ID, name, ownerID, constructionYear, [categories], numFloors).
  * 
  * @author W.Pasman
  *
