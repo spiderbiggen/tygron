@@ -113,7 +113,8 @@ public class TestEnvironmentStates {
 		 */
 		Action action = new Action(ParticipantEventType.BUILDING_PLAN_CONSTRUCTION.name().toLowerCase(),
 				buildroadfunction.get(1), new Numeral(1),
-				new Function("square", new Numeral(10), new Numeral(10), new Numeral(200), new Numeral(10)));
+				// square(10,10,200,10)
+				new Function("multipolygon", new Identifier("MULTIPOLYGON (((20 10, 20 40, 220 40, 220 10, 20 10)))")));
 
 		env.performEntityAction(MUNICIPALITY, action);
 

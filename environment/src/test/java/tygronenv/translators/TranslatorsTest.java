@@ -42,7 +42,7 @@ public class TranslatorsTest {
 		// check first coordinate, should be the (1,2)
 		Coordinate c = polygon.getCoordinate();
 		assertEquals(20.0, c.getOrdinate(0), 0.0001);
-		assertEquals(10.0, c.getOrdinate(1), 0.0001);
+		assertEquals(10, c.getOrdinate(1), 0.0001);
 	}
 
 	@Test(expected = TranslationException.class)
