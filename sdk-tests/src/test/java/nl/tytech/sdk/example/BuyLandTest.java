@@ -335,6 +335,7 @@ public class BuyLandTest {
 		assertTrue(updated);
 
 		boolean landBuyConfirmed = false;
+		boolean landSellConfirmed = false;
 		ItemMap<PopupData> popups = EventManager.getItemMap(MapLink.POPUPS);
 		for (PopupData popupData : popups) {
 
@@ -353,15 +354,17 @@ public class BuyLandTest {
 
 					if (stakeholderID.equals(buyerID)) {
 						TLogger.info("Buyer confirmed land buy");
+						landBuyConfirmed = true;
 					} else if (stakeholderID.equals(sellerID)) {
 						TLogger.info("Seller confirmed land sell");
+						landSellConfirmed = true;
 					}
-					landBuyConfirmed = true;
+
 				}
 			}
 		}
 
-		assertTrue("Land not succesfully bought", landBuyConfirmed);
+		assertTrue("Land not succesfully bought", landBuyConfirmed && landSellConfirmed);
 
 	}
 
