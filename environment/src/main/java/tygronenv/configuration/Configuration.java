@@ -48,7 +48,7 @@ public class Configuration {
 		for (Entry<String, Parameter> entry : parameters.entrySet()) {
 			ParamEnum param = translator.translate2Java(new Identifier(entry.getKey()), ParamEnum.class);
 			switch (param) {
-			case STAKEHOLDER:
+			case STAKEHOLDERS:
 				setStakeholders(paramlist2Set(entry.getValue()));
 				break;
 			case PROJECT:

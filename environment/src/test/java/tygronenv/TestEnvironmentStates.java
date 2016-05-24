@@ -32,6 +32,7 @@ import nl.tytech.data.engine.event.ParticipantEventType;
 
 public class TestEnvironmentStates {
 
+	private static final String STAKEHOLDERS = "stakeholders";
 	private static final String MUNICIPALITY = "MUNICIPALITY";
 	private EisEnv env;
 	private static String PROJECT = "project";
@@ -56,7 +57,7 @@ public class TestEnvironmentStates {
 		env.attachEnvironmentListener(envlistener);
 		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
 		parameters.put(PROJECT, PROJECTNAME);
-		parameters.put("stakeholder", new ParameterList(new Identifier(MUNICIPALITY)));
+		parameters.put(STAKEHOLDERS, new ParameterList(new Identifier(MUNICIPALITY)));
 		// any slot so not specified.
 		env.init(parameters);
 		Thread.sleep(5000); // give system sufficient time to create the entity.
@@ -161,7 +162,7 @@ public class TestEnvironmentStates {
 
 		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
 		parameters.put(PROJECT, PROJECTNAME);
-		parameters.put("stakeholder", new ParameterList(new Identifier(MUNICIPALITY)));
+		parameters.put(STAKEHOLDERS, new ParameterList(new Identifier(MUNICIPALITY)));
 		// any slot so not specified.
 		env.init(parameters);
 

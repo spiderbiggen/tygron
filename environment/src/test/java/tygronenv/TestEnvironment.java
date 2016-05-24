@@ -19,7 +19,7 @@ import eis.iilang.ParameterList;
 
 public class TestEnvironment {
 
-	private static final String STAKEHOLDER = "stakeholder";
+	private static final String STAKEHOLDERS = "stakeholders";
 	private EisEnv env;
 	private static String PROJECT = "project";
 	private static Identifier PROJECTNAME = new Identifier("testmap");
@@ -58,7 +58,7 @@ public class TestEnvironment {
 		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
 		parameters.put(PROJECT, PROJECTNAME);
 		// parameters.put(STAKEHOLDER, new Identifier("MUNICIPALITY"));
-		parameters.put(STAKEHOLDER, new ParameterList(new Identifier("MUNICIPALITY")));
+		parameters.put(STAKEHOLDERS, new ParameterList(new Identifier("MUNICIPALITY")));
 		// any slot so not specified.
 		env.init(parameters);
 	}
@@ -67,7 +67,7 @@ public class TestEnvironment {
 	public void testGetWrongStakeHolder() throws ManagementException {
 		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
 		parameters.put(PROJECT, PROJECTNAME);
-		parameters.put(STAKEHOLDER, new Identifier("BADSTAKEHOLDER"));
+		parameters.put(STAKEHOLDERS, new Identifier("BADSTAKEHOLDER"));
 		// any slot so not specified.
 		env.init(parameters);
 	}
@@ -126,7 +126,7 @@ public class TestEnvironment {
 
 		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
 		parameters.put(PROJECT, PROJECTNAME);
-		parameters.put(STAKEHOLDER, new ParameterList(new Identifier("MUNICIPALITY")));
+		parameters.put(STAKEHOLDERS, new ParameterList(new Identifier("MUNICIPALITY")));
 		env.init(parameters);
 
 		state.waitTillDone();

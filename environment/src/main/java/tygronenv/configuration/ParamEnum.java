@@ -5,7 +5,7 @@ package tygronenv.configuration;
  *
  */
 public enum ParamEnum {
-	STAKEHOLDER("stakeholder"), PROJECT("project"), SLOT("slot");
+	STAKEHOLDERS("stakeholders"), PROJECT("project"), SLOT("slot");
 
 	private String param;
 
