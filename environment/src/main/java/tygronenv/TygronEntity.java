@@ -104,6 +104,12 @@ public class TygronEntity {
 		return null;
 	}
 
+	/**
+	 * Get the intented stakeholder.
+	 * @return
+	 * 		The intented
+	 * 		{@linkplain Stakeholder.Type stakeholder}.
+	 */
 	public Type getIntentedStakeholder() {
 		return intendedStakeholder;
 	}
