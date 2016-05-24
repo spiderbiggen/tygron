@@ -9,6 +9,7 @@ import eis.iilang.Parameter;
 import eis.iilang.ParameterList;
 import nl.tytech.data.engine.item.ActionMenu;
 import nl.tytech.data.engine.item.Function;
+import nl.tytech.data.engine.item.SpecialOption;
 
 /**
  *
@@ -25,9 +26,13 @@ public class J2ActionMenu implements Java2Parameter<ActionMenu> {
 		for (Function function : actionMenu.getFunctionTypeOptions()) {
 			list.add(new ParameterList(translator.translate2Parameter(function)));
 		}
+		ParameterList specialOptions = new ParameterList();
+		for (SpecialOption specialOption : actionMenu.getSpecialOptions()) {
+			list.add(new Identifier(specialOption.getType().name()));
+		}
 
 		return new Parameter[] { new Identifier(actionMenu.getName().toLowerCase()), new Numeral(actionMenu.getID()),
-				list };
+				list, specialOptions };
 	}
 
 	@Override
