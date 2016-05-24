@@ -118,6 +118,7 @@ public class EntityEventHandler implements EventListenerInterface {
 				createPercepts(event.<ItemMap<Land>> getContent(MapLink.COMPLETE_COLLECTION), type);
 				break;
 			case POPUPS:
+				// TODO filter out only popups for the entity.
 				createPercepts(event.<ItemMap<PopupData>> getContent(MapLink.COMPLETE_COLLECTION), type);
 				break;
 			default:
