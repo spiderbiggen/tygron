@@ -125,7 +125,6 @@ public class TestEnvironment {
 		public void handleNewEntity(String entity) {
 			try {
 				initPercepts = env.getAllPerceptsFromEntity(entity);
-				System.out.println("INIT PERCEPTS REVEIFVER");
 				state.setState(StateType.DONE, null);
 			} catch (PerceiveException | NoEnvironmentException e) {
 				state.setState(StateType.ERROR, e);
@@ -190,6 +189,13 @@ public class TestEnvironment {
 
 		Action action = new Action("map_sell_land", new Numeral(1), polygon, new Numeral(400.0));
 		env.performEntityAction(MUNICIPALITY, action);
+
+		// wait for new percepts related to the sell action
+
+		while (env.getAllPerceptsFromEntity(MUNICIPALITY).isEmpty()) {
+			Thread.sleep(100);
+		}
+
 	}
 
 }

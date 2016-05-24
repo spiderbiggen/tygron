@@ -23,6 +23,7 @@ import nl.tytech.data.engine.item.ActionMenu;
 import nl.tytech.data.engine.item.Building;
 import nl.tytech.data.engine.item.Function;
 import nl.tytech.data.engine.item.Land;
+import nl.tytech.data.engine.item.PopupData;
 import nl.tytech.data.engine.item.Setting;
 import nl.tytech.data.engine.item.Stakeholder;
 import nl.tytech.data.engine.item.Zone;
@@ -117,8 +118,7 @@ public class EntityEventHandler implements EventListenerInterface {
 				createPercepts(event.<ItemMap<Land>> getContent(MapLink.COMPLETE_COLLECTION), type);
 				break;
 			case POPUPS:
-				// createPercepts(event.<ItemMap<PopupData>>
-				// getContent(MapLink.COMPLETE_COLLECTION), type);
+				createPercepts(event.<ItemMap<PopupData>> getContent(MapLink.COMPLETE_COLLECTION), type);
 				break;
 			default:
 				TLogger.warning("EntityEventHandler received unknown event:" + event);
