@@ -29,6 +29,7 @@ import nl.tytech.core.net.serializable.User;
 import nl.tytech.core.net.serializable.User.AccessLevel;
 import nl.tytech.core.structure.ItemMap;
 import nl.tytech.core.util.SettingsManager;
+import nl.tytech.data.core.item.Answer;
 import nl.tytech.data.core.item.Item;
 import nl.tytech.data.editor.event.EditorEventType;
 import nl.tytech.data.editor.event.EditorSettingsEventType;
@@ -37,6 +38,7 @@ import nl.tytech.data.engine.event.ParticipantEventType;
 import nl.tytech.data.engine.item.Function;
 import nl.tytech.data.engine.item.Land;
 import nl.tytech.data.engine.item.PopupData;
+import nl.tytech.data.engine.item.SpecialOption;
 import nl.tytech.data.engine.item.Stakeholder;
 import nl.tytech.data.engine.serializable.Category;
 import nl.tytech.locale.TLanguage;
@@ -130,7 +132,7 @@ public class TwoStakeholdersTest {
 		// wait on first updates (seperate thread)
 		boolean updated = false;
 		for (int i = 0; i < 60; i++) {
-			if (eventHandler.isMapUpdated() && eventHandler.isStakeholderUpdated()) {
+			if (eventHandler.isMapUpdated() && eventHandler.isStakeholderUpdated() && eventHandler.isLandUpdated()) {
 				updated = true;
 				break;
 			}
@@ -172,6 +174,16 @@ public class TwoStakeholdersTest {
 
 		// add event handler to receive updates on
 		eventHandler = new ExampleEventHandler();
+
+		boolean updated = false;
+		for (int i = 0; i < 60; i++) {
+			if (eventHandler.isMapUpdated() && eventHandler.isStakeholderUpdated() && eventHandler.isLandUpdated()) {
+				updated = true;
+				break;
+			}
+			ThreadUtils.sleepInterruptible(1000);
+		}
+		assertTrue(updated);
 	}
 
 	@Test
@@ -190,7 +202,7 @@ public class TwoStakeholdersTest {
 	}
 
 	@Test
-	public void test08Stakeholder0buyLand() throws Exception {
+	public void test09Stakeholder0buyLand() throws Exception {
 		ItemMap<Land> lands = EventManager.getItemMap(MapLink.LANDS);
 
 		Land sellLand = null;
@@ -213,33 +225,84 @@ public class TwoStakeholdersTest {
 		assertFalse("There is no seller", Item.NONE.equals(sellerID));
 		assertFalse("There is no buyer", Item.NONE.equals(buyerID));
 
-		/**
-		 * Shape of my new road
-		 */
 		MultiPolygon multiPolygon = sellLand.getMultiPolygon();
-		/**
-		 * Plan an new ROAD construction
-		 */
-		Integer functionID = 0;
-		int floors = 1;
-
 		double sellPrice = 400;
-
-		slotConnection.fireServerEvent(true, ParticipantEventType.MAP_SELL_LAND, sellerID, buyerID, floors,
-				multiPolygon, sellPrice);
+		slotConnection.fireServerEvent(true, ParticipantEventType.MAP_SELL_LAND, sellerID, buyerID, multiPolygon,
+				sellPrice);
 
 	}
 
 	@Test
-	public void test08confirmLandSell() throws Exception {
-		while (EventManager.getItemMap(MapLink.POPUPS).size() == 0) {
-			Thread.sleep(100);
+	public void test10confirmLandSell() throws Exception {
+		// wait on first updates (seperate thread)
+		boolean updated = false;
+		for (int i = 0; i < 60; i++) {
+			if (eventHandler.isPopupUpdated()) {
+				updated = true;
+				break;
+			}
+			ThreadUtils.sleepInterruptible(1000);
 		}
+		assertTrue(updated);
+
+		eventHandler.resetLandUpdate();
+		eventHandler.resetPopupsUpdate();
 
 		ItemMap<PopupData> popups = EventManager.getItemMap(MapLink.POPUPS);
 		for (PopupData popupData : popups) {
+			boolean forBuyer = popupData.getVisibleForStakeholderIDs().contains(buyerID);
+			boolean correctMapLink = popupData.getContentMapLink() == MapLink.SPECIAL_OPTIONS;
+			SpecialOption specialOption = EventManager.getItem(MapLink.SPECIAL_OPTIONS, popupData.getContentLinkID());
+			boolean isSellLand = specialOption != null && specialOption.getType() == SpecialOption.Type.SELL_LAND;
+
+			if (forBuyer && correctMapLink && isSellLand) {
+				// time to react:
+				Answer defaultAnswer = popupData.getAnswers().get(0);
+				slotConnection.fireServerEvent(true, ParticipantEventType.POPUP_ANSWER, buyerID, popupData.getID(),
+						defaultAnswer.getID());
+				TLogger.info("Buyer confirmed land buy: " + popupData.getVisibleForStakeholderIDs().contains(buyerID));
+
+			}
+
+			TLogger.info(popupData.getVisibleForStakeholderIDs().toString());
+			TLogger.info(popupData.getType().toString());
 
 		}
+	}
+
+	@Test
+	public void test11confirmLandSold() {
+		boolean updated = false;
+		for (int i = 0; i < 60; i++) {
+			if (eventHandler.isPopupUpdated()) {
+				updated = true;
+				break;
+			}
+			ThreadUtils.sleepInterruptible(1000);
+		}
+		assertTrue(updated);
+
+		ItemMap<PopupData> popups = EventManager.getItemMap(MapLink.POPUPS);
+		for (PopupData popupData : popups) {
+			boolean forBuyer = popupData.getVisibleForStakeholderIDs().contains(buyerID);
+			boolean correctMapLink = popupData.getContentMapLink() == MapLink.SPECIAL_OPTIONS;
+			SpecialOption specialOption = EventManager.getItem(MapLink.SPECIAL_OPTIONS, popupData.getContentLinkID());
+			boolean isSellLand = specialOption != null && specialOption.getType() == SpecialOption.Type.SELL_LAND;
+
+			if (forBuyer && correctMapLink && isSellLand) {
+				// time to react:
+				Answer defaultAnswer = popupData.getAnswers().get(0);
+				slotConnection.fireServerEvent(true, ParticipantEventType.POPUP_ANSWER, buyerID, popupData.getID(),
+						defaultAnswer.getID());
+				TLogger.info("Buyer confirmed land buy: " + popupData.getVisibleForStakeholderIDs().contains(buyerID));
+
+			}
+
+			TLogger.info(popupData.getVisibleForStakeholderIDs().toString());
+			TLogger.info(popupData.getType().toString());
+
+		}
+
 	}
 
 	@Test
