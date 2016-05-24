@@ -73,8 +73,12 @@ public class ExampleEventHandler implements EventListenerInterface, EventIDListe
 
 		if (event.getType() instanceof MapLink) {
 			mapLinkUpdated.put((MapLink) event.getType(), true);
+
+			// (Frank) Print for debug
 			Collection<Item> updates = event.getContent(MapLink.UPDATED_COLLECTION);
-			TLogger.info("Updated " + event.getType().name() + ": " + updates);
+			if (event.getType() == MapLink.STAKEHOLDERS) {
+				TLogger.info("Updated " + event.getType().name() + ": " + updates);
+			}
 		}
 	}
 

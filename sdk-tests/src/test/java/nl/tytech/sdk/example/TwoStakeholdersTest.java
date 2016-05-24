@@ -134,8 +134,7 @@ public class TwoStakeholdersTest {
 		// wait on first updates (seperate thread)
 		boolean updated = false;
 		for (int i = 0; i < 60; i++) {
-			if (eventHandler.isMapUpdated() && eventHandler.isUpdated(MapLink.STAKEHOLDERS)
-					&& eventHandler.isUpdated(MapLink.LANDS)) {
+			if (eventHandler.isMapUpdated() && eventHandler.isUpdated(MapLink.STAKEHOLDERS, MapLink.LANDS)) {
 				updated = true;
 				break;
 			}
@@ -180,8 +179,7 @@ public class TwoStakeholdersTest {
 
 		boolean updated = false;
 		for (int i = 0; i < 60; i++) {
-			if (eventHandler.isMapUpdated() && eventHandler.isUpdated(MapLink.STAKEHOLDERS)
-					&& eventHandler.isUpdated(MapLink.LANDS)) {
+			if (eventHandler.isMapUpdated() && eventHandler.isUpdated(MapLink.STAKEHOLDERS, MapLink.LANDS)) {
 				updated = true;
 				break;
 			}
@@ -258,8 +256,7 @@ public class TwoStakeholdersTest {
 		}
 		assertTrue(updated);
 
-		eventHandler.resetUpdate(MapLink.LANDS);
-		eventHandler.resetUpdate(MapLink.POPUPS);
+		eventHandler.resetUpdate(MapLink.LANDS, MapLink.POPUPS);
 
 		ItemMap<PopupData> popups = EventManager.getItemMap(MapLink.POPUPS);
 		for (PopupData popupData : popups) {
@@ -284,7 +281,7 @@ public class TwoStakeholdersTest {
 	public void test11confirmLandSoldConfirmation() {
 		boolean updated = false;
 		for (int i = 0; i < 60; i++) {
-			if (eventHandler.isUpdated(MapLink.POPUPS) && eventHandler.isUpdated(MapLink.LANDS)) {
+			if (eventHandler.isUpdated(MapLink.POPUPS, MapLink.LANDS)) {
 				updated = true;
 				break;
 			}

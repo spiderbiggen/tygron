@@ -136,8 +136,7 @@ public class PlanBuildingsTest {
 		// wait on first updates (seperate thread)
 		boolean updated = false;
 		for (int i = 0; i < 60; i++) {
-			if (eventHandler.isMapUpdated() && eventHandler.isUpdated(MapLink.STAKEHOLDERS)
-					&& eventHandler.isUpdated(MapLink.LANDS)) {
+			if (eventHandler.isMapUpdated() && eventHandler.isUpdated(MapLink.STAKEHOLDERS, MapLink.LANDS)) {
 				updated = true;
 				break;
 			}
@@ -182,8 +181,7 @@ public class PlanBuildingsTest {
 
 		boolean updated = false;
 		for (int i = 0; i < 60; i++) {
-			if (eventHandler.isMapUpdated() && eventHandler.isUpdated(MapLink.STAKEHOLDERS)
-					&& eventHandler.isUpdated(MapLink.LANDS)) {
+			if (eventHandler.isMapUpdated() && eventHandler.isUpdated(MapLink.STAKEHOLDERS, MapLink.LANDS)) {
 				updated = true;
 				break;
 			}
@@ -293,7 +291,7 @@ public class PlanBuildingsTest {
 	public void test10GetConstructableLand() throws Exception {
 		boolean updated = false;
 		for (int i = 0; i < 60; i++) {
-			if (eventHandler.isUpdated(MapLink.POPUPS) && eventHandler.isUpdated(MapLink.LANDS)) {
+			if (eventHandler.isUpdated(MapLink.POPUPS, MapLink.LANDS)) {
 				updated = true;
 				break;
 			}
