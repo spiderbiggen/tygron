@@ -23,12 +23,14 @@ import tygronenv.connection.ServerConnection;
 import tygronenv.translators.HashMap2J;
 import tygronenv.translators.J2ActionLog;
 import tygronenv.translators.J2ActionMenu;
+import tygronenv.translators.J2Answer;
 import tygronenv.translators.J2Building;
 import tygronenv.translators.J2Category;
 import tygronenv.translators.J2ClientItemMap;
 import tygronenv.translators.J2Function;
 import tygronenv.translators.J2Land;
 import tygronenv.translators.J2MultiPolygon;
+import tygronenv.translators.J2PopupData;
 import tygronenv.translators.J2Setting;
 import tygronenv.translators.J2Stakeholder;
 import tygronenv.translators.J2TimeState;
@@ -162,7 +164,7 @@ public class EisEnv extends EIDefaultImpl {
 
 	Java2Parameter<?>[] j2p = new Java2Parameter<?>[] { new J2ClientItemMap(), new J2Stakeholder(), new J2Setting(),
 			new J2Function(), new J2Category(), new J2Building(), new J2TimeState(), new J2ActionLog(),
-			new J2ActionMenu(), new J2Zone(), new J2Land(), new J2MultiPolygon() };
+			new J2ActionMenu(), new J2Zone(), new J2Land(), new J2MultiPolygon(), new J2PopupData(), new J2Answer() };
 	Parameter2Java<?>[] p2j = new Parameter2Java<?>[] { new ParamEnum2J(), new HashMap2J(), new Stakeholder2J(),
 			new MultiPolygon2J() };
 
