@@ -19,7 +19,7 @@ import nl.tytech.data.engine.serializable.UpgradePair;
 /**
  * Translate {@link UpgradeType} into UpgradeType(ID, [UpgradePair]).
  * 
- * @author W.Pasman
+ * @author M.Houtman
  *
  */
 public class J2UpgradeType implements Java2Parameter<UpgradeType> {
@@ -28,15 +28,11 @@ public class J2UpgradeType implements Java2Parameter<UpgradeType> {
 
 	@Override
 	public Parameter[] translate(UpgradeType u) throws TranslationException {
-		return new Parameter[] { new Function("upgrade_type", new Numeral(u.getID()), pairs(u.getPairs())) };
-	}
-
-	public ParameterList pairs(List<UpgradePair> pairs) {
-		ParameterList pList = new ParameterList();
-		for(UpgradePair p: pairs){
-			pList.add(new Function("upgrade_pair", new Numeral(p.getSourceFunctionID()), new Numeral(p.getTargetFunctionID())));
+		if(u.getPairs().size()>0){
+		UpgradePair pair = u.getPairs().get(0);
+		return new Parameter[] { new Function("upgrade_type", new Numeral(u.getID()), new Numeral(pair.getSourceFunctionID()), new Numeral(pair.getTargetFunctionID())) };
 		}
-		return pList;
+		return new Parameter[] { new Function("upgrade_type", new Numeral(u.getID()))};
 	}
 	
 	@Override
