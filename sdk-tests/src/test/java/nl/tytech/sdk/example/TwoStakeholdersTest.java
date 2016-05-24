@@ -64,6 +64,8 @@ public class TwoStakeholdersTest {
 	private static Integer sellerID = Item.NONE;
 	private static Integer buyerID = Item.NONE;
 
+	private static Integer landID = Item.NONE;
+
 	/** the stakeholder ids that we picked */
 	private static List<Integer> holdersIDs;
 
@@ -189,6 +191,11 @@ public class TwoStakeholdersTest {
 	@Test
 	public void test08selectStakeholderToPlay() throws Exception {
 
+		// TODO: (Frank) Enable this to be able to log into the session.
+		// Prerequisite is that the session is started as SessionType.MULTI
+		// slotConnection.fireServerEvent(false,
+		// LogicEventType.SETTINGS_ALLOW_INTERACTION, true);
+
 		holdersIDs = new ArrayList<>();
 
 		ItemMap<Stakeholder> stakeholders = EventManager.getItemMap(MapLink.STAKEHOLDERS);
@@ -213,6 +220,8 @@ public class TwoStakeholdersTest {
 
 		assertTrue("There is no land to sell", sellLand != null);
 
+		landID = sellLand.getID();
+
 		sellerID = sellLand.getOwnerID();
 		buyerID = Item.NONE;
 		for (Stakeholder stakeholder : EventManager.<Stakeholder> getItemMap(MapLink.STAKEHOLDERS)) {
@@ -224,6 +233,8 @@ public class TwoStakeholdersTest {
 
 		assertFalse("There is no seller", Item.NONE.equals(sellerID));
 		assertFalse("There is no buyer", Item.NONE.equals(buyerID));
+
+		eventHandler.resetPopupsUpdate();
 
 		MultiPolygon multiPolygon = sellLand.getMultiPolygon();
 		double sellPrice = 400;
@@ -264,17 +275,14 @@ public class TwoStakeholdersTest {
 
 			}
 
-			TLogger.info(popupData.getVisibleForStakeholderIDs().toString());
-			TLogger.info(popupData.getType().toString());
-
 		}
 	}
 
 	@Test
-	public void test11confirmLandSold() {
+	public void test11confirmLandSoldConfirmation() {
 		boolean updated = false;
 		for (int i = 0; i < 60; i++) {
-			if (eventHandler.isPopupUpdated()) {
+			if (eventHandler.isPopupUpdated() && eventHandler.isLandUpdated()) {
 				updated = true;
 				break;
 			}
@@ -282,6 +290,7 @@ public class TwoStakeholdersTest {
 		}
 		assertTrue(updated);
 
+		boolean landBuyConfirmed = false;
 		ItemMap<PopupData> popups = EventManager.getItemMap(MapLink.POPUPS);
 		for (PopupData popupData : popups) {
 			boolean forBuyer = popupData.getVisibleForStakeholderIDs().contains(buyerID);
@@ -295,13 +304,11 @@ public class TwoStakeholdersTest {
 				slotConnection.fireServerEvent(true, ParticipantEventType.POPUP_ANSWER, buyerID, popupData.getID(),
 						defaultAnswer.getID());
 				TLogger.info("Buyer confirmed land buy: " + popupData.getVisibleForStakeholderIDs().contains(buyerID));
-
+				landBuyConfirmed = true;
 			}
-
-			TLogger.info(popupData.getVisibleForStakeholderIDs().toString());
-			TLogger.info(popupData.getType().toString());
-
 		}
+
+		assertTrue("Land not succesfully bought", landBuyConfirmed);
 
 	}
 
@@ -328,7 +335,7 @@ public class TwoStakeholdersTest {
 		MultiPolygon roadMultiPolygon = JTSUtils.createSquare(10, 10, 200, 10);
 
 		Integer newBuildingID = slotConnection.fireServerEvent(true, ParticipantEventType.BUILDING_PLAN_CONSTRUCTION,
-				holdersIDs.get(1), functionID, floors, roadMultiPolygon);
+				buyerID, functionID, floors, roadMultiPolygon);
 
 		assertTrue(newBuildingID.intValue() >= 0);
 

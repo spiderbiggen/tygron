@@ -8,6 +8,7 @@ import nl.tytech.core.event.Event;
 import nl.tytech.core.event.EventListenerInterface;
 import nl.tytech.core.net.serializable.MapLink;
 import nl.tytech.data.engine.item.Land;
+import nl.tytech.data.engine.item.PopupData;
 import nl.tytech.data.engine.item.Setting;
 import nl.tytech.data.engine.item.Stakeholder;
 import nl.tytech.util.logger.TLogger;
@@ -69,7 +70,7 @@ public class ExampleEventHandler implements EventListenerInterface, EventIDListe
 			TLogger.info("Updated lands: " + updates);
 			landsUpdate = true;
 		} else if (event.getType() == MapLink.POPUPS) {
-			Collection<Land> updates = event.getContent(MapLink.UPDATED_COLLECTION);
+			Collection<PopupData> updates = event.getContent(MapLink.UPDATED_COLLECTION);
 			TLogger.info("Updated popups: " + updates);
 			popupsUpdate = true;
 		}
