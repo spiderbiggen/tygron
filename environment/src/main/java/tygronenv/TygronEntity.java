@@ -57,7 +57,6 @@ public class TygronEntity {
 	 */
 	public TygronEntity(EisEnv env, Stakeholder.Type stakeholdertype, Integer slotID) {
 		this.environment = env;
-		System.out.println("RICOOO: " + stakeholdertype);
 		this.intendedStakeholder = stakeholdertype;
 		eventHandler = new EntityEventHandler(this);
 		getSlotConnection(slotID);
@@ -71,7 +70,6 @@ public class TygronEntity {
 	 */
 	public void notifyReady(String entity) throws EntityException {
 		stakeholder = getStakeholder(intendedStakeholder);
-		System.out.println("RICO notify" + intendedStakeholder);
 		if (stakeholder == null) {
 			throw new IllegalArgumentException("Stakeholder of type " + intendedStakeholder + " is not available");
 		}

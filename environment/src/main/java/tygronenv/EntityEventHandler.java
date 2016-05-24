@@ -23,7 +23,6 @@ import nl.tytech.data.engine.item.Function;
 import nl.tytech.data.engine.item.Indicator;
 import nl.tytech.data.engine.item.Setting;
 import nl.tytech.data.engine.item.Stakeholder;
-import nl.tytech.data.engine.item.Stakeholder.Type;
 import tygronenv.percepts.ExtraPercepts;
 import tygronenv.percepts.StakeholderPercepts;
 

@@ -3,7 +3,6 @@ package tygronenv.percepts;
 import java.util.ArrayList;
 
 import nl.tytech.data.engine.item.Stakeholder;
-import nl.tytech.data.engine.item.Stakeholder.Type;
 
 /**
  * Creates extra percepts for stakeholders.
@@ -12,9 +11,19 @@ import nl.tytech.data.engine.item.Stakeholder.Type;
  */
 public class StakeholderPercepts extends ExtraPercepts {
 
+	/**
+	 * List of all the stakeholders.
+	 */
 	private ArrayList<Stakeholder> stakeholders;
+	/**
+	 * The {@link Stakeholder} you are.
+	 */
 	private Stakeholder yourStakeholder;
-	private Type yourTypeStakeholder;
+	/**
+	 * The {@linkplain Stakeholder.Type type} of
+	 * stakeholder you are.
+	 */
+	private Stakeholder.Type yourTypeStakeholder;
 	
 	/**
 	 * 
@@ -23,13 +32,12 @@ public class StakeholderPercepts extends ExtraPercepts {
 	 * {@link Stakeholder} you are in the game.
 	 */
 	public StakeholderPercepts(final ArrayList<Stakeholder> items,
-			final Type yourTypeOfStakeholder) {
+			final Stakeholder.Type yourTypeOfStakeholder) {	
 		stakeholders = items;
 		yourTypeStakeholder = yourTypeOfStakeholder; 
 		yourStakeholder = getYourStakeholder();
 		
 		registerPercept(new SelfPercept(this.yourStakeholder));
-		registerPercept(new PerceptTest());
 	}
 	
 	/**

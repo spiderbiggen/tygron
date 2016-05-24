@@ -15,12 +15,12 @@ public interface SimplePercept {
 	 * Get the {@link Percept}.
 	 * @return Returns the {@link Percept}. 
 	 */
-	public abstract Percept getPercept();
+	Percept getPercept();
 	
 	/**
 	 * Get the name of this {@link Percept}.
 	 * @return Name of this {@link Percept}.
 	 */
-	public abstract String getPerceptName();
+	String getPerceptName();
 
 }

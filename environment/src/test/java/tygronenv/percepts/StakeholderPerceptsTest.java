@@ -10,6 +10,11 @@ import java.util.ArrayList;
 import nl.tytech.data.engine.item.Stakeholder;
 import nl.tytech.data.engine.item.Stakeholder.Type;
 
+/**
+ * Tests the stakeholder percepts.
+ * @author Rico
+ *
+ */
 public class StakeholderPerceptsTest {
 	
 	private final Type typeEducation = Type.EDUCATION;
@@ -27,6 +32,9 @@ public class StakeholderPerceptsTest {
 	private ArrayList<Stakeholder> stakeholders;
 	
 	
+	/**
+	 * Setup the tests.
+	 */
 	@Before
 	public void setUp() {
 		//We can't use mockito because getType is final.
@@ -40,6 +48,9 @@ public class StakeholderPerceptsTest {
 		
 	}
 	
+	/**
+	 * Add all stakeholders to the list.
+	 */
 	private void addStakeholders() {
 		stakeholders.add(stakeEducation);
 		stakeholders.add(stakeExpert);
@@ -48,18 +59,33 @@ public class StakeholderPerceptsTest {
 	}
 	
 	
+	/**
+	 * Test if the farmer stakeholder
+	 * is in the list.
+	 */
 	@Test
 	public void testCorrectStakeholder() {
 		stakeObject = new StakeholderPercepts(stakeholders, Type.FARMER);
-		assertTrue(stakeObject.getYourStakeholder().getType().equals(Type.FARMER));
+		Stakeholder.Type type = stakeObject.getYourStakeholder().getType();
+		assertTrue(type.equals(Type.FARMER));
 	}
 	
+	/**
+	 * Test if the municipality stakeholder
+	 * is in the list.
+	 */
 	@Test
 	public void testCorrecStakeholder2() {
 		stakeObject = new StakeholderPercepts(stakeholders, Type.MUNICIPALITY);
-		assertTrue(stakeObject.getYourStakeholder().getType().equals(Type.MUNICIPALITY));
+		Stakeholder.Type type = stakeObject.getYourStakeholder().getType(); 
+		assertTrue(type.equals(Type.MUNICIPALITY));
 	}
 	
+	/**
+	 * Test if it throws a exception
+	 * when the media stakeholder is
+	 * not in the list of stakeholders.
+	 */
 	@Test(expected = IllegalArgumentException.class)
 	public void testWrongStakeholder() {
 		stakeObject = new StakeholderPercepts(stakeholders, Type.MEDIA);
