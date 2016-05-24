@@ -84,7 +84,7 @@ public class TygronEntity {
 				joinedConfirm.client.getClientToken());
 		slotConnection.fireServerEvent(true, LogicEventType.SETTINGS_ALLOW_INTERACTION, true);
 
-		environment.entityReady(stakeholder.getName());
+		environment.entityReady(stakeholder.getName().toUpperCase());
 	}
 
 	/**
@@ -197,7 +197,8 @@ public class TygronEntity {
 		Object[] arguments = translateParameters(action, stakeholder.getID());
 
 		// call. We ignore the return value.
-		slotConnection.fireServerEvent(true, type, arguments);
+		Object ret = slotConnection.fireServerEvent(true, type, arguments);
+		System.out.println(ret);
 	}
 
 	/**

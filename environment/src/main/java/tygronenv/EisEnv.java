@@ -63,7 +63,15 @@ public class EisEnv extends EIDefaultImpl {
 
 	@Override
 	protected LinkedList<Percept> getAllPerceptsFromEntity(String e) throws PerceiveException, NoEnvironmentException {
-		return entities.get(e).getPercepts();
+		return getEntity(e).getPercepts();
+	}
+
+	private TygronEntity getEntity(String e) {
+		String entity = e.toUpperCase();
+		if (!entities.containsKey(entity)) {
+			throw new IllegalArgumentException("Unknown entity " + entity + ". Have:" + entities.keySet());
+		}
+		return entities.get(entity);
 	}
 
 	@Override
@@ -91,7 +99,7 @@ public class EisEnv extends EIDefaultImpl {
 	@Override
 	protected Percept performEntityAction(String e, Action action) throws ActException {
 		try {
-			entities.get(e).performAction(action);
+			getEntity(e).performAction(action);
 		} catch (TranslationException | IllegalArgumentException e1) {
 			throw new ActException("Failed to execute action " + action, e1);
 		}
@@ -110,7 +118,8 @@ public class EisEnv extends EIDefaultImpl {
 		serverConnection = new ServerConnection(config);
 		setState(EnvironmentState.RUNNING);
 
-		for (String stakeholder : config.getStakeholders()) {
+		for (String st : config.getStakeholders()) {
+			String stakeholder = st.toUpperCase();
 			TygronEntity entity = new TygronEntity(this, stakeholder, serverConnection.getSession().getTeamSlot());
 			// These will report themselves to EIS when they are ready.
 			entities.put(stakeholder, entity);
