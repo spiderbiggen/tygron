@@ -43,6 +43,19 @@ public class TestEnvironment {
 	}
 
 	@Test
+	public void testConnectNotOwnProject() throws ManagementException {
+		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
+		Identifier otherproject = new Identifier("vhproject"); //This test might not be accurate for the danshal group as one of them owns this project.
+		Identifier domain = new Identifier("tudelft");
+		parameters.put(PROJECT, otherproject);
+		parameters.put("domain", domain);
+
+		// any stakeholder so not specified.
+		// any slot so not specified.
+		env.init(parameters);
+	}
+
+	@Test
 	public void testConnectAndKill() throws ManagementException {
 		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
 		parameters.put(PROJECT, PROJECTNAME);

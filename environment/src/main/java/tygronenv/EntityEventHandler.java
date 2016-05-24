@@ -20,9 +20,11 @@ import nl.tytech.core.structure.ItemMap;
 import nl.tytech.data.core.item.Item;
 import nl.tytech.data.engine.item.Building;
 import nl.tytech.data.engine.item.Function;
+import nl.tytech.data.engine.item.Indicator;
 import nl.tytech.data.engine.item.Setting;
 import nl.tytech.data.engine.item.Stakeholder;
 import nl.tytech.data.engine.item.UpgradeType;
+import tygronenv.translators.J2Building;
 
 /**
  * Listen to entity events and store them till they are needed. Thread safe
@@ -47,7 +49,8 @@ public class EntityEventHandler implements EventListenerInterface {
 
 	public EntityEventHandler(TygronEntity entity) {
 		this.entity = entity;
-		EventManager.addListener(this, MapLink.STAKEHOLDERS, MapLink.FUNCTIONS, MapLink.BUILDINGS, MapLink.SETTINGS, MapLink.UPGRADE_TYPES);
+		EventManager.addListener(this, MapLink.STAKEHOLDERS, MapLink.FUNCTIONS,
+				MapLink.BUILDINGS, MapLink.SETTINGS, MapLink.INDICATORS, MapLink.UPGRADE_TYPES);
 		EventManager.addListener(this, Network.ConnectionEvent.FIRST_UPDATE_FINISHED);
 	}
 
@@ -101,15 +104,20 @@ public class EntityEventHandler implements EventListenerInterface {
 				break;
 			case UPGRADE_TYPES:
 				createPercepts(event.<ItemMap<UpgradeType>> getContent(MapLink.COMPLETE_COLLECTION), type);
+			case INDICATORS:
+				//Creates the indicator/3 percepts.
+				createPercepts(event.<ItemMap<Indicator>> getContent(MapLink.COMPLETE_COLLECTION), type);
 				break;
 			default:
 				System.out.println("WARNING. EntityEventHandler received unknown event:" + event);
 				return;
-
 			}
 		} else if (type == Network.ConnectionEvent.FIRST_UPDATE_FINISHED) {
 			// entity is ready to run! Report to EIS
 			entity.notifyReady(ENTITY);
+			
+			// remove stakeholders from the listener, so we don't get new percepts of type stakeholders
+			EventManager.removeListener(this, MapLink.STAKEHOLDERS);
 		}
 	}
 
@@ -122,7 +130,6 @@ public class EntityEventHandler implements EventListenerInterface {
 	 * @param type
 	 *            the type of elements in the map.
 	 */
-
 	private <T extends Item> void createPercepts(ItemMap<T> itemMap, EventTypeEnum type) {
 		ArrayList<T> items = new ArrayList<T>(itemMap.values());
 		List<Percept> percepts = new ArrayList<Percept>();

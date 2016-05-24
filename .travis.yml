@@ -1,10 +1,31 @@
 language: java
 
-language: java
-install: mvn -pl "!doc" install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+before_install:
+# download jython to use the python scripts for checkstyle
+- wget http://search.maven.org/remotecontent?filepath=org/python/jython-standalone/2.7.0/jython-standalone-2.7.0.jar -O jython-standalone-2.7.0.jar
+# add eishub/tygron to remote as upstream
+- git remote add upstream https://github.com/eishub/tygron.git
+- git fetch upstream
+install:
+- mvn -pl "!doc" install -DskipTests=true -Dmaven.javadoc.skip=true -Dcobertura.skip -B -V
 script:
 - java -cp environment/target/tygronenv-*-jar-with-dependencies.jar login.Login $email $password
-- mvn test
+# test the code
+- mvn test -Dcobertura.skip
+# test checkstyle only on changed lines using this python script
+- git diff upstream/context...HEAD -U0 -- *.java --minimal | java -jar jython-standalone-2.7.0.jar checkstylediff.py
+# checkstyle check is configured with these arguments
+- mvn checkstyle:check -Dcheckstyle.config.location="$PWD/sun_checks_custom.xml" -Dcheckstyle.suppressions.location="$PWD/suppressions.xml" -Dcheckstyle.suppressions.file.expression=checkstyle.supression.file
+#check pmd and checkstyle only for environment
+- cd environment
+- mvn pmd:pmd
+- mvn findbugs:findbugs
+- cd target
+- echo "*PMD-Results*" && cat "java-basic.xml" && cat "java-imports.xml" && cat "java-unusedcode.xml" && echo "PMD-Results END"
+- echo "*FINDBUGS-Results*" && cat "findbugsXml.xml" && echo "FINDBUGS-Results END"
+- cd ..
+# run cobertura only in environment build fails when coverage is too low
+- mvn cobertura:check
 jdk:
 - oraclejdk8
 
