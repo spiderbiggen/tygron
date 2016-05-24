@@ -44,7 +44,7 @@ public class Login {
 	public Login() throws LoginException {
 		SettingsManager.setup(SettingsManager.class, Network.AppType.EDITOR);
 		SettingsManager.setServerIP(SERVER);
-		String result = ServicesManager.testServerConnection();
+		String result = ServicesManager.testServerAPIConnection();
 		if (result != null) {
 			throw new LoginException("Server is actively refusing to connect:" + result);
 		}
