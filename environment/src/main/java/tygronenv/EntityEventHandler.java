@@ -24,6 +24,7 @@ import nl.tytech.data.engine.item.Indicator;
 import nl.tytech.data.engine.item.Setting;
 import nl.tytech.data.engine.item.Stakeholder;
 import nl.tytech.data.engine.item.Zone;
+import tygronenv.translators.J2Building;
 
 /**
  * Listen to entity events and store them till they are needed. Thread safe
@@ -111,8 +112,6 @@ public class EntityEventHandler implements EventListenerInterface {
 				break;
 			default:
 				System.out.println("WARNING. EntityEventHandler received unknown event:" + event);
-				return;
-
 			}
 		} else if (type == Network.ConnectionEvent.FIRST_UPDATE_FINISHED) {
 			// entity is ready to run! Report to EIS
