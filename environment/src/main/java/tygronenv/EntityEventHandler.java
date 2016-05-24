@@ -122,14 +122,21 @@ public class EntityEventHandler implements EventListenerInterface {
 			EventManager.removeListener(this, MapLink.STAKEHOLDERS);
 		}
 	}
+
 	/**
-	 * Create percepts contained in a ClientItemMap array and add them to the
+	 * Create percepts contained in a ArrayList of
+	 * {@linkplain Item items} and percepts in the
+	 * {#link ExtraPercepts} and add them to the
 	 * {@link #collectedPercepts}.
-	 * 
-	 * @param itemMap
-	 *            list of ClientItemMap elements.
+	 * @param items
+	 * 			List of Items.
 	 * @param type
-	 *            the type of elements in the map.
+	 * 			The type of elements in the list.
+	 * @param extraPercepts
+	 * 		Contains the 
+	 * 		{@link ExtraPercepts} that should be
+	 * 		added new percepts.
+	 * 			
 	 */
 	private <T extends Item> void createExtraPercepts(ArrayList<T> items, EventTypeEnum type, ExtraPercepts extraPercepts) {
 		List<Percept> percepts = new ArrayList<Percept>();
