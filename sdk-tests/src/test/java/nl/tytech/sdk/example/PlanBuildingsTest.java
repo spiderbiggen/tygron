@@ -5,18 +5,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.geom.prep.PreparedGeometry;
-import com.vividsolutions.jts.geom.prep.PreparedGeometryFactory;
 
 import login.Login;
 import nl.tytech.core.client.event.EventManager;
@@ -34,18 +30,19 @@ import nl.tytech.core.structure.ItemMap;
 import nl.tytech.core.util.SettingsManager;
 import nl.tytech.data.core.item.Item;
 import nl.tytech.data.editor.event.EditorEventType;
+import nl.tytech.data.editor.event.EditorIndicatorEventType;
 import nl.tytech.data.editor.event.EditorSettingsEventType;
 import nl.tytech.data.editor.event.EditorStakeholderEventType;
 import nl.tytech.data.engine.event.ParticipantEventType;
+import nl.tytech.data.engine.item.ActionLog;
 import nl.tytech.data.engine.item.ActionMenu;
 import nl.tytech.data.engine.item.Building;
 import nl.tytech.data.engine.item.Function;
 import nl.tytech.data.engine.item.Function.PlacementType;
-import nl.tytech.data.engine.item.Land;
-import nl.tytech.data.engine.item.Setting;
+import nl.tytech.data.engine.item.Indicator;
+import nl.tytech.data.engine.item.PersonalIndicator.PersonalIndicatorType;
 import nl.tytech.data.engine.item.Stakeholder;
-import nl.tytech.data.engine.item.Terrain;
-import nl.tytech.data.engine.item.Zone;
+import nl.tytech.data.engine.serializable.Category;
 import nl.tytech.data.engine.serializable.MapType;
 import nl.tytech.locale.TLanguage;
 import nl.tytech.util.JTSUtils;
@@ -69,7 +66,8 @@ public class PlanBuildingsTest {
 
 	private static Integer stakeholderID = Item.NONE;
 
-	private static Integer actionLogID = Item.NONE;
+	private static Integer buildActionLogID = Item.NONE;
+	private static Integer revertActionLogID = Item.NONE;
 
 	@Test
 	public void test01Setup() throws Exception {
@@ -136,13 +134,42 @@ public class PlanBuildingsTest {
 		// wait on first updates (seperate thread)
 		boolean updated = false;
 		for (int i = 0; i < 60; i++) {
-			if (eventHandler.isMapUpdated() && eventHandler.isUpdated(MapLink.STAKEHOLDERS, MapLink.LANDS)) {
+			if (eventHandler.isMapUpdated() && eventHandler.isUpdated(MapLink.STAKEHOLDERS)) {
 				updated = true;
 				break;
 			}
 			ThreadUtils.sleepInterruptible(1000);
 		}
 		assertTrue(updated);
+
+		ItemMap<Stakeholder> stakeholders = EventManager.getItemMap(MapLink.STAKEHOLDERS);
+		for (Stakeholder stakeholder : stakeholders) {
+			stakeholderID = stakeholder.getID();
+			break;
+		}
+
+		// (Frank) Add indicators with targets
+		Integer levelID = 0;
+		double budget = 20000000d;
+		Integer financeIndicatorID = slotConnection.fireServerEvent(true,
+				EditorIndicatorEventType.ADD_PERSONAL_INDICATOR, stakeholderID, PersonalIndicatorType.FINANCE);
+		slotConnection.fireServerEvent(true, EditorIndicatorEventType.SET_TARGET, levelID, financeIndicatorID, 0,
+				budget);
+
+		Integer housingIndicatorID = slotConnection.fireServerEvent(true,
+				EditorIndicatorEventType.ADD_PERSONAL_INDICATOR, stakeholderID, PersonalIndicatorType.HOUSING);
+
+		// (Frank) Targets for housing indicators are defined per category.
+		double[] targets = new double[Category.values().length];
+		for (int i = 0; i < targets.length; i++) {
+			targets[i] = 250000;
+		}
+
+		slotConnection.fireServerEvent(true, EditorIndicatorEventType.SET_TARGETS, levelID, housingIndicatorID,
+				targets);
+
+		slotConnection.fireServerEvent(true, EditorStakeholderEventType.SET_START_BUDGET, stakeholderID, budget);
+
 	}
 
 	@Test
@@ -206,56 +233,6 @@ public class PlanBuildingsTest {
 		assertTrue("Expected at least 2 stakeholders", !Item.NONE.equals(stakeholderID));
 	}
 
-	private List<Polygon> getBuildableLand(Integer stakeholderID, Integer zoneID, PlacementType placementType) {
-		MapType mapType = MapType.MAQUETTE; // we are in planning mode
-
-		Zone zone = EventManager.getItem(MapLink.ZONES, zoneID);
-
-		//
-		MultiPolygon constructableLand = zone.getMultiPolygon();
-		for (Terrain terrain : EventManager.<Terrain> getItemMap(MapLink.TERRAINS)) {
-			if (placementType == PlacementType.LAND && terrain.getType().isWater()) {
-				constructableLand = JTSUtils.difference(constructableLand, terrain.getMultiPolygon(mapType));
-
-			} else if (placementType == PlacementType.WATER && !terrain.getType().isWater()) {
-				constructableLand = JTSUtils.difference(constructableLand, terrain.getMultiPolygon(mapType));
-
-			}
-		}
-
-		// Reserved land is land currently awaiting land transaction
-		Setting reservedLandSetting = EventManager.getItem(MapLink.SETTINGS, Setting.Type.RESERVED_LAND);
-		MultiPolygon reservedLand = reservedLandSetting.getMultiPolygon();
-		if (JTSUtils.containsData(reservedLand)) {
-			constructableLand = JTSUtils.difference(constructableLand, reservedLand);
-		}
-
-		List<Geometry> myLands = new ArrayList<>();
-		for (Land land : EventManager.<Land> getItemMap(MapLink.LANDS)) {
-			if (land.getOwnerID().equals(stakeholderID)) {
-				MultiPolygon mp = JTSUtils.intersection(constructableLand, land.getMultiPolygon());
-				if (JTSUtils.containsData(mp)) {
-					myLands.add(mp);
-				}
-			}
-		}
-
-		MultiPolygon myLandsMP = JTSUtils.createMP(myLands);
-		// (Frank) For faster intersection checks, used prepared geometries.
-		PreparedGeometry prepMyLand = PreparedGeometryFactory.prepare(myLandsMP);
-		for (Building building : EventManager.<Building> getItemMap(MapLink.BUILDINGS)) {
-			if (prepMyLand.intersects(building.getMultiPolygon(mapType))) {
-				myLandsMP = JTSUtils.difference(myLandsMP, building.getMultiPolygon(mapType));
-			}
-		}
-
-		List<Polygon> buildablePolygons = JTSUtils.getPolygons(myLandsMP);
-		for (Polygon polygon : buildablePolygons) {
-			TLogger.info(polygon.toString());
-		}
-		return buildablePolygons;
-	}
-
 	@Test
 	public void test09GetConstructableLand() throws Exception {
 
@@ -274,30 +251,92 @@ public class PlanBuildingsTest {
 
 		assertTrue("No applicable land function found!", function != null);
 
-		List<Polygon> buildablePolygons = getBuildableLand(stakeholderID, zoneID, function.getPlacementType());
+		List<Polygon> buildablePolygons = SDKTestUtil.getBuildableLand(MapType.MAQUETTE, stakeholderID, zoneID,
+				function.getPlacementType());
 
 		assertTrue("No buildable polygons found!", buildablePolygons.size() > 0);
 
+		eventHandler.resetUpdate(MapLink.ACTION_LOGS);
+
 		MultiPolygon selectedPlot = JTSUtils.createMP(buildablePolygons.get(0));
+		TLogger.info("Size selected plot: " + selectedPlot.getArea());
 		int floors = function.getDefaultFloors();
-		actionLogID = slotConnection.fireServerEvent(true, ParticipantEventType.BUILDING_PLAN_CONSTRUCTION,
+		buildActionLogID = slotConnection.fireServerEvent(true, ParticipantEventType.BUILDING_PLAN_CONSTRUCTION,
 				stakeholderID, function.getID(), floors, selectedPlot);
 
-		assertTrue("Action was not succesfull!", !Item.NONE.equals(actionLogID));
+		assertTrue("Action was not succesfull!", !Item.NONE.equals(buildActionLogID));
 
 	}
 
 	@Test
-	public void test10GetConstructableLand() throws Exception {
+	public void test10GetActionLogAndIndicatorChange() throws Exception {
 		boolean updated = false;
 		for (int i = 0; i < 60; i++) {
-			if (eventHandler.isUpdated(MapLink.POPUPS, MapLink.LANDS)) {
+			if (eventHandler.isUpdated(MapLink.ACTION_LOGS)) {
 				updated = true;
 				break;
 			}
 			ThreadUtils.sleepInterruptible(1000);
 		}
 		assertTrue(updated);
+
+		ActionLog actionLog = EventManager.getItem(MapLink.ACTION_LOGS, buildActionLogID);
+		assertTrue("Actionlog with ID " + buildActionLogID + " does not exist!", actionLog != null);
+
+		for (Indicator indicator : EventManager.<Indicator> getItemMap(MapLink.INDICATORS)) {
+			if (actionLog.containsAfterScore(indicator)) {
+				Double increase = actionLog.getIncrease(indicator);
+				TLogger.info("Indicator: " + indicator + " change: " + increase);
+			}
+		}
+
+	}
+
+	@Test
+	public void test11RevertConstruction() throws Exception {
+
+		ActionLog actionLog = EventManager.getItem(MapLink.ACTION_LOGS, buildActionLogID);
+		assertTrue("Maplink of ActionLog " + actionLog + " was not BUILDINGS", !actionLog.getBuildingIDs().isEmpty());
+
+		List<Building> buildings = EventManager.<Building> getItemMap(MapLink.BUILDINGS)
+				.getItems(actionLog.getBuildingIDs());
+		assertTrue("Building of ActionLog " + actionLog + " does not exist!", !buildings.isEmpty());
+
+		eventHandler.resetUpdate(MapLink.ACTION_LOGS, MapLink.BUILDINGS);
+
+		revertActionLogID = slotConnection.fireServerEvent(true, ParticipantEventType.BUILDING_REVERT_POLYGON,
+				stakeholderID, actionLog.getMultiPolygon());
+	}
+
+	@Test
+	public void test12RevertConstruction() throws Exception {
+		boolean updated = false;
+		for (int i = 0; i < 60; i++) {
+			if (eventHandler.isUpdated(MapLink.ACTION_LOGS, MapLink.BUILDINGS)) {
+				updated = true;
+				break;
+			}
+			ThreadUtils.sleepInterruptible(1000);
+		}
+		assertTrue(updated);
+
+		ActionLog buildActionLog = EventManager.getItem(MapLink.ACTION_LOGS, buildActionLogID);
+		List<Building> buildings = EventManager.<Building> getItemMap(MapLink.BUILDINGS)
+				.getItems(buildActionLog.getBuildingIDs());
+
+		for (Building building : buildings) {
+			assertTrue("Building " + building + " is not reverted!", !building.isInMap(MapType.MAQUETTE));
+		}
+
+		ActionLog revertActionLog = EventManager.getItem(MapLink.ACTION_LOGS, revertActionLogID);
+		assertTrue("Revert ActionLog does not exist", revertActionLog != null);
+
+		for (Indicator indicator : EventManager.<Indicator> getItemMap(MapLink.INDICATORS)) {
+			if (revertActionLog.containsAfterScore(indicator)) {
+				Double increase = revertActionLog.getIncrease(indicator);
+				TLogger.info("Indicator: " + indicator + " change: " + increase);
+			}
+		}
 
 	}
 
