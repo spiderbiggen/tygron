@@ -26,7 +26,7 @@ public class J2Zone implements Java2Parameter<Zone>{
 	 */
 	@Override
 	public Parameter[] translate(Zone z) throws TranslationException {
-		return new Parameter[] { new Function("Zone", new Numeral(z.getID()), new Identifier(z.getName()), new Numeral(z.getMaxAllowedFloors()) 
+		return new Parameter[] { new Function("zone", new Numeral(z.getID()), new Identifier(z.getName()), new Numeral(z.getMaxAllowedFloors()) 
 				, new Numeral(size(z))
 				, translator.translate2Parameter(z.getAllowedCategories())[0]
 				)};
