@@ -57,45 +57,4 @@ public class J2ZoneTest {
 		verify(z, atLeast(1)).getAllowedCategories();
 	}
 
-	/* // OLD
-	 * package tygronenv.translators;
-	 * 
-	 * import org.junit.Test; import static org.mockito.Mockito.*;
-	 * 
-	 * import java.util.ArrayList;
-	 * 
-	 * import eis.eis2java.exception.TranslationException; import
-	 * eis.eis2java.translation.Java2Parameter; import eis.iilang.Parameter;
-	 * import nl.tytech.data.engine.item.Building; import
-	 * nl.tytech.data.engine.item.Function; import
-	 * nl.tytech.data.engine.item.Zone; import
-	 * nl.tytech.data.engine.serializable.Category;
-	 * 
-	 * public class J2ZoneTest{
-	 * 
-	 * @Test public void test() throws TranslationException { J2Zone translator
-	 * = new J2Zone();
-	 * 
-	 * Zone z = mock(Zone.class); Function f = mock(Function.class); //Category
-	 * c = mock(Category.class);
-	 * 
-	 * ArrayList<nl.tytech.data.engine.item.Function> func = new
-	 * ArrayList<nl.tytech.data.engine.item.Function>(); func.add(f);
-	 * 
-	 * ArrayList<Category> cat = new ArrayList<>(); cat.add(null);
-	 * 
-	 * when(z.getID()).thenReturn(1); when(z.getName()).thenReturn("name");
-	 * when(z.getMaxAllowedFloors()).thenReturn(2);
-	 * when(z.getAllowedCategories()).thenReturn(cat);
-	 * when(f.getID()).thenReturn(10); when(z.getfunctions()).thenReturn(func);
-	 * when(z.getMultiPolygon().getArea()).thenReturn(3.0);
-	 * 
-	 * Parameter[] p = translator.translate(z);
-	 * 
-	 * System.out.println(p[0]); assert(p[0].equals("Zone")); }
-	 * 
-	 * 
-	 * }
-	 */
-
 }
