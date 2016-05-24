@@ -21,7 +21,7 @@ import nl.tytech.util.StringUtils;
 
 /**
  * Execute login procedure. Store password if asked.
- * 
+ *
  * @author W.Pasman
  *
  */
@@ -37,14 +37,14 @@ public class Login {
 
 	/**
 	 * Class that contains procedures for login and storing name and passwords.
-	 * 
+	 *
 	 * @throws LoginException
 	 *             if login fails.
 	 */
 	public Login() throws LoginException {
 		SettingsManager.setup(SettingsManager.class, Network.AppType.EDITOR);
 		SettingsManager.setServerIP(SERVER);
-		String result = ServicesManager.testServerConnection();
+		String result = ServicesManager.testServerAPIConnection();
 		if (result != null) {
 			throw new LoginException("Server is actively refusing to connect:" + result);
 		}
@@ -54,7 +54,7 @@ public class Login {
 	/**
 	 * Execute standard login procedure: check if we have credentials. If not,
 	 * ask them from user and save
-	 * 
+	 *
 	 * @throws LoginException
 	 */
 	public User doLogin() throws LoginException {
@@ -101,9 +101,9 @@ public class Login {
 
 	/**
 	 * Ask user for the credentials.
-	 * 
+	 *
 	 * @throws LoginException
-	 * 
+	 *
 	 * @throws IllegalStateException
 	 *             if user cancels login procedure.
 	 */
@@ -130,7 +130,7 @@ public class Login {
 
 	/**
 	 * Make a row with given label, and an input area
-	 * 
+	 *
 	 * @param label
 	 * @param inputarea
 	 *            the {@link Component} - input area for user
