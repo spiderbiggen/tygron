@@ -5,6 +5,7 @@ import eis.eis2java.translation.Java2Parameter;
 import eis.eis2java.translation.Translator;
 import eis.iilang.Function;
 import eis.iilang.Identifier;
+import eis.iilang.Numeral;
 import eis.iilang.Parameter;
 import nl.tytech.data.engine.item.Building;
 import nl.tytech.data.engine.item.PopupData;
@@ -22,8 +23,8 @@ public class J2PopupData implements Java2Parameter<PopupData> {
 	@Override
 	public Parameter[] translate(PopupData b) throws TranslationException {
 
-		return new Parameter[] { new Function("request", new Identifier(b.getType().toString())),
-				translator.translate2Parameter(b.getAnswers())[0] };
+		return new Parameter[] { new Function("request", new Identifier(b.getType().toString()), new Numeral(b.getID()),
+				translator.translate2Parameter(b.getAnswers())[0]) };
 	}
 
 	@Override

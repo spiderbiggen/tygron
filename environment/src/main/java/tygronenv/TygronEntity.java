@@ -197,8 +197,7 @@ public class TygronEntity {
 		Object[] arguments = translateParameters(action, stakeholder.getID());
 
 		// call. We ignore the return value.
-		Object ret = slotConnection.fireServerEvent(true, type, arguments);
-		System.out.println(ret);
+		slotConnection.fireServerEvent(true, type, arguments);
 	}
 
 	/**

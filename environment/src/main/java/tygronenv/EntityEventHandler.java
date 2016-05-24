@@ -97,7 +97,7 @@ public class EntityEventHandler implements EventListenerInterface {
 				createPercepts(event.<ItemMap<ActionLog>> getContent(MapLink.COMPLETE_COLLECTION), type);
 				break;
 			case ACTION_MENUS:
-				createPercepts(event.<ItemMap<ActionMenu>> getContent(MapLink.COMPLETE_COLLECTION), type);
+				createPercepts(event.<ItemMap<ActionMenu>> getContent(MapLink.COMPLETE_COLLECTION), type, "actions");
 				break;
 			case BUILDINGS:
 				createPercepts(event.<ItemMap<Building>> getContent(MapLink.COMPLETE_COLLECTION), type);
@@ -119,7 +119,7 @@ public class EntityEventHandler implements EventListenerInterface {
 				break;
 			case POPUPS:
 				// TODO filter out only popups for the entity.
-				createPercepts(event.<ItemMap<PopupData>> getContent(MapLink.COMPLETE_COLLECTION), type);
+				createPercepts(event.<ItemMap<PopupData>> getContent(MapLink.COMPLETE_COLLECTION), type, "requests");
 				break;
 			default:
 				TLogger.warning("EntityEventHandler received unknown event:" + event);
@@ -133,6 +133,17 @@ public class EntityEventHandler implements EventListenerInterface {
 	}
 
 	/**
+	 * see {@link #createPercepts(ItemMap, EventTypeEnum, String)}. The
+	 * perceptname is {@link EventTypeEnum#name()}.
+	 * 
+	 * @param itemMap
+	 * @param type
+	 */
+	private <T extends Item> void createPercepts(ItemMap<T> itemMap, EventTypeEnum type) {
+		createPercepts(itemMap, type, type.name().toLowerCase());
+	}
+
+	/**
 	 * Create percepts contained in a ClientItemMap array and add them to the
 	 * {@link #collectedPercepts}.
 	 *
@@ -142,7 +153,7 @@ public class EntityEventHandler implements EventListenerInterface {
 	 *            the type of elements in the map.
 	 */
 
-	private <T extends Item> void createPercepts(ItemMap<T> itemMap, EventTypeEnum type) {
+	private <T extends Item> void createPercepts(ItemMap<T> itemMap, EventTypeEnum type, String perceptname) {
 		ArrayList<T> items = new ArrayList<T>(itemMap.values());
 		List<Percept> percepts = new ArrayList<Percept>();
 		Parameter[] parameters = null;
@@ -152,7 +163,7 @@ public class EntityEventHandler implements EventListenerInterface {
 			e.printStackTrace();
 		}
 		if (parameters != null) {
-			percepts.add(new Percept(type.name().toLowerCase(), parameters));
+			percepts.add(new Percept(perceptname, parameters));
 		}
 		addPercepts(type, percepts);
 
