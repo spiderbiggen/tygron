@@ -31,8 +31,7 @@ public class J2ActionMenu implements Java2Parameter<ActionMenu> {
 			list.add(new Identifier(specialOption.getType().name()));
 		}
 
-		return new Parameter[] { new Identifier(actionMenu.getName().toLowerCase()), new Numeral(actionMenu.getID()),
-				list, specialOptions };
+		return new Parameter[] { new Identifier("actions"), new Numeral(actionMenu.getID()), list, specialOptions };
 	}
 
 	@Override
