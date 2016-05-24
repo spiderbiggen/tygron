@@ -191,7 +191,7 @@ public class TestEnvironment {
 		env.performEntityAction(MUNICIPALITY, action);
 
 		// wait for new percepts related to the sell action
-
+		Thread.sleep(3000);
 		while (env.getAllPerceptsFromEntity(MUNICIPALITY).isEmpty()) {
 			Thread.sleep(100);
 		}
