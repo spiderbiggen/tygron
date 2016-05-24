@@ -140,7 +140,8 @@ public class BuyLandTest {
 		// wait on first updates (seperate thread)
 		boolean updated = false;
 		for (int i = 0; i < 60; i++) {
-			if (eventHandler.isMapUpdated() && eventHandler.isStakeholderUpdated() && eventHandler.isLandUpdated()) {
+			if (eventHandler.isMapUpdated() && eventHandler.isUpdated(MapLink.STAKEHOLDERS)
+					&& eventHandler.isUpdated(MapLink.LANDS)) {
 				updated = true;
 				break;
 			}
@@ -185,7 +186,8 @@ public class BuyLandTest {
 
 		boolean updated = false;
 		for (int i = 0; i < 60; i++) {
-			if (eventHandler.isMapUpdated() && eventHandler.isStakeholderUpdated() && eventHandler.isLandUpdated()) {
+			if (eventHandler.isMapUpdated() && eventHandler.isUpdated(MapLink.STAKEHOLDERS)
+					&& eventHandler.isUpdated(MapLink.LANDS)) {
 				updated = true;
 				break;
 			}
@@ -237,7 +239,7 @@ public class BuyLandTest {
 		assertFalse("There is no seller", Item.NONE.equals(sellerID));
 		assertFalse("There is no buyer", Item.NONE.equals(buyerID));
 
-		eventHandler.resetPopupsUpdate();
+		eventHandler.resetUpdate(MapLink.POPUPS);
 
 		MultiPolygon multiPolygon = sellLand.getMultiPolygon();
 		double buyPrice = 400;
@@ -250,7 +252,7 @@ public class BuyLandTest {
 		// wait on first updates (seperate thread)
 		boolean updated = false;
 		for (int i = 0; i < 60; i++) {
-			if (eventHandler.isPopupUpdated()) {
+			if (eventHandler.isUpdated(MapLink.POPUPS)) {
 				updated = true;
 				break;
 			}
@@ -258,8 +260,8 @@ public class BuyLandTest {
 		}
 		assertTrue(updated);
 
-		eventHandler.resetLandUpdate();
-		eventHandler.resetPopupsUpdate();
+		eventHandler.resetUpdate(MapLink.LANDS);
+		eventHandler.resetUpdate(MapLink.POPUPS);
 
 		ItemMap<PopupData> popups = EventManager.getItemMap(MapLink.POPUPS);
 		for (PopupData popupData : popups) {
@@ -326,7 +328,7 @@ public class BuyLandTest {
 	public void test11confirmLandSoldConfirmation() {
 		boolean updated = false;
 		for (int i = 0; i < 60; i++) {
-			if (eventHandler.isPopupUpdated() && eventHandler.isLandUpdated()) {
+			if (eventHandler.isUpdated(MapLink.POPUPS) && eventHandler.isUpdated(MapLink.LANDS)) {
 				updated = true;
 				break;
 			}

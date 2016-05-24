@@ -1,25 +1,25 @@
 package nl.tytech.sdk.example;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import nl.tytech.core.client.event.EventIDListenerInterface;
 import nl.tytech.core.client.event.EventManager;
 import nl.tytech.core.event.Event;
 import nl.tytech.core.event.EventListenerInterface;
 import nl.tytech.core.net.serializable.MapLink;
-import nl.tytech.data.engine.item.Land;
-import nl.tytech.data.engine.item.PopupData;
+import nl.tytech.data.core.item.Item;
 import nl.tytech.data.engine.item.Setting;
-import nl.tytech.data.engine.item.Stakeholder;
 import nl.tytech.util.logger.TLogger;
 
 public class ExampleEventHandler implements EventListenerInterface, EventIDListenerInterface {
 
-	private boolean stakeholderUpdate = false, mapUpdate = false;
-	private boolean landsUpdate = false, popupsUpdate = false;
+	private boolean mapUpdate = false;
+	private Map<MapLink, Boolean> mapLinkUpdated = new HashMap<>();
 
 	public ExampleEventHandler() {
-		EventManager.addListener(this, MapLink.STAKEHOLDERS, MapLink.LANDS, MapLink.POPUPS);
+		EventManager.addListener(this, MapLink.class);
 		EventManager.addEnumListener(this, MapLink.SETTINGS, Setting.Type.MAP_WIDTH_METERS);
 	}
 
@@ -27,20 +27,30 @@ public class ExampleEventHandler implements EventListenerInterface, EventIDListe
 		return mapUpdate;
 	}
 
-	public boolean isStakeholderUpdated() {
-		return stakeholderUpdate;
+	public boolean isUpdated(MapLink mapLink) {
+		Boolean result = mapLinkUpdated.get(mapLink);
+		if (result == null) {
+			result = Boolean.FALSE;
+		}
+		return result;
 	}
 
-	public void resetLandUpdate() {
-		landsUpdate = false;
+	public boolean isUpdated(MapLink... mapLinks) {
+		boolean result = true;
+		for (MapLink mapLink : mapLinks) {
+			result &= isUpdated(mapLink);
+		}
+		return result;
 	}
 
-	public void resetPopupsUpdate() {
-		popupsUpdate = false;
+	public void resetUpdate(MapLink... mapLinks) {
+		for (MapLink mapLink : mapLinks) {
+			resetUpdate(mapLink);
+		}
 	}
 
-	public boolean isLandUpdated() {
-		return landsUpdate;
+	public void resetUpdate(MapLink mapLink) {
+		mapLinkUpdated.put(mapLink, false);
 	}
 
 	@Override
@@ -61,23 +71,11 @@ public class ExampleEventHandler implements EventListenerInterface, EventIDListe
 	@Override
 	public void notifyListener(Event event) {
 
-		if (event.getType() == MapLink.STAKEHOLDERS) {
-			Collection<Stakeholder> updates = event.getContent(MapLink.UPDATED_COLLECTION);
-			TLogger.info("Updated stakeholders: " + updates);
-			stakeholderUpdate = true;
-		} else if (event.getType() == MapLink.LANDS) {
-			Collection<Land> updates = event.getContent(MapLink.UPDATED_COLLECTION);
-			TLogger.info("Updated lands: " + updates);
-			landsUpdate = true;
-		} else if (event.getType() == MapLink.POPUPS) {
-			Collection<PopupData> updates = event.getContent(MapLink.UPDATED_COLLECTION);
-			TLogger.info("Updated popups: " + updates);
-			popupsUpdate = true;
+		if (event.getType() instanceof MapLink) {
+			mapLinkUpdated.put((MapLink) event.getType(), true);
+			Collection<Item> updates = event.getContent(MapLink.UPDATED_COLLECTION);
+			TLogger.info("Updated " + event.getType().name() + ": " + updates);
 		}
-	}
-
-	public boolean isPopupUpdated() {
-		return popupsUpdate;
 	}
 
 }

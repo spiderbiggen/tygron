@@ -136,7 +136,8 @@ public class PlanBuildingsTest {
 		// wait on first updates (seperate thread)
 		boolean updated = false;
 		for (int i = 0; i < 60; i++) {
-			if (eventHandler.isMapUpdated() && eventHandler.isStakeholderUpdated() && eventHandler.isLandUpdated()) {
+			if (eventHandler.isMapUpdated() && eventHandler.isUpdated(MapLink.STAKEHOLDERS)
+					&& eventHandler.isUpdated(MapLink.LANDS)) {
 				updated = true;
 				break;
 			}
@@ -181,7 +182,8 @@ public class PlanBuildingsTest {
 
 		boolean updated = false;
 		for (int i = 0; i < 60; i++) {
-			if (eventHandler.isMapUpdated() && eventHandler.isStakeholderUpdated() && eventHandler.isLandUpdated()) {
+			if (eventHandler.isMapUpdated() && eventHandler.isUpdated(MapLink.STAKEHOLDERS)
+					&& eventHandler.isUpdated(MapLink.LANDS)) {
 				updated = true;
 				break;
 			}
@@ -204,9 +206,6 @@ public class PlanBuildingsTest {
 			break;
 		}
 		assertTrue("Expected at least 2 stakeholders", !Item.NONE.equals(stakeholderID));
-		// slotConnection.fireServerEvent(true,
-		// ParticipantEventType.STAKEHOLDER_SELECT, stakeholderID,
-		// reply.client.getClientToken());
 	}
 
 	private List<Polygon> getBuildableLand(Integer stakeholderID, Integer zoneID, PlacementType placementType) {
@@ -244,6 +243,7 @@ public class PlanBuildingsTest {
 		}
 
 		MultiPolygon myLandsMP = JTSUtils.createMP(myLands);
+		// (Frank) For faster intersection checks, used prepared geometries.
 		PreparedGeometry prepMyLand = PreparedGeometryFactory.prepare(myLandsMP);
 		for (Building building : EventManager.<Building> getItemMap(MapLink.BUILDINGS)) {
 			if (prepMyLand.intersects(building.getMultiPolygon(mapType))) {
@@ -286,6 +286,20 @@ public class PlanBuildingsTest {
 				stakeholderID, function.getID(), floors, selectedPlot);
 
 		assertTrue("Action was not succesfull!", !Item.NONE.equals(actionLogID));
+
+	}
+
+	@Test
+	public void test10GetConstructableLand() throws Exception {
+		boolean updated = false;
+		for (int i = 0; i < 60; i++) {
+			if (eventHandler.isUpdated(MapLink.POPUPS) && eventHandler.isUpdated(MapLink.LANDS)) {
+				updated = true;
+				break;
+			}
+			ThreadUtils.sleepInterruptible(1000);
+		}
+		assertTrue(updated);
 
 	}
 
