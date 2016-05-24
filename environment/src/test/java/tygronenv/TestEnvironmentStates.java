@@ -63,7 +63,7 @@ public class TestEnvironmentStates {
 		Thread.sleep(5000); // give system sufficient time to create the entity.
 
 		// after the init, a new entity should appear that we can connect to.
-		verify(envlistener).handleNewEntity("Municipality");
+		verify(envlistener).handleNewEntity(MUNICIPALITY);
 
 	}
 
@@ -167,7 +167,7 @@ public class TestEnvironmentStates {
 		// any slot so not specified.
 		env.init(parameters);
 
-		assertEquals("Municipality", listener.waitForEntity());
+		assertEquals("MUNICIPALITY", listener.waitForEntity());
 	}
 
 	/**
