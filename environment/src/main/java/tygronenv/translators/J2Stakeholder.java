@@ -36,9 +36,13 @@ public class J2Stakeholder implements Java2Parameter<Stakeholder> {
 	 */
 	@Override
 	public Parameter[] translate(final Stakeholder stakeholder) throws TranslationException {
+		Double budget = stakeholder.getBudget();
+		if (budget == null) {
+			budget = 0d;
+		}
 		return new Parameter[] { new Function("stakeholder", new Numeral(stakeholder.getID()),
 				new Identifier(stakeholder.getName()),
-				new Numeral(stakeholder.getStartBudget()),
+				new Numeral(budget),
 				new Numeral(stakeholder.getYearlyIncome())), new Function("indicatorLink", new Numeral(stakeholder.getID()), 
 		        indicator(stakeholder.getMyIndicators(), stakeholder)) };
 	}
