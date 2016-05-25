@@ -22,11 +22,11 @@ import nl.tytech.data.engine.serializable.UpgradePair;
  */
 public class J2UpgradeTypeTest {
 	/**
-	 *translator the J2Indicator to test.
+	 * Translator of the J2Indicator to test.
 	 */
 	private J2UpgradeType translator;
 	/**
-	 *the indicator to translate.
+	 * The indicators to translate.
 	 */
 	private UpgradeType upgradeType;
 	private UpgradePair upgradePair;
