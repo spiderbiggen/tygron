@@ -23,6 +23,7 @@ import nl.tytech.data.engine.item.Function;
 import nl.tytech.data.engine.item.Indicator;
 import nl.tytech.data.engine.item.Setting;
 import nl.tytech.data.engine.item.Stakeholder;
+import nl.tytech.data.engine.item.Zone;
 import tygronenv.translators.J2Building;
 
 /**
@@ -49,7 +50,7 @@ public class EntityEventHandler implements EventListenerInterface {
 	public EntityEventHandler(TygronEntity entity) {
 		this.entity = entity;
 		EventManager.addListener(this, MapLink.STAKEHOLDERS, MapLink.FUNCTIONS,
-				MapLink.BUILDINGS, MapLink.SETTINGS, MapLink.INDICATORS);
+				MapLink.BUILDINGS, MapLink.SETTINGS, MapLink.INDICATORS, MapLink.ZONES);
 		EventManager.addListener(this, Network.ConnectionEvent.FIRST_UPDATE_FINISHED);
 	}
 
@@ -104,6 +105,10 @@ public class EntityEventHandler implements EventListenerInterface {
 			case INDICATORS:
 				//Creates the indicator/3 percepts.
 				createPercepts(event.<ItemMap<Indicator>> getContent(MapLink.COMPLETE_COLLECTION), type);
+				break;
+			case ZONES:
+				//Creates the zone/5 percepts.
+				createPercepts(event.<ItemMap<Zone>> getContent(MapLink.COMPLETE_COLLECTION), type);
 				break;
 			default:
 				System.out.println("WARNING. EntityEventHandler received unknown event:" + event);
