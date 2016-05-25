@@ -5,7 +5,7 @@ before_install:
 # add eishub/tygron to remote as upstream
 - git remote add upstream https://github.com/eishub/tygron.git
 - git fetch upstream
-install:
+install: 
 - mvn -pl "!doc" install -DskipTests=true -Dmaven.javadoc.skip=true -Dcobertura.skip -B -V 
 script:
 # add login credentials in registry
