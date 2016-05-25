@@ -94,7 +94,6 @@ public class EntityEventHandler implements EventListenerInterface {
 				ItemMap<Stakeholder> itemMap = event.<ItemMap<Stakeholder>> getContent(MapLink.COMPLETE_COLLECTION);
 				ArrayList<Stakeholder> items = new ArrayList<Stakeholder>(itemMap.values());
 				createExtraPercepts(items, type, new StakeholderPercepts(items, entity.getIntentedStakeholder()));
-//				createPercepts(event.<ItemMap<Stakeholder>> getContent(MapLink.COMPLETE_COLLECTION), type);
 				break;
 			case FUNCTIONS:
 				createPercepts(event.<ItemMap<Function>> getContent(MapLink.COMPLETE_COLLECTION), type);
