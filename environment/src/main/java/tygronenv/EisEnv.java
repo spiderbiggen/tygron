@@ -31,6 +31,7 @@ import tygronenv.translators.J2TimeState;
 import tygronenv.translators.MultiPolygon2J;
 import tygronenv.translators.ParamEnum2J;
 import tygronenv.translators.Stakeholder2J;
+import tygronenv.translators.J2Zone;
 
 /**
  * Implements the Tygron EIS adapter
@@ -139,7 +140,7 @@ public class EisEnv extends EIDefaultImpl {
 	/************************* SUPPORT FUNCTIONS ****************************/
 
 	Java2Parameter<?>[] j2p = new Java2Parameter<?>[] { new J2ClientItemMap(), new J2Stakeholder(), new J2Setting(),
-			new J2BaseFunction(), new J2Category(), new J2Building(), new J2TimeState(),
+			new J2BaseFunction(), new J2Category(), new J2Building(), new J2TimeState(), new J2Zone(),
 			new J2Indicator()};
 	Parameter2Java<?>[] p2j = new Parameter2Java<?>[] { new ParamEnum2J(), new HashMap2J(), new Stakeholder2J(),
 			new MultiPolygon2J() };
