@@ -37,7 +37,7 @@ public class MultiPolygon2JTest {
 	 */
 	@Test(expected = TranslationException.class)
 	public void testTranslateBadWeather2() throws TranslationException {
-		Function parameter = new Function("NotAmultipolygon");
+		Function parameter = new Function("notAmultipolygon");
 		translator.translate(parameter);
 	}
 
@@ -58,7 +58,7 @@ public class MultiPolygon2JTest {
 	 * @throws TranslationException Expected exception.
 	 */
 	@Test(expected = TranslationException.class)
-	public void testTranslateBadWeather5() throws TranslationException {
+	public void testTranslateBadWeather4() throws TranslationException {
 		Function parameter = new Function("multipolygon",
 				new Identifier("InvalidPolygon"));
 		translator.translate(parameter);
