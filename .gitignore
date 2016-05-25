@@ -26,6 +26,6 @@ hs_err_pid*
 
 #IntelliJ
 .idea/*
-*.iml
+tygron_environment.iml
 /.settings/
 *.iml

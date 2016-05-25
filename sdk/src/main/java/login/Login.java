@@ -20,7 +20,7 @@ import nl.tytech.util.StringUtils;
 
 /**
  * Execute login procedure. Store password if asked.
- *
+ * 
  * @author W.Pasman
  *
  */
@@ -36,7 +36,7 @@ public class Login {
 
 	/**
 	 * Class that contains procedures for login and storing name and passwords.
-	 *
+	 * 
 	 * @throws LoginException
 	 *             if login fails.
 	 */
@@ -53,7 +53,7 @@ public class Login {
 	/**
 	 * Execute standard login procedure: check if we have credentials. If not,
 	 * ask them from user and save
-	 *
+	 * 
 	 * @throws LoginException
 	 */
 	public void doLogin() throws LoginException {
@@ -92,9 +92,9 @@ public class Login {
 
 	/**
 	 * Ask user for the credentials.
-	 *
+	 * 
 	 * @throws LoginException
-	 *
+	 * 
 	 * @throws IllegalStateException
 	 *             if user cancels login procedure.
 	 */
@@ -121,7 +121,7 @@ public class Login {
 
 	/**
 	 * Make a row with given label, and an input area
-	 *
+	 * 
 	 * @param label
 	 * @param inputarea
 	 *            the {@link Component} - input area for user

@@ -1,14 +1,14 @@
 language: java
-
 before_install:
 # download jython to use the python scripts for checkstyle
 - wget http://search.maven.org/remotecontent?filepath=org/python/jython-standalone/2.7.0/jython-standalone-2.7.0.jar -O jython-standalone-2.7.0.jar
 # add eishub/tygron to remote as upstream
 - git remote add upstream https://github.com/eishub/tygron.git
 - git fetch upstream
-install:
+install: 
 - mvn -pl "!doc" install -DskipTests=true -Dmaven.javadoc.skip=true -Dcobertura.skip -B -V
 script:
+# add login credentials in registry
 - java -cp environment/target/tygronenv-*-jar-with-dependencies.jar login.Login $email $password
 # test the code
 - mvn test -Dcobertura.skip
