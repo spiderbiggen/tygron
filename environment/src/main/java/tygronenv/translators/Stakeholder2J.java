@@ -25,8 +25,6 @@ public class Stakeholder2J implements Parameter2Java<Stakeholder> {
 			throw new TranslationException("expected identifier but got " + parameter);
 		}
 		String id = ((Identifier) parameter).getValue();
-		System.out.println("ID");
-		System.out.println(id);
 		List<Stakeholder> stakeholders = new ArrayList<>(
 				EventManager.<Stakeholder> getItemMap(MapLink.STAKEHOLDERS).values());
 		for (Stakeholder stakeholder : stakeholders) {
