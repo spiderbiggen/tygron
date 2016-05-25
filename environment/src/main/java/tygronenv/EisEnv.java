@@ -31,7 +31,6 @@ import tygronenv.translators.J2TimeState;
 import tygronenv.translators.MultiPolygon2J;
 import tygronenv.translators.ParamEnum2J;
 import tygronenv.translators.Stakeholder2J;
-import tygronenv.translators.J2Zone;
 
 /**
  * Implements the Tygron EIS adapter
