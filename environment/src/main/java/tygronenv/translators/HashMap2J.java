@@ -16,7 +16,7 @@ public class HashMap2J implements Parameter2Java<HashMap> {
 	}
 
 	@Override
-	public HashMap translate(Parameter parameter) throws TranslationException {
+	public HashMap<Identifier, Parameter> translate(Parameter parameter) throws TranslationException {
 		if (!(parameter instanceof ParameterList)) {
 			throw new TranslationException("Hashmap Translation on an object that is not a list");
 		}
@@ -24,7 +24,7 @@ public class HashMap2J implements Parameter2Java<HashMap> {
 		return translateEntries((ParameterList) parameter);
 	}
 
-	private HashMap translateEntries(ParameterList parameter) throws TranslationException {
+	private HashMap<Identifier, Parameter> translateEntries(ParameterList parameter) throws TranslationException {
 		HashMap<Identifier, Parameter> map = new HashMap<>();
 
 		for (Parameter entry : parameter) {
