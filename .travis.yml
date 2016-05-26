@@ -12,8 +12,15 @@ script:
 - java -cp environment/target/tygronenv-*-jar-with-dependencies.jar login.Login $email $password
 # test the code
 - mvn test -Dcobertura.skip
+# get the latest commit of legacy contributers on branch
+# take the latest commit of the legacy contributors
+# that have done work on commits of the current branch and put this in
+# a text file with the UTC date and the commit hash
+- while read name;do echo $(git log --author="$(echo $name | sed 's/\\r//g')" upstream/context..HEAD --format="%ct %H" | head -1) >> latestcommits.txt ; done < legacycoders.cfg
+# take the latest commit and get the second value, which is the commit hash
+# this commit hash is put in the variable TAIL, we use a python script to get_second_entry the second value of the space separeted string, then
 # test checkstyle only on changed lines using this python script
-- git diff upstream/context...HEAD -U0 -- *.java --minimal | java -jar jython-standalone-2.7.0.jar checkstylediff.py
+- git diff $(java -jar jython-standalone-2.7.0.jar get_second_entry.py $(sort latestcommits.txt -r | head -1))...HEAD -U0 -- *.java --minimal | java -jar jython-standalone-2.7.0.jar checkstylediff.py
 # checkstyle check is configured with these arguments
 - mvn checkstyle:check -Dcheckstyle.config.location="$PWD/sun_checks_custom.xml" -Dcheckstyle.suppressions.location="$PWD/suppressions.xml" -Dcheckstyle.suppressions.file.expression=checkstyle.supression.file
 #check pmd and checkstyle only for environment
