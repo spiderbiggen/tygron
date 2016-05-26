@@ -87,7 +87,7 @@ public class TygronEntity {
 	 *            the stakeholder to use. Or null if any stakeholder is ok.
 	 * @return stakeholder, or null if requested type is not available.
 	 */
-	private Stakeholder getStakeholder(Stakeholder.Type intendedStakeHolder) {
+	public Stakeholder getStakeholder(final Stakeholder.Type intendedStakeHolder) {
 
 		ItemMap<Stakeholder> stakeholders = EventManager.getItemMap(MapLink.STAKEHOLDERS);
 
@@ -103,7 +103,15 @@ public class TygronEntity {
 		}
 		return null;
 	}
-
+	
+	/**
+	 * Get the intented stakeholder.
+	 * @return The intented stakeholder.
+	 */
+	public Stakeholder.Type getIntendedStakeholder() {
+		return intendedStakeholder;
+	}
+	
 	/**
 	 * Join the existing session on the given slot.
 	 * 

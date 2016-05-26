@@ -8,6 +8,7 @@ import java.util.Map;
 import eis.eis2java.exception.TranslationException;
 import eis.eis2java.translation.Translator;
 import eis.exceptions.EntityException;
+import eis.iilang.Numeral;
 import eis.iilang.Parameter;
 import eis.iilang.Percept;
 import nl.tytech.core.client.event.EventManager;
@@ -89,7 +90,8 @@ public class EntityEventHandler implements EventListenerInterface {
 		if (type instanceof MapLink) {
 			switch ((MapLink) type) {
 			case STAKEHOLDERS:
-				createPercepts(event.<ItemMap<Stakeholder>> getContent(MapLink.COMPLETE_COLLECTION), type);
+				createStakeholderPercepts(event.<ItemMap<Stakeholder>>
+					getContent(MapLink.COMPLETE_COLLECTION), type);
 				break;
 			case FUNCTIONS:
 				createPercepts(event.<ItemMap<Function>> getContent(MapLink.COMPLETE_COLLECTION), type);
@@ -119,15 +121,19 @@ public class EntityEventHandler implements EventListenerInterface {
 	}
 
 	/**
-	 * Create percepts contained in a ClientItemMap array and add them to the
-	 * {@link #collectedPercepts}.
+	 * Create percepts contained in a ClientItemMap array 
+	 * and add them to the {@link #collectedPercepts}.
 	 * 
 	 * @param itemMap
 	 *            list of ClientItemMap elements.
 	 * @param type
 	 *            the type of elements in the map.
+	 * @param <T> T should extend an Item.
+	 * @return 
+	 * 			List of all percepts
 	 */
-	private <T extends Item> void createPercepts(ItemMap<T> itemMap, EventTypeEnum type) {
+	private <T extends Item> List<Percept> createPerceptsList(final ItemMap<T> itemMap, 
+			final EventTypeEnum type) {
 		ArrayList<T> items = new ArrayList<T>(itemMap.values());
 		List<Percept> percepts = new ArrayList<Percept>();
 		Parameter[] parameters = null;
@@ -139,8 +145,40 @@ public class EntityEventHandler implements EventListenerInterface {
 		if (parameters != null) {
 			percepts.add(new Percept(type.name().toLowerCase(), parameters));
 		}
+		return percepts;
+		
+	}
+	
+	/**
+	 * Create percepts contained in a ClientItemMap array 
+	 * and add them to the {@link #collectedPercepts}.
+	 * 
+	 * @param itemMap
+	 *            list of ClientItemMap elements.
+	 * @param type
+	 *            the type of elements in the map.
+	 * @param <T> T should extend an Item.
+	 */	
+	private <T extends Item> void createPercepts(final ItemMap<T> itemMap, 
+			final EventTypeEnum type) {
+		List<Percept> percepts = createPerceptsList(itemMap, type);
 		addPercepts(type, percepts);
-
+	}
+	
+	/**
+	 * Create all percepts that involve stakeholders.
+	 * @param itemMap list of ClientItemMap elements.
+	 * @param type  the type of elements in the map.
+	 */
+	private void createStakeholderPercepts(final ItemMap<Stakeholder> itemMap, 
+			final EventTypeEnum type) {
+		List<Percept> percepts = createPerceptsList(itemMap, type);
+		Stakeholder.Type intentedSt = entity.getIntendedStakeholder();
+		Stakeholder stakeholder = entity.getStakeholder(intentedSt);
+		Percept myIdPercept = new Percept("my_stakeholder_id",
+				new Numeral(stakeholder.getID()));
+		percepts.add(myIdPercept);
+		addPercepts(type, percepts);
 	}
 
 	public void stop() {
