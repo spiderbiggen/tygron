@@ -23,7 +23,6 @@ import nl.tytech.data.engine.item.ActionMenu;
 import nl.tytech.data.engine.item.Building;
 import nl.tytech.data.engine.item.Function;
 import nl.tytech.data.engine.item.Indicator;
-import tygronenv.translators.J2Building;
 import nl.tytech.data.engine.item.Land;
 import nl.tytech.data.engine.item.PopupData;
 import nl.tytech.data.engine.item.Setting;

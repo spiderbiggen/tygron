@@ -2,9 +2,6 @@ package tygronenv.translators;
 
 import static org.junit.Assert.assertEquals;
 
-import eis.iilang.*;
-import nl.tytech.data.engine.item.Building;
-import nl.tytech.data.engine.serializable.Category;
 import org.junit.Test;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -13,12 +10,6 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import eis.eis2java.exception.NoTranslatorException;
 import eis.eis2java.exception.TranslationException;
 import eis.eis2java.translation.Translator;
-import org.junit.runners.ParentRunner;
-import org.mockito.Mockito;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
 import eis.iilang.Function;
 import eis.iilang.Identifier;
 import eis.iilang.Numeral;

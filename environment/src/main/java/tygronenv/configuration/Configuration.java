@@ -10,9 +10,6 @@ import eis.eis2java.exception.TranslationException;
 import eis.eis2java.translation.Translator;
 import eis.iilang.Identifier;
 import eis.iilang.Parameter;
-import nl.tytech.data.engine.item.Stakeholder;
-import nl.tytech.data.engine.item.Stakeholder.Type;
-import nl.tytech.data.engine.item.Strategy;
 import eis.iilang.ParameterList;
 
 /**
