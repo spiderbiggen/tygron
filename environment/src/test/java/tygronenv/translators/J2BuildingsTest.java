@@ -29,6 +29,7 @@ public class J2BuildingsTest {
         String name = "testBuilding";
         int ownerID = 10;
         int buildYr = 1950;
+        int functId = 650;
         Collection<Category> categories = new ArrayList<>();
         Category cat1 = Category.EDUCATION;
         Category cat2 = Category.BRIDGE;
@@ -39,6 +40,7 @@ public class J2BuildingsTest {
         building.setId(buildingID);
         building.setOwnerID(ownerID);
         building.setConstructionYear(buildYr);
+        building.setFunctionID(functId);
         Building spyBuilding = Mockito.spy(building);
         Mockito.doReturn(floors).when(spyBuilding).getFloors();
         Mockito.doReturn(categories).when(spyBuilding).getCategories();
@@ -60,7 +62,8 @@ public class J2BuildingsTest {
         assertEquals(new Numeral(ownerID), parameters.get(2));
         assertEquals(new Numeral(buildYr), parameters.get(3));
         assertEquals(paramCategories, parameters.get(4));
-        assertEquals(new Numeral(floors), parameters.get(5));
+        assertEquals(new Numeral(functId), parameters.get(5));
+        assertEquals(new Numeral(floors), parameters.get(6));
     }
 
 }
