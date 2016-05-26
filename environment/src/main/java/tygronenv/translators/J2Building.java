@@ -28,6 +28,7 @@ public class J2Building implements Java2Parameter<Building> {
 						new Numeral(b.getOwnerID()),
 						new Numeral(b.getConstructionYear()),
 						translator.translate2Parameter(b.getCategories())[0],
+						new Numeral(b.getFunctionID()),
 						new Numeral(b.getFloors()))
 		};
 	}
