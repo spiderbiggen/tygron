@@ -143,8 +143,6 @@ public class EisEnv extends EIDefaultImpl {
 		}
 	};
 
-	// FIXME reset #3844
-
 	@Override
 	public boolean isStateTransitionValid(EnvironmentState oldState, EnvironmentState newState) {
 		return true;
@@ -184,4 +182,3 @@ public class EisEnv extends EIDefaultImpl {
 	}
 
 }
-//>>>>>>> da1c28640e1d5fadbaab369afa0a019331fc637a
