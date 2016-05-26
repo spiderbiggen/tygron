@@ -23,6 +23,8 @@ import nl.tytech.data.engine.item.Function;
 import nl.tytech.data.engine.item.Indicator;
 import nl.tytech.data.engine.item.Setting;
 import nl.tytech.data.engine.item.Stakeholder;
+import tygronenv.percepts.ExtraPercepts;
+import tygronenv.percepts.StakeholderPercepts;
 
 /**
  * Listen to entity events and store them till they are needed. Thread safe
@@ -89,7 +91,9 @@ public class EntityEventHandler implements EventListenerInterface {
 		if (type instanceof MapLink) {
 			switch ((MapLink) type) {
 			case STAKEHOLDERS:
-				createPercepts(event.<ItemMap<Stakeholder>> getContent(MapLink.COMPLETE_COLLECTION), type);
+				ItemMap<Stakeholder> itemMap = event.<ItemMap<Stakeholder>> getContent(MapLink.COMPLETE_COLLECTION);
+				ArrayList<Stakeholder> items = new ArrayList<Stakeholder>(itemMap.values());
+				createExtraPercepts(items, type, new StakeholderPercepts(items, entity.getIntentedStakeholder()));
 				break;
 			case FUNCTIONS:
 				createPercepts(event.<ItemMap<Function>> getContent(MapLink.COMPLETE_COLLECTION), type);
@@ -118,6 +122,37 @@ public class EntityEventHandler implements EventListenerInterface {
 		}
 	}
 
+	/**
+	 * Create percepts contained in a ArrayList of
+	 * {@linkplain Item items} and percepts in the
+	 * {#link ExtraPercepts} and add them to the
+	 * {@link #collectedPercepts}.
+	 * @param items
+	 * 			List of Items.
+	 * @param type
+	 * 			The type of elements in the list.
+	 * @param extraPercepts
+	 * 		Contains the 
+	 * 		{@link ExtraPercepts} that should be
+	 * 		added new percepts.
+	 * 			
+	 */
+	private <T extends Item> void createExtraPercepts(ArrayList<T> items, EventTypeEnum type, ExtraPercepts extraPercepts) {
+		List<Percept> percepts = new ArrayList<Percept>();
+		Parameter[] parameters = null;
+		try {
+			parameters = translator.translate2Parameter(items);
+		} catch (TranslationException e) {
+			e.printStackTrace();
+		}
+		if (parameters != null) {
+			percepts.add(new Percept(type.name().toLowerCase(), parameters));
+		}
+		percepts.addAll(extraPercepts.getPercepts());
+		addPercepts(type, percepts);
+
+	}
+	
 	/**
 	 * Create percepts contained in a ClientItemMap array and add them to the
 	 * {@link #collectedPercepts}.

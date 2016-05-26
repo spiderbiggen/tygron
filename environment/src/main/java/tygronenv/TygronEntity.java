@@ -105,6 +105,16 @@ public class TygronEntity {
 	}
 
 	/**
+	 * Get the intented stakeholder.
+	 * @return
+	 * 		The intented
+	 * 		{@linkplain Stakeholder.Type stakeholder}.
+	 */
+	public Type getIntentedStakeholder() {
+		return intendedStakeholder;
+	}
+	
+	/**
 	 * Join the existing session on the given slot.
 	 * 
 	 * @param slotID

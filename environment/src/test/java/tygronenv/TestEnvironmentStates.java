@@ -81,6 +81,8 @@ public class TestEnvironmentStates {
 				new ParameterList(new Function("stakeholder", new Numeral(1), new Identifier("Inhabitants"),
 						new Numeral(0.0), new Numeral(0)), new Function("indicatorLink", new Numeral(1), 
 		                        new ParameterList()))));
+		Percept expectedPercept2 = new Percept("my_stakeholder_id", new Numeral(0));
+		assertTrue(percepts.contains(expectedPercept2));
 		assertTrue(percepts.contains(expectedPercept));
 
 	}
