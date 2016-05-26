@@ -95,7 +95,7 @@ for root, dirs, files in os.walk("./"):
 		if file.endswith(".java"):
 			java_files.append(os.path.join(root, file))
 # make the file names the same convention as the files read in git diff
-java_files = [x.replace("./","").replace("\\","[\\\/]") for x in java_files]
+java_files = [x.replace("./","").replace("\\","[\\\/]").replace("/","[\\\/]") for x in java_files]
 # all files that are not changed can be fully suppressed and have no changes
 suppressed_files = [(file,False) for file in [y for y in java_files] if not(file in [y[0] for y in changed_files])]
 

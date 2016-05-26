@@ -22,7 +22,7 @@ script:
 # test checkstyle only on changed lines using this python script
 - git diff $(java -jar jython-standalone-2.7.0.jar get_second_entry.py $(sort latestcommits.txt -r | head -1))...HEAD -U0 -- *.java --minimal | java -jar jython-standalone-2.7.0.jar checkstylediff.py
 # checkstyle check is configured with these arguments
-- mvn checkstyle:check -Dcheckstyle.config.location="$PWD/sun_checks_custom.xml" -Dcheckstyle.suppressions.location="$PWD/suppressions.xml" -Dcheckstyle.suppressions.file.expression=checkstyle.supression.file
+- mvn checkstyle:check -Dcheckstyle.config.location="$TRAVIS_BUILD_DIR/sun_checks_custom.xml" -Dcheckstyle.suppressions.location="$TRAVIS_BUILD_DIR/suppressions.xml" -Dcheckstyle.suppressions.file.expression=checkstyle.suppression.file
 #check pmd and checkstyle only for environment
 - cd environment
 - mvn pmd:pmd

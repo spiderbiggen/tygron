@@ -4,12 +4,11 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.MultiPolygon;
-
 import eis.eis2java.exception.TranslationException;
 import eis.iilang.Function;
 import eis.iilang.Identifier;
-import eis.iilang.Numeral;
 
 /**
  * Tests all of the possible interactions with {@link MultiPolygon2J}.
@@ -62,6 +61,18 @@ public class MultiPolygon2JTest {
 		Function parameter = new Function("multipolygon",
 				new Identifier("InvalidPolygon"));
 		translator.translate(parameter);
+	}
+
+	/**
+	 * Tests if the translate function creates the correct polygon.
+	 * @throws TranslationException Unexpected exception.
+	 */
+	@Test
+	public void testTranslateGoodWeather() throws TranslationException {
+		Function parameter = new Function("multipolygon",
+				new Identifier("MULTIPOLYGON (((0 0, 0 10, 10 10, 0 0)))"));
+		MultiPolygon result = translator.translate(parameter);
+		assertEquals(result.getCoordinate(), new Coordinate(0, 0));
 	}
 
 	/**
