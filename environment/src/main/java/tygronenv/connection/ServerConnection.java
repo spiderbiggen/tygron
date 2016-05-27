@@ -33,27 +33,21 @@ public class ServerConnection {
 	private ProjectFactory factory = new ProjectFactory();
 
 	/**
-	 * Connect with the server, using the {@link Settings}.
+	 * Connect with the server, and create Session with the
+	 * {@link Configuration}.
 	 * 
 	 * @param config
 	 *            the {@link Configuration} to use
 	 * @throws ManagementException
 	 */
 	public ServerConnection(Configuration config) throws ManagementException {
-
+		User user;
 		Login login;
 		try {
 			login = new Login();
-			login.doLogin();
+			user = login.doLogin();
 		} catch (LoginException e) {
 			throw new ManagementException("login failed", e);
-		}
-
-		User user = ServicesManager.getMyUserAccount();
-
-		if (user == null) {
-			throw new ManagementException("failed to attach user" + login.getUserName()
-					+ ". Wrong name/pass? Please check the configuration.cfg file");
 		}
 
 		if (user.getMaxAccessLevel().ordinal() < AccessLevel.EDITOR.ordinal()) {

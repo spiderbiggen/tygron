@@ -8,6 +8,7 @@ import eis.iilang.Identifier;
 import eis.iilang.Numeral;
 import eis.iilang.Parameter;
 import nl.tytech.data.engine.item.Zone;
+
 /**
  * Translate {@link Zone} into zones(ID, name, maxFloors, size, [categories], [FunctionIDs]).
  * 
@@ -38,7 +39,6 @@ public class J2Zone implements Java2Parameter<Zone>{
 	public double size(Zone z){
 		return z.getMultiPolygon().getArea();
 	}
-	
 
 	@Override
 	public Class<? extends Zone> translatesFrom() {
