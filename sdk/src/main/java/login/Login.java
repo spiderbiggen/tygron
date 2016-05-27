@@ -15,12 +15,13 @@ import javax.swing.JTextField;
 import nl.tytech.core.client.net.ServicesManager;
 import nl.tytech.core.net.Network;
 import nl.tytech.core.net.event.UserServiceEventType;
+import nl.tytech.core.net.serializable.User;
 import nl.tytech.core.util.SettingsManager;
 import nl.tytech.util.StringUtils;
 
 /**
  * Execute login procedure. Store password if asked.
- * 
+ *
  * @author W.Pasman
  *
  */
@@ -36,7 +37,7 @@ public class Login {
 
 	/**
 	 * Class that contains procedures for login and storing name and passwords.
-	 * 
+	 *
 	 * @throws LoginException
 	 *             if login fails.
 	 */
@@ -53,10 +54,10 @@ public class Login {
 	/**
 	 * Execute standard login procedure: check if we have credentials. If not,
 	 * ask them from user and save
-	 * 
+	 *
 	 * @throws LoginException
 	 */
-	public void doLogin() throws LoginException {
+	public User doLogin() throws LoginException {
 
 		getCredentials();
 
@@ -68,6 +69,14 @@ public class Login {
 		}
 
 		ServicesManager.setSessionLoginCredentials(username, hashedPass, true);
+
+		User user = ServicesManager.getMyUserAccount();
+		if (user == null) {
+			throw new LoginException(
+					"Failed to connect with user" + username + ". Maybe wrong password or the password expired? ");
+
+		}
+		return user;
 	}
 
 	/**
@@ -92,9 +101,9 @@ public class Login {
 
 	/**
 	 * Ask user for the credentials.
-	 * 
+	 *
 	 * @throws LoginException
-	 * 
+	 *
 	 * @throws IllegalStateException
 	 *             if user cancels login procedure.
 	 */
@@ -121,7 +130,7 @@ public class Login {
 
 	/**
 	 * Make a row with given label, and an input area
-	 * 
+	 *
 	 * @param label
 	 * @param inputarea
 	 *            the {@link Component} - input area for user

@@ -1,19 +1,23 @@
 package tygronenv.translators;
 
-import eis.eis2java.exception.TranslationException;
-import eis.eis2java.translation.Translator;
-import eis.iilang.*;
-import nl.tytech.data.engine.item.Building;
-import nl.tytech.data.engine.serializable.Category;
-import org.junit.AfterClass;
-import org.junit.Test;
-import org.mockito.Mockito;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import org.mockito.Mockito;
+
+import eis.eis2java.exception.TranslationException;
+import eis.eis2java.translation.Translator;
+import eis.iilang.Function;
+import eis.iilang.Identifier;
+import eis.iilang.Numeral;
+import eis.iilang.Parameter;
+import eis.iilang.ParameterList;
+import nl.tytech.data.engine.item.Building;
+import nl.tytech.data.engine.serializable.Category;
 
 /**
  * Created by Stefan Breetveld on 23-5-2016.
