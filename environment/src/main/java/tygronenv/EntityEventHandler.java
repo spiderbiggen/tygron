@@ -121,8 +121,7 @@ public class EntityEventHandler implements EventListenerInterface {
 	}
 
 	/**
-	 * Create percepts contained in a ClientItemMap array 
-	 * and add them to the {@link #collectedPercepts}.
+	 * Create percepts contained in a ClientItemMap array.
 	 * 
 	 * @param itemMap
 	 *            list of ClientItemMap elements.
