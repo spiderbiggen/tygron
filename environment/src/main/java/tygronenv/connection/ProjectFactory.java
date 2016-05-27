@@ -23,8 +23,6 @@ import nl.tytech.locale.TLanguage;
  */
 public class ProjectFactory {
 
-	private static final String DOMAIN = "tudelft";
-
 	/**
 	 * Join existing project.
 	 *
