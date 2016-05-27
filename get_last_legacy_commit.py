@@ -8,13 +8,17 @@ import re
 import subprocess
 
 LEGACY_CODERS_CONFIG_FILE = "legacycoders.cfg"
-BRANCH_TO_MERGE_TO = "upstream/context"
+FALLBACK_COMMIT_TXT = "fallbackcommit.txt"
+
+fallback_commit = ""
+with open(FALLBACK_COMMIT_TXT) as f:
+	fallback_commit = f.readlines()[0]
 
 legacy_coders = []
 with open(LEGACY_CODERS_CONFIG_FILE) as f:
 	legacy_coders = f.readlines()
 
-latest_legacy_commit = subprocess.Popen("git rev-parse "+BRANCH_TO_MERGE_TO, stdout=subprocess.PIPE).stdout.read().replace("\n","")
+latest_legacy_commit = fallback_commit
 legacy_coder_found = False
 
 for line in sys.stdin:
