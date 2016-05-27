@@ -15,6 +15,7 @@ import javax.swing.JTextField;
 import nl.tytech.core.client.net.ServicesManager;
 import nl.tytech.core.net.Network;
 import nl.tytech.core.net.event.UserServiceEventType;
+import nl.tytech.core.net.serializable.User;
 import nl.tytech.core.util.SettingsManager;
 import nl.tytech.util.StringUtils;
 
@@ -56,7 +57,7 @@ public class Login {
 	 *
 	 * @throws LoginException
 	 */
-	public void doLogin() throws LoginException {
+	public User doLogin() throws LoginException {
 
 		getCredentials();
 
@@ -68,6 +69,14 @@ public class Login {
 		}
 
 		ServicesManager.setSessionLoginCredentials(username, hashedPass, true);
+
+		User user = ServicesManager.getMyUserAccount();
+		if (user == null) {
+			throw new LoginException(
+					"Failed to connect with user" + username + ". Maybe wrong password or the password expired? ");
+
+		}
+		return user;
 	}
 
 	/**

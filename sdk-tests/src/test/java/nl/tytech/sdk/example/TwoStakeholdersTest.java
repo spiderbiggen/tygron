@@ -1,9 +1,13 @@
 package nl.tytech.sdk.example;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -25,11 +29,16 @@ import nl.tytech.core.net.serializable.User;
 import nl.tytech.core.net.serializable.User.AccessLevel;
 import nl.tytech.core.structure.ItemMap;
 import nl.tytech.core.util.SettingsManager;
+import nl.tytech.data.core.item.Answer;
+import nl.tytech.data.core.item.Item;
 import nl.tytech.data.editor.event.EditorEventType;
 import nl.tytech.data.editor.event.EditorSettingsEventType;
 import nl.tytech.data.editor.event.EditorStakeholderEventType;
 import nl.tytech.data.engine.event.ParticipantEventType;
 import nl.tytech.data.engine.item.Function;
+import nl.tytech.data.engine.item.Land;
+import nl.tytech.data.engine.item.PopupData;
+import nl.tytech.data.engine.item.SpecialOption;
 import nl.tytech.data.engine.item.Stakeholder;
 import nl.tytech.data.engine.serializable.Category;
 import nl.tytech.locale.TLanguage;
@@ -38,9 +47,7 @@ import nl.tytech.util.ThreadUtils;
 import nl.tytech.util.logger.TLogger;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class ExampleTest {
-
-	private final static String SERVER = "preview.tygron.com";
+public class TwoStakeholdersTest {
 
 	private static Integer slotID;
 
@@ -52,9 +59,15 @@ public class ExampleTest {
 
 	private static ExampleEventHandler eventHandler;
 
-	private static Integer stakeholderID = 0;
-
 	private static Login login;
+
+	private static Integer sellerID = Item.NONE;
+	private static Integer buyerID = Item.NONE;
+
+	private static Integer landID = Item.NONE;
+
+	/** the stakeholder ids that we picked */
+	private static List<Integer> holdersIDs;
 
 	@Test
 	public void test01Setup() throws Exception {
@@ -121,7 +134,7 @@ public class ExampleTest {
 		// wait on first updates (seperate thread)
 		boolean updated = false;
 		for (int i = 0; i < 60; i++) {
-			if (eventHandler.isMapUpdated() && eventHandler.isUpdated(MapLink.STAKEHOLDERS)) {
+			if (eventHandler.isMapUpdated() && eventHandler.isUpdated(MapLink.STAKEHOLDERS, MapLink.LANDS)) {
 				updated = true;
 				break;
 			}
@@ -163,24 +176,143 @@ public class ExampleTest {
 
 		// add event handler to receive updates on
 		eventHandler = new ExampleEventHandler();
+
+		boolean updated = false;
+		for (int i = 0; i < 60; i++) {
+			if (eventHandler.isMapUpdated() && eventHandler.isUpdated(MapLink.STAKEHOLDERS, MapLink.LANDS)) {
+				updated = true;
+				break;
+			}
+			ThreadUtils.sleepInterruptible(1000);
+		}
+		assertTrue(updated);
 	}
 
 	@Test
 	public void test08selectStakeholderToPlay() throws Exception {
 
-		stakeholderID = 0;
+		// TODO: (Frank) Enable this to be able to log into the session.
+		// Prerequisite is that the session is started as SessionType.MULTI
+		// slotConnection.fireServerEvent(false,
+		// LogicEventType.SETTINGS_ALLOW_INTERACTION, true);
+
+		holdersIDs = new ArrayList<>();
+
 		ItemMap<Stakeholder> stakeholders = EventManager.getItemMap(MapLink.STAKEHOLDERS);
 		for (Stakeholder stakeholder : stakeholders) {
-			stakeholderID = stakeholder.getID();
-			TLogger.info("Selecting first stakeholder: " + stakeholder.getName() + " to play!");
-			break;
+			holdersIDs.add(stakeholder.getID());
 		}
-		slotConnection.fireServerEvent(true, ParticipantEventType.STAKEHOLDER_SELECT, stakeholderID,
-				reply.client.getClientToken());
+		assertTrue("Expected at least 2 stakeholders", holdersIDs.size() >= 2);
+		// slotConnection.fireServerEvent(true,
+		// ParticipantEventType.STAKEHOLDER_SELECT, stakeholderID,
+		// reply.client.getClientToken());
 	}
 
 	@Test
-	public void test09planBuilding() throws Exception {
+	public void test09Stakeholder0buyLand() throws Exception {
+		ItemMap<Land> lands = EventManager.getItemMap(MapLink.LANDS);
+
+		Land sellLand = null;
+		for (Land land : lands) {
+			sellLand = land;
+			break;
+		}
+
+		assertTrue("There is no land to sell", sellLand != null);
+
+		landID = sellLand.getID();
+
+		sellerID = sellLand.getOwnerID();
+		buyerID = Item.NONE;
+		for (Stakeholder stakeholder : EventManager.<Stakeholder> getItemMap(MapLink.STAKEHOLDERS)) {
+			if (!stakeholder.getID().equals(sellerID)) {
+				buyerID = stakeholder.getID();
+				break;
+			}
+		}
+
+		assertFalse("There is no seller", Item.NONE.equals(sellerID));
+		assertFalse("There is no buyer", Item.NONE.equals(buyerID));
+
+		eventHandler.resetUpdate(MapLink.POPUPS);
+
+		MultiPolygon multiPolygon = sellLand.getMultiPolygon();
+		double sellPrice = 400;
+		slotConnection.fireServerEvent(true, ParticipantEventType.MAP_SELL_LAND, sellerID, buyerID, multiPolygon,
+				sellPrice);
+
+	}
+
+	@Test
+	public void test10confirmLandSell() throws Exception {
+		// wait on first updates (seperate thread)
+		boolean updated = false;
+		for (int i = 0; i < 60; i++) {
+			if (eventHandler.isUpdated(MapLink.POPUPS)) {
+				updated = true;
+				break;
+			}
+			ThreadUtils.sleepInterruptible(1000);
+		}
+		assertTrue(updated);
+
+		eventHandler.resetUpdate(MapLink.LANDS, MapLink.POPUPS);
+
+		ItemMap<PopupData> popups = EventManager.getItemMap(MapLink.POPUPS);
+		for (PopupData popupData : popups) {
+			boolean forBuyer = popupData.getVisibleForStakeholderIDs().contains(buyerID);
+			boolean correctMapLink = popupData.getContentMapLink() == MapLink.SPECIAL_OPTIONS;
+			SpecialOption specialOption = EventManager.getItem(MapLink.SPECIAL_OPTIONS, popupData.getContentLinkID());
+			boolean isSellLand = specialOption != null && specialOption.getType() == SpecialOption.Type.SELL_LAND;
+
+			if (forBuyer && correctMapLink && isSellLand) {
+				// time to react:
+				Answer defaultAnswer = popupData.getAnswers().get(0);
+				slotConnection.fireServerEvent(true, ParticipantEventType.POPUP_ANSWER, buyerID, popupData.getID(),
+						defaultAnswer.getID());
+				TLogger.info("Buyer confirmed land buy: " + popupData.getVisibleForStakeholderIDs().contains(buyerID));
+
+			}
+
+		}
+	}
+
+	@Test
+	public void test11confirmLandSoldConfirmation() {
+		boolean updated = false;
+		for (int i = 0; i < 60; i++) {
+			if (eventHandler.isUpdated(MapLink.POPUPS, MapLink.LANDS)) {
+				updated = true;
+				break;
+			}
+			ThreadUtils.sleepInterruptible(1000);
+		}
+		assertTrue(updated);
+
+		boolean landBuyConfirmed = false;
+		ItemMap<PopupData> popups = EventManager.getItemMap(MapLink.POPUPS);
+		for (PopupData popupData : popups) {
+			boolean forBuyer = popupData.getVisibleForStakeholderIDs().contains(buyerID);
+			boolean correctMapLink = popupData.getContentMapLink() == MapLink.SPECIAL_OPTIONS;
+			SpecialOption specialOption = EventManager.getItem(MapLink.SPECIAL_OPTIONS, popupData.getContentLinkID());
+			boolean isSellLand = specialOption != null && specialOption.getType() == SpecialOption.Type.SELL_LAND;
+
+			if (forBuyer && correctMapLink && isSellLand) {
+				// time to react:
+				Answer defaultAnswer = popupData.getAnswers().get(0);
+				slotConnection.fireServerEvent(true, ParticipantEventType.POPUP_ANSWER, buyerID, popupData.getID(),
+						defaultAnswer.getID());
+				TLogger.info("Buyer confirmed land buy: " + popupData.getVisibleForStakeholderIDs().contains(buyerID));
+				landBuyConfirmed = true;
+			}
+		}
+
+		assertTrue("Land not succesfully bought", landBuyConfirmed);
+
+	}
+
+	@Test
+	public void test12planBuilding() throws Exception {
 
 		/**
 		 * Plan an new ROAD construction
@@ -202,19 +334,19 @@ public class ExampleTest {
 		MultiPolygon roadMultiPolygon = JTSUtils.createSquare(10, 10, 200, 10);
 
 		Integer newBuildingID = slotConnection.fireServerEvent(true, ParticipantEventType.BUILDING_PLAN_CONSTRUCTION,
-				stakeholderID, functionID, floors, roadMultiPolygon);
+				buyerID, functionID, floors, roadMultiPolygon);
 
 		assertTrue(newBuildingID.intValue() >= 0);
 
 	}
 
 	@Test
-	public void test10closeRegularSession() throws Exception {
+	public void test13closeRegularSession() throws Exception {
 		slotConnection.disconnect(false);
 	}
 
 	@Test
-	public void test11deleteProject() throws Exception {
+	public void test14deleteProject() throws Exception {
 		assertTrue(ServicesManager.fireServiceEvent(IOServiceEventType.DELETE_PROJECT, data.getFileName()));
 	}
 }
