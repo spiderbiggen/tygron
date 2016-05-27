@@ -79,7 +79,6 @@ public class TygronEntity {
 	 * @throws EntityException
 	 */
 	public void notifyReady(String entity) throws EntityException {
-	//	connectStakeholder();
 		slotConnection.fireServerEvent(true, ParticipantEventType.STAKEHOLDER_SELECT, stakeholder.getID(),
 				joinedConfirm.client.getClientToken());
 		slotConnection.fireServerEvent(true, LogicEventType.SETTINGS_ALLOW_INTERACTION, true);
