@@ -95,7 +95,6 @@ public class TygronEntity {
 	 *             stakeholder name does not exist.
 	 * 
 	 */
-
 	public void connectStakeholder() throws EntityException {
 
 		ItemMap<Stakeholder> stakeholders = EventManager.getItemMap(MapLink.STAKEHOLDERS);
