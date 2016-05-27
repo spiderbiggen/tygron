@@ -18,7 +18,7 @@ public class ParamEnum2J implements Parameter2Java<ParamEnum> {
 			throw new TranslationException();
 		}
 		String id = ((Identifier) parameter).getValue();
-
+		
 		for (ParamEnum params : ParamEnum.values()) {
 			if (params.getParam().equals(id)) {
 				return params;
