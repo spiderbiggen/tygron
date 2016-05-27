@@ -8,6 +8,7 @@
 		<!-- name of the main project on eishub. -->
 		<environmentname>tygron</environmentname>
 		<mainclass>tygronenv.EisEnv</mainclass>
+		<repoToken>token</repoToken>
 	</properties>
 
 	<groupId>eishub</groupId>
@@ -165,15 +166,15 @@
 				<artifactId>cobertura-maven-plugin</artifactId>
 				<version>2.7</version>
 				<configuration>
-				         <formats>
-            <format>xml</format>
-            <format>html</format>
-          </formats>
-					<forceMojoExecution>false</forceMojoExecution>
-					<check>
-                        <totalLineRate>75</totalLineRate>
-                        <haltOnFailure>true</haltOnFailure>
-					</check>
+					<formats>
+						<format>xml</format>
+						<format>html</format>
+					</formats>
+						<forceMojoExecution>false</forceMojoExecution>
+						<check>
+							<totalLineRate>75</totalLineRate>
+							<haltOnFailure>true</haltOnFailure>
+						</check>
 				</configuration>
 				<executions>
 				<execution>
@@ -243,6 +244,14 @@
                     </reportPlugins>
                 </configuration>
             </plugin>
+			<plugin>
+				<groupId>org.eluder.coveralls</groupId>
+				<artifactId>coveralls-maven-plugin</artifactId>
+				<version>4.1.0</version>
+				<configuration>
+					<repoToken>${repoToken}</repoToken>
+				</configuration>
+			</plugin>
 
 		</plugins>
 	</build>
