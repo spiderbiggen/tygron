@@ -196,16 +196,12 @@ public class EntityEventHandler implements EventListenerInterface {
 	 * Create all percepts that involve stakeholders.
 	 * @param itemMap list of ClientItemMap elements.
 	 * @param type  the type of elements in the map.
+	 * @throws EntityException Exception when we can't find a the correct stakeholder.
 	 */
 	private void createStakeholderPercepts(final ItemMap<Stakeholder> itemMap, 
-			final EventTypeEnum type) {
+			final EventTypeEnum type) throws EntityException {
 		List<Percept> percepts = createPercepts(itemMap, type, type.name().toLowerCase());
-		try {
-			entity.connectStakeholder();
-		} catch (EntityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		entity.connectStakeholder();
 		Stakeholder stakeholder = entity.getStakeholder();
 		Percept myIdPercept = new Percept("my_stakeholder_id",
 				new Numeral(stakeholder.getID()));
