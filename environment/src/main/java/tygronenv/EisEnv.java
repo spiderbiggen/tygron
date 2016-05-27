@@ -66,6 +66,7 @@ public class EisEnv extends EIDefaultImpl {
 
 	@Override
 	protected LinkedList<Percept> getAllPerceptsFromEntity(String e) throws PerceiveException, NoEnvironmentException {
+		
 		return getEntity(e).getPercepts();
 	}
 
