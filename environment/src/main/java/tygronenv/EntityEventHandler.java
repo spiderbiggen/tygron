@@ -118,7 +118,8 @@ public class EntityEventHandler implements EventListenerInterface {
 				createPercepts(event.<ItemMap<Setting>> getContent(MapLink.COMPLETE_COLLECTION), type);
 				break;
 			case UPGRADE_TYPES:
-				createPercepts(event.<ItemMap<UpgradeType>> getContent(MapLink.COMPLETE_COLLECTION), type);
+				createPercepts(event.<ItemMap<UpgradeType>>getContent(MapLink.COMPLETE_COLLECTION),
+				    type);
 			case INDICATORS:
 				//Creates the indicator/3 percepts.
 				createPercepts(event.<ItemMap<Indicator>> getContent(MapLink.COMPLETE_COLLECTION), type);

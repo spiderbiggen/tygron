@@ -69,6 +69,12 @@ public class EisEnv extends EIDefaultImpl {
 		return getEntity(e).getPercepts();
 	}
 
+	/**
+	 * Returns an entity with the requested name.
+	 *
+	 * @param e the name of the entity.
+	 * @return the requested entity.
+	 */
 	private TygronEntity getEntity(final String e) {
 		String entity = e.toUpperCase();
 		if (!entities.containsKey(entity)) {
@@ -152,7 +158,7 @@ public class EisEnv extends EIDefaultImpl {
 	 * Entity with given name is ready for use. Report to EIS
 	 *
 	 * @param entity the identifier of the entity
-	 * @throws EntityException
+	 * @throws EntityException Exception when we can't find a the correct stakeholder.
 	 */
 	public void entityReady(final String entity) throws EntityException {
 		addEntity(entity, "stakeholder");
@@ -162,13 +168,13 @@ public class EisEnv extends EIDefaultImpl {
 	 * SUPPORT FUNCTIONS.
 	 ****************************/
 
-	Java2Parameter<?>[] j2p = new Java2Parameter<?>[]{new J2ClientItemMap(), new J2Stakeholder(), new J2Setting(),
-			new J2Function(), new J2Category(), new J2Building(), new J2TimeState(), new J2ActionLog(),
-			new J2ActionMenu(), new J2Zone(), new J2Land(), new J2MultiPolygon(), new J2PopupData(), new J2Answer(),
-			new J2Indicator(), new J2UpgradeType()};
+	private Java2Parameter<?>[] j2p = new Java2Parameter<?>[]{new J2ClientItemMap(), new J2Stakeholder(),
+	    new J2Setting(), new J2Function(), new J2Category(), new J2Building(), new J2TimeState(),
+	    new J2ActionLog(), new J2ActionMenu(), new J2Zone(), new J2Land(), new J2MultiPolygon(),
+	    new J2PopupData(), new J2Answer(), new J2Indicator(), new J2UpgradeType()};
 
-	Parameter2Java<?>[] p2j = new Parameter2Java<?>[]{new ParamEnum2J(), new HashMap2J(), new Stakeholder2J(),
-			new MultiPolygon2J()};
+	private Parameter2Java<?>[] p2j = new Parameter2Java<?>[]{new ParamEnum2J(),
+	  new HashMap2J(), new Stakeholder2J(), new MultiPolygon2J()};
 
 	/**
 	 * Installs the required EIS2Java translators.
