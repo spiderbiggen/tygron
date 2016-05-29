@@ -42,7 +42,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Implements the Tygron EIS adapter
+ * Implements the Tygron EIS adapter.
  *
  * @author W.Pasman
  */
@@ -65,11 +65,12 @@ public class EisEnv extends EIDefaultImpl {
     }
 
     @Override
-    protected LinkedList<Percept> getAllPerceptsFromEntity(String e) throws PerceiveException, NoEnvironmentException {
+    protected LinkedList<Percept> getAllPerceptsFromEntity(final String e)
+            throws PerceiveException, NoEnvironmentException {
         return getEntity(e).getPercepts();
     }
 
-    private TygronEntity getEntity(String e) {
+    private TygronEntity getEntity(final String e) {
         String entity = e.toUpperCase();
         if (!entities.containsKey(entity)) {
             throw new IllegalArgumentException("Unknown entity " + entity + ". Have:" + entities.keySet());
@@ -78,7 +79,7 @@ public class EisEnv extends EIDefaultImpl {
     }
 
     @Override
-    protected boolean isSupportedByEnvironment(Action action) {
+    protected boolean isSupportedByEnvironment(final Action action) {
         try {
             TygronEntity.getActionType(action.getName());
             TygronEntity.translateParameters(action, 0);
@@ -90,17 +91,17 @@ public class EisEnv extends EIDefaultImpl {
     }
 
     @Override
-    protected boolean isSupportedByType(Action action, String type) {
+    protected boolean isSupportedByType(final Action action, final String type) {
         return isSupportedByEnvironment(action); // ignore type.
     }
 
     @Override
-    protected boolean isSupportedByEntity(Action action, String entity) {
+    protected boolean isSupportedByEntity(final Action action, final String entity) {
         return isSupportedByEnvironment(action); // ignore entity.
     }
 
     @Override
-    protected Percept performEntityAction(String e, Action action) throws ActException {
+    protected Percept performEntityAction(final String e, final Action action) throws ActException {
         try {
             getEntity(e).performAction(action);
         } catch (TranslationException | IllegalArgumentException e1) {
@@ -110,7 +111,7 @@ public class EisEnv extends EIDefaultImpl {
     }
 
     @Override
-    public void init(Map<String, Parameter> parameters) throws ManagementException {
+    public void init(final Map<String, Parameter> parameters) throws ManagementException {
         super.init(parameters);
         Configuration config;
         try {
@@ -143,10 +144,8 @@ public class EisEnv extends EIDefaultImpl {
         }
     }
 
-    ;
-
     @Override
-    public boolean isStateTransitionValid(EnvironmentState oldState, EnvironmentState newState) {
+    public boolean isStateTransitionValid(final EnvironmentState oldState, final EnvironmentState newState) {
         return true;
     }
 
@@ -156,7 +155,7 @@ public class EisEnv extends EIDefaultImpl {
      * @param entity the identifier of the entity
      * @throws EntityException
      */
-    public void entityReady(String entity) throws EntityException {
+    public void entityReady(final String entity) throws EntityException {
         addEntity(entity, "stakeholder");
     }
 
@@ -173,7 +172,7 @@ public class EisEnv extends EIDefaultImpl {
             new MultiPolygon2J()};
 
     /**
-     * Installs the required EIS2Java translators
+     * Installs the required EIS2Java translators.
      */
     private void installTranslators() {
         Translator translatorfactory = Translator.getInstance();

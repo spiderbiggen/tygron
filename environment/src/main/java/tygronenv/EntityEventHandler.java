@@ -56,8 +56,8 @@ public class EntityEventHandler implements EventListenerInterface {
 	public EntityEventHandler(TygronEntity entity) {
 		this.entity = entity;
 		EventManager.addListener(this, MapLink.STAKEHOLDERS, MapLink.ACTION_MENUS, MapLink.ACTION_LOGS,
-				MapLink.FUNCTIONS, MapLink.BUILDINGS, MapLink.SETTINGS, MapLink.ZONES, MapLink.LANDS, MapLink.POPUPS,
-				MapLink.INDICATORS, MapLink.UPGRADE_TYPES);
+				MapLink.FUNCTIONS, MapLink.BUILDINGS, MapLink.SETTINGS, MapLink.ZONES, MapLink.LANDS,
+				MapLink.POPUPS,	MapLink.INDICATORS, MapLink.UPGRADE_TYPES);
 		EventManager.addListener(this, Network.ConnectionEvent.FIRST_UPDATE_FINISHED);
 	}
 
@@ -105,7 +105,8 @@ public class EntityEventHandler implements EventListenerInterface {
 				createPercepts(event.<ItemMap<ActionLog>>getContent(MapLink.COMPLETE_COLLECTION), type);
 				break;
 			case ACTION_MENUS:
-				createPercepts(event.<ItemMap<ActionMenu>>getContent(MapLink.COMPLETE_COLLECTION), type, "actions");
+				createPercepts(event.<ItemMap<ActionMenu>>getContent(MapLink.COMPLETE_COLLECTION),
+						type, "actions");
 				break;
 			case BUILDINGS:
 				createPercepts(event.<ItemMap<Building>> getContent(MapLink.COMPLETE_COLLECTION), type);
