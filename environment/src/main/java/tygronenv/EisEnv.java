@@ -36,7 +36,6 @@ import tygronenv.translators.J2Zone;
 import tygronenv.translators.MultiPolygon2J;
 import tygronenv.translators.ParamEnum2J;
 import tygronenv.translators.Stakeholder2J;
-
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -160,7 +159,7 @@ public class EisEnv extends EIDefaultImpl {
     }
 
     /*************************
-     * SUPPORT FUNCTIONS
+     * SUPPORT FUNCTIONS.
      ****************************/
 
     Java2Parameter<?>[] j2p = new Java2Parameter<?>[]{new J2ClientItemMap(), new J2Stakeholder(), new J2Setting(),
