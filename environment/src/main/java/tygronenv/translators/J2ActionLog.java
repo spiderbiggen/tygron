@@ -9,33 +9,55 @@ import eis.iilang.Parameter;
 import eis.iilang.ParameterList;
 import nl.tytech.core.client.event.EventManager;
 import nl.tytech.core.net.serializable.MapLink;
+import nl.tytech.core.structure.ItemMap;
 import nl.tytech.data.engine.item.ActionLog;
 import nl.tytech.data.engine.item.Indicator;
+import nl.tytech.data.engine.item.Stakeholder;
 
 /**
+ *Translates {@link ActionLog} into
+ *actionlog(StakeholderID, ActionDescription, ActionLogID, X).
+ *X is a list of (IndicatorID,Increase).
  *
  * @author Frank Baars
  *
  */
 public class J2ActionLog implements Java2Parameter<ActionLog> {
 
+	/**
+	 * Empty constructor.
+	 */
+	public J2ActionLog() {
+	}
+	
+	/**
+	 * Translates the actionlog into a parameter.
+	 */
 	@Override
-	public Parameter[] translate(ActionLog actionLog) throws TranslationException {
+	public Parameter[] translate(final ActionLog actionLog) throws TranslationException {
 	    
 	    ParameterList parList = new ParameterList();
+	    ItemMap<Indicator> map =
+	    		EventManager.<Indicator>getItemMap(MapLink.INDICATORS);
 	    
-		for (Indicator indicator : EventManager.<Indicator> getItemMap(MapLink.INDICATORS).values()) {
+		for (Indicator indicator : map.values()) {
 			Double increase = actionLog.getIncrease(indicator);
-			if (increase != null) {
-				// TODO: Implement how you want to use it, and add to parameter
-				// result
-			    parList.add(new ParameterList(new Numeral(indicator.getID()), new Numeral(increase)));
+			if (increase != null && increase != 0.0) {
+			    parList.add(new ParameterList(new Numeral(indicator.getID()),
+			    		new Numeral(increase)));
 			}
 		}
 
-		return new Parameter[] { new Function("actionlog", new Numeral(actionLog.getStakeholder().getID()), new Identifier(actionLog.getAction()), new Numeral(actionLog.getID()), parList) };
+		Stakeholder stakeholder = actionLog.getStakeholder();
+		return new Parameter[] { new Function("actionlog",
+				new Numeral(stakeholder.getID()),
+				new Identifier(actionLog.getAction()),
+				new Numeral(actionLog.getID()), parList) };
 	}
 
+	/**
+	 * Get the class which is translated from.
+	 */
 	@Override
 	public Class<? extends ActionLog> translatesFrom() {
 		return ActionLog.class;
