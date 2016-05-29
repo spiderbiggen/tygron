@@ -48,140 +48,140 @@ import java.util.Map;
 @SuppressWarnings("serial")
 public class EisEnv extends EIDefaultImpl {
 
-    private ServerConnection serverConnection = null;
+	private ServerConnection serverConnection = null;
 
-    /**
-     * Map with {@link TygronEntity}s. The key String is equal to
-     * {@link TygronEntity#getName}.
-     */
-    private Map<String, TygronEntity> entities = new HashMap<String, TygronEntity>();
+	/**
+	 * Map with {@link TygronEntity}s. The key String is equal to
+	 * {@link TygronEntity#getName}.
+	 */
+	private Map<String, TygronEntity> entities = new HashMap<String, TygronEntity>();
 
-    /**
-     * General initialization: translators.
-     */
-    public EisEnv() {
-        installTranslators();
-    }
+	/**
+	 * General initialization: translators.
+	 */
+	public EisEnv() {
+		installTranslators();
+	}
 
-    @Override
-    protected LinkedList<Percept> getAllPerceptsFromEntity(final String e)
-            throws PerceiveException, NoEnvironmentException {
-        return getEntity(e).getPercepts();
-    }
+	@Override
+	protected LinkedList<Percept> getAllPerceptsFromEntity(final String e)
+			throws PerceiveException, NoEnvironmentException {
+		return getEntity(e).getPercepts();
+	}
 
-    private TygronEntity getEntity(final String e) {
-        String entity = e.toUpperCase();
-        if (!entities.containsKey(entity)) {
-            throw new IllegalArgumentException("Unknown entity " + entity + ". Have:" + entities.keySet());
-        }
-        return entities.get(entity);
-    }
+	private TygronEntity getEntity(final String e) {
+		String entity = e.toUpperCase();
+		if (!entities.containsKey(entity)) {
+			throw new IllegalArgumentException("Unknown entity " + entity + ". Have:" + entities.keySet());
+		}
+		return entities.get(entity);
+	}
 
-    @Override
-    protected boolean isSupportedByEnvironment(final Action action) {
-        try {
-            TygronEntity.getActionType(action.getName());
-            TygronEntity.translateParameters(action, 0);
-        } catch (TranslationException e) {
-            return false;
-        }
+	@Override
+	protected boolean isSupportedByEnvironment(final Action action) {
+		try {
+			TygronEntity.getActionType(action.getName());
+			TygronEntity.translateParameters(action, 0);
+		} catch (TranslationException e) {
+			return false;
+		}
 
-        return true;
-    }
+		return true;
+	}
 
-    @Override
-    protected boolean isSupportedByType(final Action action, final String type) {
-        return isSupportedByEnvironment(action); // ignore type.
-    }
+	@Override
+	protected boolean isSupportedByType(final Action action, final String type) {
+		return isSupportedByEnvironment(action); // ignore type.
+	}
 
-    @Override
-    protected boolean isSupportedByEntity(final Action action, final String entity) {
-        return isSupportedByEnvironment(action); // ignore entity.
-    }
+	@Override
+	protected boolean isSupportedByEntity(final Action action, final String entity) {
+		return isSupportedByEnvironment(action); // ignore entity.
+	}
 
-    @Override
-    protected Percept performEntityAction(final String e, final Action action) throws ActException {
-        try {
-            getEntity(e).performAction(action);
-        } catch (TranslationException | IllegalArgumentException e1) {
-            throw new ActException("Failed to execute action " + action, e1);
-        }
-        return null;
-    }
+	@Override
+	protected Percept performEntityAction(final String e, final Action action) throws ActException {
+		try {
+			getEntity(e).performAction(action);
+		} catch (TranslationException | IllegalArgumentException e1) {
+			throw new ActException("Failed to execute action " + action, e1);
+		}
+		return null;
+	}
 
-    @Override
-    public void init(final Map<String, Parameter> parameters) throws ManagementException {
-        super.init(parameters);
-        Configuration config;
-        try {
-            config = new Configuration(parameters);
-        } catch (TranslationException e) {
-            throw new ManagementException("problem with the init settings", e);
-        }
-        serverConnection = new ServerConnection(config);
-        setState(EnvironmentState.RUNNING);
+	@Override
+	public void init(final Map<String, Parameter> parameters) throws ManagementException {
+		super.init(parameters);
+		Configuration config;
+		try {
+			config = new Configuration(parameters);
+		} catch (TranslationException e) {
+			throw new ManagementException("problem with the init settings", e);
+		}
+		serverConnection = new ServerConnection(config);
+		setState(EnvironmentState.RUNNING);
 
-        for (String st : config.getStakeholders()) {
-            String stakeholder = st.toUpperCase();
-            TygronEntity entity = new TygronEntity(this, stakeholder, serverConnection.getSession().getTeamSlot());
-            // These will report themselves to EIS when they are ready.
-            entities.put(stakeholder, entity);
-        }
+		for (String st : config.getStakeholders()) {
+			String stakeholder = st.toUpperCase();
+			TygronEntity entity = new TygronEntity(this, stakeholder, serverConnection.getSession().getTeamSlot());
+			// These will report themselves to EIS when they are ready.
+			entities.put(stakeholder, entity);
+		}
 
-    }
+	}
 
-    @Override
-    public void kill() throws ManagementException {
-        super.kill();
-        for (TygronEntity entity : entities.values()) {
-            entity.close();
-        }
-        entities = new HashMap<>();
-        if (serverConnection != null) {
-            serverConnection.disconnect();
-            serverConnection = null;
-        }
-    }
+	@Override
+	public void kill() throws ManagementException {
+		super.kill();
+		for (TygronEntity entity : entities.values()) {
+			entity.close();
+		}
+		entities = new HashMap<>();
+		if (serverConnection != null) {
+			serverConnection.disconnect();
+			serverConnection = null;
+		}
+	}
 
-    @Override
-    public boolean isStateTransitionValid(final EnvironmentState oldState, final EnvironmentState newState) {
-        return true;
-    }
+	@Override
+	public boolean isStateTransitionValid(final EnvironmentState oldState, final EnvironmentState newState) {
+		return true;
+	}
 
-    /**
-     * Entity with given name is ready for use. Report to EIS
-     *
-     * @param entity the identifier of the entity
-     * @throws EntityException
-     */
-    public void entityReady(final String entity) throws EntityException {
-        addEntity(entity, "stakeholder");
-    }
+	/**
+	 * Entity with given name is ready for use. Report to EIS
+	 *
+	 * @param entity the identifier of the entity
+	 * @throws EntityException
+	 */
+	public void entityReady(final String entity) throws EntityException {
+		addEntity(entity, "stakeholder");
+	}
 
-    /*************************
-     * SUPPORT FUNCTIONS.
-     ****************************/
+	/*************************
+	 * SUPPORT FUNCTIONS.
+	 ****************************/
 
-    Java2Parameter<?>[] j2p = new Java2Parameter<?>[]{new J2ClientItemMap(), new J2Stakeholder(), new J2Setting(),
-            new J2Function(), new J2Category(), new J2Building(), new J2TimeState(), new J2ActionLog(),
-            new J2ActionMenu(), new J2Zone(), new J2Land(), new J2MultiPolygon(), new J2PopupData(), new J2Answer(),
-            new J2Indicator(), new J2UpgradeType()};
+	Java2Parameter<?>[] j2p = new Java2Parameter<?>[]{new J2ClientItemMap(), new J2Stakeholder(), new J2Setting(),
+			new J2Function(), new J2Category(), new J2Building(), new J2TimeState(), new J2ActionLog(),
+			new J2ActionMenu(), new J2Zone(), new J2Land(), new J2MultiPolygon(), new J2PopupData(), new J2Answer(),
+			new J2Indicator(), new J2UpgradeType()};
 
-    Parameter2Java<?>[] p2j = new Parameter2Java<?>[]{new ParamEnum2J(), new HashMap2J(), new Stakeholder2J(),
-            new MultiPolygon2J()};
+	Parameter2Java<?>[] p2j = new Parameter2Java<?>[]{new ParamEnum2J(), new HashMap2J(), new Stakeholder2J(),
+			new MultiPolygon2J()};
 
-    /**
-     * Installs the required EIS2Java translators.
-     */
-    private void installTranslators() {
-        Translator translatorfactory = Translator.getInstance();
+	/**
+	 * Installs the required EIS2Java translators.
+	 */
+	private void installTranslators() {
+		Translator translatorfactory = Translator.getInstance();
 
-        for (Java2Parameter<?> translator : j2p) {
-            translatorfactory.registerJava2ParameterTranslator(translator);
-        }
-        for (Parameter2Java<?> translator : p2j) {
-            translatorfactory.registerParameter2JavaTranslator(translator);
-        }
-    }
+		for (Java2Parameter<?> translator : j2p) {
+			translatorfactory.registerJava2ParameterTranslator(translator);
+		}
+		for (Parameter2Java<?> translator : p2j) {
+			translatorfactory.registerParameter2JavaTranslator(translator);
+		}
+	}
 
 }
