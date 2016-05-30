@@ -190,7 +190,7 @@ public class TygronEntity {
 	 * @throws TranslationException
 	 *             if a parameter can not be translated.
 	 */
-	public void performAction(Action action) throws TranslationException {
+	public Percept performAction(Action action) throws TranslationException {
 		/**
 		 * Action is of the form 'BUILDING_PLAN_CONSTRUCTION'(p1,p2,p3...).
 		 * 
@@ -203,11 +203,7 @@ public class TygronEntity {
 		CustomAction customAction = customActions.get(actionName);
 
 		if (customAction != null) {
-			List<Percept> reactions = customAction.call(action.getParameters());
-			if (customAction.returnsPercept()) {
-				eventHandler.addCustomPercepts(null);
-				eventHandler.addCustomPercepts(reactions);
-			}
+			return customAction.call(this, action.getParameters());
 		} else {
 			ParticipantEventType type = getActionType(actionName);
 			if (type == null) {
@@ -218,6 +214,8 @@ public class TygronEntity {
 
 			// call. We ignore the return value.
 			slotConnection.fireServerEvent(true, type, arguments);
+
+			return null;
 		}
 	}
 

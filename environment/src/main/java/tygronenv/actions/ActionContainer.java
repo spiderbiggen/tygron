@@ -18,8 +18,8 @@ public class ActionContainer extends HashMap<String, CustomAction> {
 	public ActionContainer() {
 		super();
 
-		// Add functions here:
-		addAction(new CounterTestAction());
+		// Add actions here:
+		addAction(new CounterExample());
 	}
 
 	/**

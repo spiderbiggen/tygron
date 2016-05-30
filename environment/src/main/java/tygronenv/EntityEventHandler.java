@@ -72,14 +72,6 @@ public class EntityEventHandler implements EventListenerInterface {
 	}
 
 	/**
-	 * Add custom percepts.
-	 * @param percepts List of percepts.
-	 */
-	public synchronized void addCustomPercepts(final List<Percept> percepts) {
-		collectedPercepts.put(null, percepts);
-	}
-
-	/**
 	 * Get the percepts and clean our {@link #collectedPercepts}.
 	 *
 	 * @return percepts collected since last call to this

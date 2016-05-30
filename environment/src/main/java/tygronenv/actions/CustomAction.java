@@ -1,10 +1,10 @@
 package tygronenv.actions;
 
 import java.util.LinkedList;
-import java.util.List;
 
 import eis.iilang.Parameter;
 import eis.iilang.Percept;
+import tygronenv.TygronEntity;
 
 /**
  * Interface for custom actions.
@@ -14,9 +14,9 @@ public interface CustomAction {
 	/**
 	 * This method is called when the action was called by an agent.
 	 * @param parameters The parameters provided by the agent.
-	 * @return List of percepts resulting from the action.
+	 * @return List of percepts resulting from the action. This list can be empty or null.
 	 */
-	List<Percept> call(LinkedList<Parameter> parameters);
+	Percept call(TygronEntity caller, LinkedList<Parameter> parameters);
 
 	/**
 	 * This method provides the name of the action, which the agent
@@ -24,12 +24,4 @@ public interface CustomAction {
 	 * @return The name of the action.
 	 */
 	String getName();
-
-	/**
-	 * Specifies if this actions should return a percept.
-	 * @return
-	 * 		True if this actions returns a percept,
-	 * 		otherwise false.
-	 */
-	boolean returnsPercept();
 }

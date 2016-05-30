@@ -114,11 +114,10 @@ public class EisEnv extends EIDefaultImpl {
 	@Override
 	protected Percept performEntityAction(final String e, final Action action) throws ActException {
 		try {
-			getEntity(e).performAction(action);
+			return getEntity(e).performAction(action);
 		} catch (TranslationException | IllegalArgumentException e1) {
 			throw new ActException("Failed to execute action " + action, e1);
 		}
-		return null;
 	}
 
 	@Override
