@@ -8,6 +8,7 @@ import nl.tytech.core.client.event.EventIDListenerInterface;
 import nl.tytech.core.client.event.EventManager;
 import nl.tytech.core.event.Event;
 import nl.tytech.core.event.EventListenerInterface;
+import nl.tytech.core.net.Network;
 import nl.tytech.core.net.serializable.MapLink;
 import nl.tytech.data.core.item.Item;
 import nl.tytech.data.engine.item.Setting;
@@ -17,10 +18,15 @@ public class ExampleEventHandler implements EventListenerInterface, EventIDListe
 
 	private boolean mapUpdate = false;
 	private Map<MapLink, Boolean> mapLinkUpdated = new HashMap<>();
+	/**
+	 * goes true after FIRST_UPDATE_FINISHED comes
+	 **/
+	private boolean firstUpdate = false;
 
 	public ExampleEventHandler() {
 		EventManager.addListener(this, MapLink.class);
 		EventManager.addEnumListener(this, MapLink.SETTINGS, Setting.Type.MAP_WIDTH_METERS);
+		EventManager.addListener(this, Network.ConnectionEvent.FIRST_UPDATE_FINISHED);
 	}
 
 	public boolean isMapUpdated() {
@@ -79,6 +85,36 @@ public class ExampleEventHandler implements EventListenerInterface, EventIDListe
 			if (event.getType() == MapLink.STAKEHOLDERS) {
 				TLogger.info("Updated " + event.getType().name() + ": " + updates);
 			}
+		} else if (event.getType() == Network.ConnectionEvent.FIRST_UPDATE_FINISHED) {
+			firstUpdate();
+		}
+	}
+
+	/**
+	 * Called when first update comes in
+	 */
+	private void firstUpdate() {
+		firstUpdate = true;
+	}
+
+	/**
+	 * Wait for FIRST_UPDATE_FINISHED
+	 * 
+	 * @param timeoutMs
+	 *            the max time to wait (ms)
+	 * @throws InterruptedException
+	 *             if time-out occurs.
+	 */
+	public void waitForFirstUpdate(int timeoutMs) throws InterruptedException {
+		// time to sleep if firstUpdate not yet
+		final int SLEEPTIME = 100;
+
+		while (!firstUpdate && timeoutMs > 0) {
+			Thread.sleep(SLEEPTIME);
+			timeoutMs -= SLEEPTIME;
+		}
+		if (!firstUpdate) {
+			throw new InterruptedException("Timed out on waiting for FIRST_UPDATE_FINISHED.");
 		}
 	}
 
