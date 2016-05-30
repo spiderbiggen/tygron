@@ -79,7 +79,6 @@ public class TygronEntity {
 	 * @throws EntityException
 	 */
 	public void notifyReady(String entity) throws EntityException {
-		connectStakeholder();
 		slotConnection.fireServerEvent(true, ParticipantEventType.STAKEHOLDER_SELECT, stakeholder.getID(),
 				joinedConfirm.client.getClientToken());
 		slotConnection.fireServerEvent(true, LogicEventType.SETTINGS_ALLOW_INTERACTION, true);
@@ -96,7 +95,7 @@ public class TygronEntity {
 	 *             stakeholder name does not exist.
 	 * 
 	 */
-	private void connectStakeholder() throws EntityException {
+	public void connectStakeholder() throws EntityException {
 
 		ItemMap<Stakeholder> stakeholders = EventManager.getItemMap(MapLink.STAKEHOLDERS);
 
@@ -123,7 +122,15 @@ public class TygronEntity {
 		throw new EntityException(
 				"Stakeholder with name " + intendedStakeholderName + " is not available. Available are:" + names);
 	}
-
+	
+	/**
+	 * Get the current stakeholder.
+	 * @return The {@link Stakeholder} you are in the game.
+	 */
+	public Stakeholder getStakeholder() {
+		return stakeholder;
+	}
+	
 	/**
 	 * Join the existing session on the given slot.
 	 * 
