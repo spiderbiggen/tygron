@@ -1,5 +1,6 @@
 package nl.tytech.sdk.example;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -26,7 +27,7 @@ import nl.tytech.locale.TLanguage;
 
 public class FirstUpdateTest {
 
-	private ProjectData data;
+	private ProjectData project;
 	private SlotConnection slotConnection;
 	private ExampleEventHandler eventHandler;
 
@@ -38,13 +39,12 @@ public class FirstUpdateTest {
 	@Before
 	public void before() throws LoginException {
 		login();
-		eventHandler = connect();
 	}
 
 	@After
 	public void after() {
 		slotConnection.disconnect(false);
-		assertTrue(ServicesManager.fireServiceEvent(IOServiceEventType.DELETE_PROJECT, data.getFileName()));
+		assertTrue(ServicesManager.fireServiceEvent(IOServiceEventType.DELETE_PROJECT, project.getFileName()));
 	}
 
 	private void login() throws LoginException {
@@ -52,19 +52,16 @@ public class FirstUpdateTest {
 		login.doLogin();
 
 		String projectName = "test" + System.currentTimeMillis();
-		data = ServicesManager.fireServiceEvent(IOServiceEventType.CREATE_NEW_PROJECT, projectName, TLanguage.EN);
-		assertNotNull(data);
+		project = ServicesManager.fireServiceEvent(IOServiceEventType.CREATE_NEW_PROJECT, projectName, TLanguage.EN);
+		assertNotNull(project);
 
 	}
 
 	private ExampleEventHandler connect() {
 
 		Integer slotID = ServicesManager.fireServiceEvent(IOServiceEventType.START_NEW_SESSION, SessionType.EDITOR,
-				data.getFileName(), TLanguage.EN);
-		assertTrue("Could not get slot for project " + data.getFileName(), slotID != null && slotID >= 0);
-
-		// add event handler to receive updates on
-		ExampleEventHandler eventHandler = new ExampleEventHandler();
+				project.getFileName(), TLanguage.EN);
+		assertTrue("Could not get slot for project " + project.getFileName(), slotID != null && slotID >= 0);
 
 		JoinReply reply = ServicesManager.fireServiceEvent(IOServiceEventType.JOIN_SESSION, slotID,
 				AppType.PARTICIPANT);
@@ -80,10 +77,29 @@ public class FirstUpdateTest {
 
 	@Test
 	public void checkInitialStakeholders() throws InterruptedException {
+		// add event handler to receive updates on
+		ExampleEventHandler eventHandler = new ExampleEventHandler();
+
+		connect();
 		eventHandler.waitForFirstUpdate(5000);
 
 		ItemMap<Item> map = EventManager.getItemMap(MapLink.STAKEHOLDERS);
 		assertTrue(map.size() > 0);
+	}
+
+	@Test
+	public void checkExactlyOneFirstUpdate() throws InterruptedException {
+		// add event handler to receive updates on
+		ExampleEventHandler eventHandler = new ExampleEventHandler();
+		ExampleEventHandler eventHandler2 = new ExampleEventHandler();
+
+		connect();
+		eventHandler.waitForFirstUpdate(5000);
+		eventHandler2.waitForFirstUpdate(5000);
+		Thread.sleep(2000);
+
+		assertEquals(1, eventHandler.getNumberOfFirstUpdates());
+		assertEquals(1, eventHandler2.getNumberOfFirstUpdates());
 	}
 
 }

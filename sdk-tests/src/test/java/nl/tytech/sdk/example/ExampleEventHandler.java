@@ -19,9 +19,9 @@ public class ExampleEventHandler implements EventListenerInterface, EventIDListe
 	private boolean mapUpdate = false;
 	private Map<MapLink, Boolean> mapLinkUpdated = new HashMap<>();
 	/**
-	 * goes true after FIRST_UPDATE_FINISHED comes
+	 * increments after every FIRST_UPDATE_FINISHED comes in
 	 **/
-	private boolean firstUpdate = false;
+	private int firstUpdate = 0;
 
 	public ExampleEventHandler() {
 		EventManager.addListener(this, MapLink.class);
@@ -94,7 +94,15 @@ public class ExampleEventHandler implements EventListenerInterface, EventIDListe
 	 * Called when first update comes in
 	 */
 	private void firstUpdate() {
-		firstUpdate = true;
+		firstUpdate++;
+	}
+
+	/**
+	 * 
+	 * @return number of calls to Network.ConnectionEvent.FIRST_UPDATE_FINISHED
+	 */
+	public int getNumberOfFirstUpdates() {
+		return firstUpdate;
 	}
 
 	/**
@@ -109,11 +117,11 @@ public class ExampleEventHandler implements EventListenerInterface, EventIDListe
 		// time to sleep if firstUpdate not yet
 		final int SLEEPTIME = 100;
 
-		while (!firstUpdate && timeoutMs > 0) {
+		while (firstUpdate == 0 && timeoutMs > 0) {
 			Thread.sleep(SLEEPTIME);
 			timeoutMs -= SLEEPTIME;
 		}
-		if (!firstUpdate) {
+		if (firstUpdate == 0) {
 			throw new InterruptedException("Timed out on waiting for FIRST_UPDATE_FINISHED.");
 		}
 	}
