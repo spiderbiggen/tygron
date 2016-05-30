@@ -24,6 +24,7 @@ public class ExampleEventHandler implements EventListenerInterface, EventIDListe
 	private int firstUpdate = 0;
 
 	public ExampleEventHandler() {
+
 		EventManager.addListener(this, MapLink.class);
 		EventManager.addEnumListener(this, MapLink.SETTINGS, Setting.Type.MAP_WIDTH_METERS);
 		EventManager.addListener(this, Network.ConnectionEvent.FIRST_UPDATE_FINISHED);

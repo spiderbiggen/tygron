@@ -128,7 +128,6 @@ public class EntityEventHandler implements EventListenerInterface {
 			}
 		} else if (type == Network.ConnectionEvent.FIRST_UPDATE_FINISHED) {
 			System.out.println("received  FIRST_UPDATE_FINISHED in " + this);
-
 			// entity is ready to run! Report to EIS
 			entity.notifyReady(ENTITY);
 		}
