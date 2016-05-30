@@ -29,17 +29,13 @@ public class J2ActionLog implements Java2Parameter<ActionLog> {
 	 */
 	public J2ActionLog() {
 	}
-	
 	/**
 	 * Translates the actionlog into a parameter.
 	 */
 	@Override
 	public Parameter[] translate(final ActionLog actionLog) throws TranslationException {
-	    
 	    ParameterList parList = new ParameterList();
-	    ItemMap<Indicator> map =
-	    		EventManager.<Indicator>getItemMap(MapLink.INDICATORS);
-	    
+	    ItemMap<Indicator> map = EventManager.<Indicator>getItemMap(MapLink.INDICATORS);
 		for (Indicator indicator : map.values()) {
 			Double increase = actionLog.getIncrease(indicator);
 			if (increase != null && increase != 0.0) {
@@ -49,7 +45,7 @@ public class J2ActionLog implements Java2Parameter<ActionLog> {
 		}
 
 		Stakeholder stakeholder = actionLog.getStakeholder();
-		return new Parameter[] { new Function("actionlog",
+		return new Parameter[] {new Function("actionlog",
 				new Numeral(stakeholder.getID()),
 				new Identifier(actionLog.getAction()),
 				new Numeral(actionLog.getID()), parList) };
