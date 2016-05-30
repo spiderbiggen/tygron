@@ -189,8 +189,9 @@ public class TygronEntity {
 	 *            2.
 	 * @throws TranslationException
 	 *             if a parameter can not be translated.
+	 * @return a Percept returned by the action, or null.
 	 */
-	public Percept performAction(Action action) throws TranslationException {
+	public Percept performAction(final Action action) throws TranslationException {
 		/**
 		 * Action is of the form 'BUILDING_PLAN_CONSTRUCTION'(p1,p2,p3...).
 		 * 

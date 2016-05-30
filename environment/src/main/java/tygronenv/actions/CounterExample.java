@@ -17,7 +17,7 @@ public class CounterExample implements CustomAction {
 	private int counter = 0;
 
 	@Override
-	public Percept call(TygronEntity caller, final LinkedList<Parameter> parameters) {
+	public Percept call(final TygronEntity caller, final LinkedList<Parameter> parameters) {
 		counter++;
 		System.out.println("Action has been called " + counter + " times.");
 		System.out.println(parameters);

@@ -13,6 +13,7 @@ import tygronenv.TygronEntity;
 public interface CustomAction {
 	/**
 	 * This method is called when the action was called by an agent.
+	 * @param caller The TygronEntity that called the action.
 	 * @param parameters The parameters provided by the agent.
 	 * @return List of percepts resulting from the action. This list can be empty or null.
 	 */
