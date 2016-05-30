@@ -25,12 +25,12 @@ import nl.tytech.core.net.serializable.ProjectData;
 import nl.tytech.core.structure.ItemMap;
 import nl.tytech.core.util.SettingsManager;
 import nl.tytech.data.core.item.Item;
+import nl.tytech.data.engine.event.LogicEventType;
 import nl.tytech.locale.TLanguage;
 
 public class FirstUpdateTest {
 
 	private ProjectData project;
-	private SlotConnection slotConnection;
 	private ProjectFactory factory;
 
 	/**
@@ -69,7 +69,7 @@ public class FirstUpdateTest {
 		 * 
 		 * Een ander client zich nog bevind in de draaiende sessie.
 		 */
-		factory.deleteProject(project);
+		// factory.deleteProject(project);
 	}
 
 	@Test
@@ -77,33 +77,40 @@ public class FirstUpdateTest {
 		// add event handler to receive updates on
 		ExampleEventHandler eventHandler = new ExampleEventHandler();
 
-		participate();
+		SlotConnection participant1 = participate();
 		eventHandler.waitForFirstUpdate(5000);
 
 		ItemMap<Item> map = EventManager.getItemMap(MapLink.STAKEHOLDERS);
 		assertEquals(2, map.size());
-		slotConnection.disconnect(false);
+		participant1.disconnect(false);
 	}
 
 	@Test
 	public void checkExactlyOneFirstUpdate() throws InterruptedException {
 		// add event handler to receive updates on
 		ExampleEventHandler eventHandler = new ExampleEventHandler();
-		ExampleEventHandler eventHandler2 = new ExampleEventHandler();
+		SlotConnection participant1 = participate();
+		Thread.sleep(4000);
 
-		participate();
+		ExampleEventHandler eventHandler2 = new ExampleEventHandler();
+		SlotConnection participant2 = participate();
 		eventHandler.waitForFirstUpdate(5000);
 		eventHandler2.waitForFirstUpdate(5000);
 
 		assertEquals(1, eventHandler.getNumberOfFirstUpdates());
 		assertEquals(1, eventHandler2.getNumberOfFirstUpdates());
 
-		slotConnection.disconnect(false);
+		participant1.disconnect(false);
+		participant2.disconnect(false);
 	}
 
 	/******************** SUPPORT FUNCS ***********************/
 
-	private void participate() {
+	/**
+	 * 
+	 * @return a slotconnection for a new participant.
+	 */
+	private SlotConnection participate() {
 		Integer slotID = ServicesManager.fireServiceEvent(IOServiceEventType.START_NEW_SESSION, SessionType.MULTI,
 				project.getFileName(), TLanguage.EN);
 		assertTrue(slotID != null && slotID >= 0);
@@ -111,10 +118,12 @@ public class FirstUpdateTest {
 				AppType.PARTICIPANT);
 		assertNotNull(reply);
 
-		slotConnection = new SlotConnection();
+		SlotConnection slotConnection = new SlotConnection();
 		slotConnection.initSettings(AppType.PARTICIPANT, SettingsManager.getServerIP(), slotID, reply.serverToken,
 				reply.client.getClientToken());
+		slotConnection.fireServerEvent(true, LogicEventType.SETTINGS_ALLOW_INTERACTION, true);
 		assertTrue(slotConnection.connect());
+		return slotConnection;
 	}
 
 }
