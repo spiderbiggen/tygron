@@ -82,7 +82,6 @@ public class EntityEventHandler implements EventListenerInterface {
 		return copy;
 	}
 
-
 	@Override
 	public void notifyListener(Event event) {
 		try {
