@@ -51,7 +51,7 @@ public class TygronEntity {
 	private String intendedStakeholderName;
 
 	private final static Translator translator = Translator.getInstance();
-	
+
 	private ActionContainer customActions = new ActionContainer();
 
 	/**
