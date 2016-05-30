@@ -21,6 +21,9 @@ import nl.tytech.core.util.SettingsManager;
 import nl.tytech.data.engine.event.LogicEventType;
 import nl.tytech.data.engine.event.ParticipantEventType;
 import nl.tytech.data.engine.item.Stakeholder;
+import nl.tytech.util.logger.TLogger;
+import tygronenv.actions.ActionContainer;
+import tygronenv.actions.CustomAction;
 
 /**
  * the 'participant' - a single stakeholder connection. Handles events coming in
@@ -49,6 +52,8 @@ public class TygronEntity {
 	private String intendedStakeholderName;
 
 	private final static Translator translator = Translator.getInstance();
+	
+	private ActionContainer customActions = new ActionContainer();
 
 	/**
 	 * Create new Tygron entity. It will report to env when the entity is ready
@@ -195,16 +200,27 @@ public class TygronEntity {
 				stakeholderID, functionID, floors, roadMultiPolygon);
 				</code>
 		 */
-
-		ParticipantEventType type = getActionType(action.getName());
-		if (type == null) {
-			throw new TranslationException("unknown action " + action.getName());
+		if (true == true) {
+			return;
 		}
+		TLogger.info("\n\nGot action!\n\n");
 
-		Object[] arguments = translateParameters(action, stakeholder.getID());
+		String actionName = action.getName().toLowerCase();
+		System.out.println(actionName);
+		CustomAction customAction = customActions.get(actionName);
+		if (customAction != null) {
+			customAction.call(action.getParameters());
+		} else {
+			ParticipantEventType type = getActionType(actionName);
+			if (type == null) {
+				throw new TranslationException("unknown action " + actionName);
+			}
 
-		// call. We ignore the return value.
-		slotConnection.fireServerEvent(true, type, arguments);
+			Object[] arguments = translateParameters(action, stakeholder.getID());
+
+			// call. We ignore the return value.
+			slotConnection.fireServerEvent(true, type, arguments);
+		}
 	}
 
 	/**
