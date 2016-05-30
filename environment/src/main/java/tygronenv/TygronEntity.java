@@ -205,6 +205,7 @@ public class TygronEntity {
 		if (customAction != null) {
 			List<Percept> reactions = customAction.call(action.getParameters());
 			if (customAction.returnsPercept()) {
+				eventHandler.addCustomPercepts(null);
 				eventHandler.addCustomPercepts(reactions);
 			}
 		} else {
