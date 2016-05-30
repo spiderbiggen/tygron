@@ -9,6 +9,8 @@ import java.util.LinkedList;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.vividsolutions.jts.geom.MultiPolygon;
+
 import eis.eis2java.exception.TranslationException;
 import eis.eis2java.translation.Translator;
 import eis.iilang.Function;
@@ -26,6 +28,8 @@ import nl.tytech.data.engine.serializable.Category;
 public class J2BuildingsTest {
 
     private Translator translator = Translator.getInstance();
+	private MultiPolygon2J multiPolygonTranslator = new MultiPolygon2J();
+
 
     @Test
     public void J2ExtBuildingTest() throws TranslationException {
@@ -33,6 +37,8 @@ public class J2BuildingsTest {
         String name = "testBuilding";
         int ownerID = 10;
         int buildYr = 1950;
+        Function parameter = new Function("multipolygon", new Identifier("MULTIPOLYGON (((10 10, 10 20, 20 20, 10 10)))"));
+		MultiPolygon multiPoly = multiPolygonTranslator.translate(parameter);
         Collection<Category> categories = new ArrayList<>();
         Category cat1 = Category.EDUCATION;
         Category cat2 = Category.BRIDGE;
@@ -43,6 +49,7 @@ public class J2BuildingsTest {
         building.setId(buildingID);
         building.setOwnerID(ownerID);
         building.setConstructionYear(buildYr);
+        building.setMultiPolygon(multiPoly);
         Building spyBuilding = Mockito.spy(building);
         Mockito.doReturn(floors).when(spyBuilding).getFloors();
         Mockito.doReturn(categories).when(spyBuilding).getCategories();
@@ -65,6 +72,7 @@ public class J2BuildingsTest {
         assertEquals(new Numeral(buildYr), parameters.get(3));
         assertEquals(paramCategories, parameters.get(4));
         assertEquals(new Numeral(floors), parameters.get(5));
+        assertEquals(multiPoly, parameters.get(6));
     }
 
 }
