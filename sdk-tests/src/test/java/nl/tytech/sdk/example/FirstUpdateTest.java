@@ -10,8 +10,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import login.ProjectException;
 import login.Login;
+import login.ProjectException;
 import login.ProjectFactory;
 import nl.tytech.core.client.event.EventManager;
 import nl.tytech.core.client.net.ServicesManager;
@@ -53,8 +53,6 @@ public class FirstUpdateTest {
 	@After
 	public void after() throws InterruptedException, ProjectException {
 
-		Thread.sleep(1000);
-		factory.deleteProject(project);
 		/**
 		 * FIXME this throws and I have no idea why. Can be many problems:
 		 * 
@@ -71,9 +69,7 @@ public class FirstUpdateTest {
 		 * 
 		 * Een ander client zich nog bevind in de draaiende sessie.
 		 */
-		// assertTrue(ServicesManager.fireServiceEvent(IOServiceEventType.DELETE_PROJECT,
-		// project.getFileName()));
-
+		factory.deleteProject(project);
 	}
 
 	@Test
