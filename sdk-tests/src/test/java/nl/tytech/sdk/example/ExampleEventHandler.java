@@ -65,7 +65,6 @@ public class ExampleEventHandler implements EventListenerInterface, EventIDListe
 
 		if (enhum == Setting.Type.MAP_WIDTH_METERS) {
 			Setting setting = EventManager.getItem(MapLink.SETTINGS, Setting.Type.MAP_WIDTH_METERS);
-			TLogger.info("Map Width is set to: " + setting.getIntValue());
 			mapUpdate = true;
 		}
 	}
