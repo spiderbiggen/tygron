@@ -79,7 +79,7 @@ public class FirstUpdateTest {
 	}
 
 	@Test
-	public void checkInitialStakeholders() throws Exception {
+	public void checkInitialStakeholders() throws InterruptedException {
 		eventHandler.waitForFirstUpdate(5000);
 
 		ItemMap<Item> map = EventManager.getItemMap(MapLink.STAKEHOLDERS);
