@@ -28,6 +28,7 @@ import nl.tytech.data.engine.item.Land;
 import nl.tytech.data.engine.item.PopupData;
 import nl.tytech.data.engine.item.Setting;
 import nl.tytech.data.engine.item.Stakeholder;
+import nl.tytech.data.engine.item.UpgradeType;
 import nl.tytech.data.engine.item.Zone;
 import nl.tytech.util.logger.TLogger;
 
@@ -55,7 +56,8 @@ public class EntityEventHandler implements EventListenerInterface {
 	public EntityEventHandler(TygronEntity entity) {
 		this.entity = entity;
 		EventManager.addListener(this, MapLink.STAKEHOLDERS, MapLink.ACTION_MENUS, MapLink.ACTION_LOGS,
-				MapLink.FUNCTIONS, MapLink.BUILDINGS, MapLink.SETTINGS, MapLink.ZONES, MapLink.LANDS, MapLink.POPUPS, MapLink.INDICATORS);
+				MapLink.FUNCTIONS, MapLink.BUILDINGS, MapLink.SETTINGS, MapLink.ZONES, MapLink.LANDS,
+				MapLink.POPUPS,	MapLink.INDICATORS, MapLink.UPGRADE_TYPES);
 		EventManager.addListener(this, Network.ConnectionEvent.FIRST_UPDATE_FINISHED);
 	}
 
@@ -103,7 +105,8 @@ public class EntityEventHandler implements EventListenerInterface {
 				createPercepts(event.<ItemMap<ActionLog>>getContent(MapLink.COMPLETE_COLLECTION), type);
 				break;
 			case ACTION_MENUS:
-				createPercepts(event.<ItemMap<ActionMenu>>getContent(MapLink.COMPLETE_COLLECTION), type, "actions");
+				createPercepts(event.<ItemMap<ActionMenu>>getContent(MapLink.COMPLETE_COLLECTION),
+						type, "actions");
 				break;
 			case BUILDINGS:
 				createPercepts(event.<ItemMap<Building>> getContent(MapLink.COMPLETE_COLLECTION), type);
@@ -114,6 +117,9 @@ public class EntityEventHandler implements EventListenerInterface {
 			case SETTINGS:
 				createPercepts(event.<ItemMap<Setting>> getContent(MapLink.COMPLETE_COLLECTION), type);
 				break;
+			case UPGRADE_TYPES:
+				createPercepts(event.<ItemMap<UpgradeType>>getContent(MapLink.COMPLETE_COLLECTION),
+				    type);
 			case INDICATORS:
 				//Creates the indicator/3 percepts.
 				createPercepts(event.<ItemMap<Indicator>> getContent(MapLink.COMPLETE_COLLECTION), type);
