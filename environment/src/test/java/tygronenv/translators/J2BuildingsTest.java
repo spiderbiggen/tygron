@@ -26,6 +26,7 @@ import nl.tytech.data.engine.serializable.Category;
 import nl.tytech.data.engine.serializable.MapType;
 
 import org.junit.runner.RunWith;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -40,7 +41,7 @@ public class J2BuildingsTest {
     private Translator translator = Translator.getInstance();
 
     @Test
-    public void J2ExtBuildingTest() throws TranslationException {
+    public void J2BuildingTest() throws TranslationException {
         int buildingID = 10;
         String name = "testBuilding";
         int ownerID = 10;
@@ -60,34 +61,40 @@ public class J2BuildingsTest {
         categories.add(cat1);
         categories.add(cat2);
         int floors = 5;
-        Building building = new Building(0, name);
-        building.setId(buildingID);
-        building.setOwnerID(ownerID);
-        building.setConstructionYear(buildYr);
-        Building spyBuilding = Mockito.spy(building);
-        Mockito.doReturn(floors).when(spyBuilding).getFloors();
-        Mockito.doReturn(categories).when(spyBuilding).getCategories();
-        Mockito.doReturn(mp).when(spyBuilding).getMultiPolygon(MapType.MAQUETTE);
 
         translator.registerJava2ParameterTranslator(new J2Building());
         translator.registerJava2ParameterTranslator(new J2Category());
+        translator.registerJava2ParameterTranslator(new J2MultiPolygon());
 
-        Parameter[] params = translator.translate2Parameter(spyBuilding);
+        Building b = PowerMockito.mock(Building.class);
+
+        PowerMockito.when(b.getName()).thenReturn(name);
+        PowerMockito.when(b.getID()).thenReturn(buildingID);
+        PowerMockito.when(b.getOwnerID()).thenReturn(ownerID);
+        PowerMockito.when(b.getConstructionYear()).thenReturn(buildYr);
+        PowerMockito.when(b.getFloors()).thenReturn(floors);
+        PowerMockito.when(b.getCategories()).thenReturn(categories);
+        PowerMockito.when(b.getMultiPolygon(MapType.MAQUETTE)).thenReturn(mp);
+
+        Parameter[] params = translator.translate2Parameter(b);
         Function func = (Function) params[0];
         LinkedList<Parameter> parameters = func.getParameters();
 
         ParameterList paramCategories = new ParameterList();
         paramCategories.add(new Identifier(cat1.name()));
         paramCategories.add(new Identifier(cat2.name()));
+        Parameter multiPolygon = new Function("multipolygon", new Identifier(mp.toText()));
 
+        System.out.println(func);
         assertEquals("building", func.getName());
         assertEquals(new Numeral(buildingID), parameters.get(0));
         assertEquals(new Identifier(name), parameters.get(1));
         assertEquals(new Numeral(ownerID), parameters.get(2));
-        assertEquals(new Numeral(buildYr), parameters.get(3));
-        assertEquals(paramCategories, parameters.get(4));
-        assertEquals(new Numeral(floors), parameters.get(5));
-        assertEquals(mp, parameters.get(6));
+        assertEquals(new Numeral(floors), parameters.get(3));
+        assertEquals(new Numeral(buildYr), parameters.get(4));
+        assertEquals(paramCategories, parameters.get(5));
+        assertEquals(multiPolygon, parameters.get(6));
+
     }
 
 }

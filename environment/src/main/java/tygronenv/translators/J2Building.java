@@ -27,10 +27,11 @@ public class J2Building implements Java2Parameter<Building> {
 						new Numeral(b.getID()),
 						new Identifier(b.getName()),
 						new Numeral(b.getOwnerID()),
-						new Numeral(b.getConstructionYear()),
-						translator.translate2Parameter(b.getCategories())[0],
 						new Numeral(b.getFloors()),
-						translator.translate2Parameter(b.getMultiPolygon(MapType.MAQUETTE))[0])
+						new Numeral(b.getConstructionYear()),
+                        translator.translate2Parameter(b.getCategories())[0],
+						translator.translate2Parameter(b.getMultiPolygon(MapType.MAQUETTE))[0]),
+
 		};
 	}
 
