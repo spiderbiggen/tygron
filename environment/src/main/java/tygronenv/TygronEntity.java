@@ -203,7 +203,10 @@ public class TygronEntity {
 		CustomAction customAction = customActions.get(actionName);
 
 		if (customAction != null) {
-			customAction.call(action.getParameters());
+			List<Percept> reactions = customAction.call(action.getParameters());
+			if (customAction.returnsPercept()) {
+				eventHandler.addCustomPercepts(reactions);
+			}
 		} else {
 			ParticipantEventType type = getActionType(actionName);
 			if (type == null) {
