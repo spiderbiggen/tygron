@@ -21,7 +21,7 @@ public class CounterTestAction implements CustomAction {
 		counter++;
 		System.out.println("Action has been called " + counter + " times.");
 		System.out.println(parameters);
-		
+	
 		//create a percept
 		List<Percept> percepts = new LinkedList<Percept>();
 		Percept percept = new Percept("counter", new Numeral(counter));

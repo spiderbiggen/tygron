@@ -70,15 +70,15 @@ public class EntityEventHandler implements EventListenerInterface {
 	private synchronized void addPercepts(EventTypeEnum type, List<Percept> percepts) {
 		collectedPercepts.put(type, percepts);
 	}
-	
+
 	/**
 	 * Add custom percepts.
-	 * @param percepts List of percepts 
+	 * @param percepts List of percepts.
 	 */
 	public synchronized void addCustomPercepts(final List<Percept> percepts) {
 		collectedPercepts.put(null, percepts);
 	}
-	
+
 	/**
 	 * Get the percepts and clean our {@link #collectedPercepts}.
 	 *
@@ -89,7 +89,6 @@ public class EntityEventHandler implements EventListenerInterface {
 		collectedPercepts = new HashMap<>();
 		return copy;
 	}
-	
 
 
 	@Override

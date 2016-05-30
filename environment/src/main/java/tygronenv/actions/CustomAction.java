@@ -24,7 +24,7 @@ public interface CustomAction {
 	 * @return The name of the action.
 	 */
 	String getName();
-	
+
 	/**
 	 * Specifies if this actions should return a percept.
 	 * @return
