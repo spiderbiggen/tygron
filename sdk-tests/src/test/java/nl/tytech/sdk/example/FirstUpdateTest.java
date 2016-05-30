@@ -90,11 +90,11 @@ public class FirstUpdateTest {
 		// add event handler to receive updates on
 		ExampleEventHandler eventHandler = new ExampleEventHandler();
 		SlotConnection participant1 = participate();
-		Thread.sleep(4000);
+
+		eventHandler.waitForFirstUpdate(5000);
 
 		ExampleEventHandler eventHandler2 = new ExampleEventHandler();
 		SlotConnection participant2 = participate();
-		eventHandler.waitForFirstUpdate(5000);
 		eventHandler2.waitForFirstUpdate(5000);
 
 		assertEquals(1, eventHandler.getNumberOfFirstUpdates());
