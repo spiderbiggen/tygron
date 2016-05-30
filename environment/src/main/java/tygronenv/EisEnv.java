@@ -14,6 +14,7 @@ import eis.iilang.Action;
 import eis.iilang.EnvironmentState;
 import eis.iilang.Parameter;
 import eis.iilang.Percept;
+import tygronenv.actions.ActionContainer;
 import tygronenv.configuration.Configuration;
 import tygronenv.connection.ServerConnection;
 import tygronenv.translators.HashMap2J;
@@ -85,8 +86,13 @@ public class EisEnv extends EIDefaultImpl {
 
 	@Override
 	protected boolean isSupportedByEnvironment(final Action action) {
+		ActionContainer actions = new ActionContainer();
+		String actionName = action.getName();
+		if (actions.containsKey(actionName)) {
+			return true;
+		}
 		try {
-			TygronEntity.getActionType(action.getName());
+			TygronEntity.getActionType(actionName);
 			TygronEntity.translateParameters(action, 0);
 		} catch (TranslationException e) {
 			return false;
@@ -107,9 +113,6 @@ public class EisEnv extends EIDefaultImpl {
 
 	@Override
 	protected Percept performEntityAction(final String e, final Action action) throws ActException {
-		if (true) {
-			return null;
-		}
 		try {
 			getEntity(e).performAction(action);
 		} catch (TranslationException | IllegalArgumentException e1) {

@@ -2,6 +2,11 @@ package tygronenv.actions;
 
 import java.util.HashMap;
 
+/**
+ * 
+ * @author Max_G
+ *
+ */
 public class ActionContainer extends HashMap<String, CustomAction>{
 	private static final long serialVersionUID = -6578689136054121705L;
 	

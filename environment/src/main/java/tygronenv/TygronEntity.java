@@ -21,7 +21,6 @@ import nl.tytech.core.util.SettingsManager;
 import nl.tytech.data.engine.event.LogicEventType;
 import nl.tytech.data.engine.event.ParticipantEventType;
 import nl.tytech.data.engine.item.Stakeholder;
-import nl.tytech.util.logger.TLogger;
 import tygronenv.actions.ActionContainer;
 import tygronenv.actions.CustomAction;
 
@@ -200,14 +199,9 @@ public class TygronEntity {
 				stakeholderID, functionID, floors, roadMultiPolygon);
 				</code>
 		 */
-		if (true == true) {
-			return;
-		}
-		TLogger.info("\n\nGot action!\n\n");
-
 		String actionName = action.getName().toLowerCase();
-		System.out.println(actionName);
 		CustomAction customAction = customActions.get(actionName);
+		
 		if (customAction != null) {
 			customAction.call(action.getParameters());
 		} else {
