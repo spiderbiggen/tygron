@@ -1,39 +1,27 @@
 package tygronenv.translators;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
-
-import org.junit.Test;
-import org.mockito.Mockito;
-
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
-
 import eis.eis2java.exception.TranslationException;
 import eis.eis2java.translation.Translator;
 import eis.iilang.Function;
-import eis.iilang.Identifier;
-import eis.iilang.Numeral;
 import eis.iilang.Parameter;
-import eis.iilang.ParameterList;
 import nl.tytech.data.engine.item.Building;
 import nl.tytech.data.engine.serializable.Category;
-import nl.tytech.data.engine.serializable.MapType;
-
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+
+import java.util.Arrays;
+import java.util.Collection;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Created by Stefan Breetveld on 23-5-2016.
@@ -48,12 +36,13 @@ public class J2BuildingsTest {
     /**
      * Test whether Java to Building({@link J2Building}) asks for
      * the correct properties of the indicator.
+     *
      * @throws TranslationException thrown if the translate method fails.
      */
     @Test
     public void J2BuildingTest() throws TranslationException {
         GeometryFactory gf = new GeometryFactory();
-		MultiPolygon mp = gf.createMultiPolygon(new Polygon[0]);
+        MultiPolygon mp = gf.createMultiPolygon(new Polygon[0]);
         Collection<Category> categories = Arrays.asList(Category.EDUCATION, Category.BRIDGE);
 
         Building b = PowerMockito.mock(Building.class);
@@ -77,7 +66,7 @@ public class J2BuildingsTest {
         verify(b, times(1)).getConstructionYear();
         verify(b, times(1)).getCategories();
         verify(b, times(1)).getFloors();
-        verify(b,times(1)).getFunctionID();
+        verify(b, times(1)).getFunctionID();
         verify(b, times(1)).getMultiPolygon(any());
         verify(j2c, times(2)).translate(any());
         verify(j2mp, times(1)).translate(any());
