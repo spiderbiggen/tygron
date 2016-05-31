@@ -1,6 +1,5 @@
 package nl.tytech.sdk.example;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,9 +11,7 @@ import nl.tytech.core.event.Event;
 import nl.tytech.core.event.EventListenerInterface;
 import nl.tytech.core.net.Network;
 import nl.tytech.core.net.serializable.MapLink;
-import nl.tytech.data.core.item.Item;
 import nl.tytech.data.engine.item.Setting;
-import nl.tytech.util.logger.TLogger;
 
 public class ExampleEventHandler implements EventListenerInterface, EventIDListenerInterface {
 
@@ -107,11 +104,6 @@ public class ExampleEventHandler implements EventListenerInterface, EventIDListe
 		if (event.getType() instanceof MapLink) {
 			mapLinkUpdated.put((MapLink) event.getType(), true);
 
-			// (Frank) Print for debug
-			Collection<Item> updates = event.getContent(MapLink.UPDATED_COLLECTION);
-			if (event.getType() == MapLink.STAKEHOLDERS) {
-				TLogger.info("Updated " + event.getType().name() + ": " + updates);
-			}
 		} else if (event.getType() == Network.ConnectionEvent.FIRST_UPDATE_FINISHED) {
 			firstUpdate();
 		}
