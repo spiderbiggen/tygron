@@ -11,7 +11,7 @@ import nl.tytech.data.engine.item.Building;
 import nl.tytech.data.engine.serializable.MapType;
 
 /**
- * Translate {@link Building} into building(ID, name, ownerID, constructionYear, [categories], numFloors).
+ * Translate {@link Building} into building(ID, name, ownerID, constructionYear, [categories], FunctionID, numFloors).
  * 
  * @author W.Pasman
  *
@@ -29,9 +29,9 @@ public class J2Building implements Java2Parameter<Building> {
 						new Numeral(b.getOwnerID()),
 						new Numeral(b.getConstructionYear()),
                         translator.translate2Parameter(b.getCategories())[0],
+						new Numeral(b.getFunctionID()),
 						new Numeral(b.getFloors()),
 						translator.translate2Parameter(b.getMultiPolygon(MapType.MAQUETTE))[0]),
-
 		};
 	}
 

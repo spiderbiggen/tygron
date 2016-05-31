@@ -77,10 +77,10 @@ public class J2BuildingsTest {
         verify(b, times(1)).getConstructionYear();
         verify(b, times(1)).getCategories();
         verify(b, times(1)).getFloors();
+        verify(b,times(1)).getFunctionID();
         verify(b, times(1)).getMultiPolygon(any());
         verify(j2c, times(2)).translate(any());
         verify(j2mp, times(1)).translate(any());
-
     }
 
 }

@@ -12,6 +12,8 @@ script:
 - java -cp environment/target/tygronenv-*-jar-with-dependencies.jar login.Login $email $password
 # test the code
 - mvn test -Dcobertura.skip
+# put the last commit of the context branch in a file to be read later
+- git rev-parse upstream/context > fallbackcommit.txt
 # test checkstyle only on changed lines using this python script
 # get the latest commit of legacy contributers on branch
 # take the latest commit of the legacy contributors
