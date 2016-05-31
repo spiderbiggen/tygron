@@ -36,7 +36,7 @@ public class TygronEntityImpl implements TygronEntity, EntityEventListener {
 	 */
 	private JoinReply joinedConfirm;
 	private EntityEventHandler eventHandler;
-	private Stakeholder stakeholder;
+	private Stakeholder stakeholder = null; // set when we get connected.
 	private EntityListener environment;
 	/**
 	 * The name that this entity should represent. At construction time we do
@@ -265,6 +265,11 @@ public class TygronEntityImpl implements TygronEntity, EntityEventListener {
 
 		return true;
 
+	}
+
+	@Override
+	public Stakeholder getStakeholder() {
+		return stakeholder;
 	}
 
 }

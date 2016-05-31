@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import eis.eis2java.exception.TranslationException;
 import eis.iilang.Action;
 import eis.iilang.Percept;
+import nl.tytech.data.engine.item.Stakeholder;
 
 /**
  * The 'participant' - a single stakeholder connection. Handles events coming in
@@ -42,5 +43,12 @@ public interface TygronEntity {
 	 * Close server connection.
 	 */
 	void close();
+
+	/**
+	 * 
+	 * @return the Stakeholder, or null if we are not yet connected with a
+	 *         stakeholder.
+	 */
+	Stakeholder getStakeholder();
 
 }
