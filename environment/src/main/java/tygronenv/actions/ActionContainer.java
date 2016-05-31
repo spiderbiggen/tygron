@@ -5,7 +5,7 @@ import java.util.HashMap;
 /**
  * A container for CustomActions. All custom actions should be added in the constructor
  * of this object.
- * @author Max_G
+ * @author Max Groenenboom
  */
 public class ActionContainer extends HashMap<String, CustomAction> {
 	private static final long serialVersionUID = -6578689136054121705L;

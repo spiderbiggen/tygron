@@ -30,7 +30,7 @@ import tygronenv.TygronEntity;
  * Possible actionTypes are "build", "demolish", and none more at the moment (it's a WIP).
  * It is also possible to specify a filter, with zone,<id1>,<id2> or stakeholder,<id1>,<id2> pairs, filtering
  * only on pieces of land that are owned by the specified stakeholder, or are in the specified zone.
- * @author Max_G
+ * @author Max Groenenboom
  */
 public class GetRelevantAreas implements CustomAction, EventListenerInterface {
 
@@ -47,55 +47,52 @@ public class GetRelevantAreas implements CustomAction, EventListenerInterface {
 
 	@Override
 	public Percept call(final TygronEntity caller, final LinkedList<Parameter> parameters) {
-		try {
-			Percept result = new Percept("relevant_areas");
-			System.out.println(parameters); // TODO remove //
+		Percept result = new Percept("relevant_areas");
 
-			// Get parameters.
-			Iterator<Parameter> params = parameters.iterator();
-			Number callID = ((Numeral) params.next()).getValue();
-			String actionType = ((Identifier) params.next()).getValue();
-			ParameterList filters = null;
-			Parameter filterParam = params.next();
-			if (filterParam instanceof Identifier) {
-				filters = new ParameterList();
-			} else {
-				filters = (ParameterList) filterParam;
-			}
-
-			// Get multiPolygons.
-			List<MultiPolygon> polygons = getUsableArea(caller, actionType);
-			System.out.println("Got polygons:");
-			System.out.println(polygons); // TODO remove //
-
-			// Filter multiPolygons.
-			filterPolygons(polygons, filters);
-			System.out.println("Filtered polygons:");
-			System.out.println(polygons); // TODO remove //
-
-			// Create result parameters.
-			result.addParameter(new Numeral(callID));
-			ParameterList areas = new ParameterList();
-			try {
-				for (MultiPolygon polygon : polygons) {
-					areas.add(new ParameterList(
-							TRANSLATOR.translate2Parameter(polygon)[0],
-							new Numeral(polygon.getArea())
-					));
-				}
-			} catch (TranslationException e) {
-				TLogger.exception(e);
-				e.printStackTrace();
-			}
-			result.addParameter(areas);
-			System.out.println("Resulting Percept:");
-			System.out.println(result);
-
-			return result;
-		} catch (Exception e) {
-			TLogger.exception(e, e.getMessage());
-			throw e;
+		// Get parameters.
+		Iterator<Parameter> params = parameters.iterator();
+		Number callID = ((Numeral) params.next()).getValue();
+		String actionType = ((Identifier) params.next()).getValue();
+		ParameterList filters = null;
+		Parameter filterParam = params.next();
+		// If the filter parameter is an Identifier, it is probably "[]", or someone called it wrong.
+		// Thus, there are no (valid) filters specified.
+		if (filterParam instanceof Identifier) {
+			filters = new ParameterList();
+		} else {
+			filters = (ParameterList) filterParam;
 		}
+
+		// Get multiPolygons.
+		List<MultiPolygon> polygons = getUsableArea(caller, actionType);
+
+		// Filter resulting multiPolygons.
+		filterPolygons(polygons, filters);
+
+		// Create result parameters.
+		result.addParameter(new Numeral(callID));
+		ParameterList areas = new ParameterList();
+		try {
+			for (MultiPolygon polygon : polygons) {
+				areas.add(new ParameterList(
+						TRANSLATOR.translate2Parameter(polygon)[0],
+						new Numeral(polygon.getArea())
+				));
+			}
+		} catch (TranslationException e) {
+			TLogger.exception(e);
+			e.printStackTrace();
+		}
+		result.addParameter(areas);
+		System.out.println("Resulting Percept:");
+		final int maxAmountOfPolys = 50;
+		if (areas.size() > maxAmountOfPolys) {
+			System.out.println("<<snipped, too large (" + areas.size() + " MultiPolygons)>>");
+		} else {
+			System.out.println(result);
+		}
+
+		return result;
 	}
 
 	/**
@@ -133,8 +130,12 @@ public class GetRelevantAreas implements CustomAction, EventListenerInterface {
 	 * @return The list of MultiPolygons.
 	 */
 	private List<MultiPolygon> getDemolishableArea(final Stakeholder stakeholder) {
-		List<MultiPolygon> polygons = new ArrayList<MultiPolygon>(buildings.size());
-		buildings.forEach((building) -> polygons.add(building.getMultiPolygon(MapType.MAQUETTE)));
+		List<MultiPolygon> polygons = new ArrayList<MultiPolygon>();
+		for (Building building : buildings) {
+			if (building.getOwner().getID() == stakeholder.getID()) {
+				polygons.add(building.getMultiPolygon(MapType.MAQUETTE));
+			}
+		}
 		return polygons;
 	}
 

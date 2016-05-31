@@ -8,7 +8,7 @@ import tygronenv.TygronEntity;
 
 /**
  * Interface for custom actions.
- * @author Max_G
+ * @author Max Groenenboom
  */
 public interface CustomAction {
 	/**
