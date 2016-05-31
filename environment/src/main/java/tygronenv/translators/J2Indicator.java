@@ -1,6 +1,7 @@
 package tygronenv.translators;
 
 import nl.tytech.data.engine.item.Indicator;
+import nl.tytech.data.engine.serializable.MapType;
 
 import eis.eis2java.exception.TranslationException;
 import eis.eis2java.translation.Java2Parameter;
@@ -25,7 +26,10 @@ public class J2Indicator implements Java2Parameter<Indicator> {
         String explanation = indicator.getExplanation();
 //        int indID = indicator.getID();
         double target = indicator.getTarget();
-        double currentValue = 0;
+        Double currentValue = indicator.getExactNumberValue(MapType.MAQUETTE);
+        if (currentValue == null) {
+            currentValue = 0.0;
+        }
         ParameterList pl = new ParameterList();
 
         if (explanation.contains("<p hidden>")) {
