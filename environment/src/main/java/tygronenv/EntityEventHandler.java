@@ -48,10 +48,11 @@ public class EntityEventHandler implements EventListenerInterface {
 	 * FIXME collect Events and evaluate the percept lazy.
 	 */
 	private Map<EventTypeEnum, List<Percept>> collectedPercepts = new HashMap<>();
-	private TygronEntity entity;
+	private EntityEventListener entity;
 
-	public EntityEventHandler(TygronEntity entity) {
+	public EntityEventHandler(EntityEventListener entity) {
 		this.entity = entity;
+
 		EventManager.addListener(this, MapLink.STAKEHOLDERS, MapLink.ACTION_MENUS, MapLink.ACTION_LOGS,
 				MapLink.FUNCTIONS, MapLink.BUILDINGS, MapLink.SETTINGS, MapLink.ZONES, MapLink.LANDS, MapLink.POPUPS);
 		EventManager.addListener(this, Network.ConnectionEvent.FIRST_UPDATE_FINISHED);
