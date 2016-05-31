@@ -23,7 +23,7 @@ public class J2Indicator implements Java2Parameter<Indicator> {
     @Override
     public Parameter[] translate(final Indicator indicator) throws TranslationException {
         String explanation = indicator.getExplanation();
-        int indID = indicator.getID();
+//        int indID = indicator.getID();
         double target = indicator.getTarget();
         double currentValue = 0;
         ParameterList pl = new ParameterList();
@@ -35,17 +35,17 @@ public class J2Indicator implements Java2Parameter<Indicator> {
             // If the indicator is an indicator with zones, we add multi
             if (explanation.contains("multi")) {
                 currentValue = Double.parseDouble(explanation.split("multi")[0]);
-                pl = zoneLink(indID, target, explanation.split("multi")[1]);
+                pl = zoneLink(indicator.getID(), target, explanation.split("multi")[1]);
             } else if (explanation.contains("multiT")) {
                 String[] targetValues = explanation.split("MultiT")[0].split("\\\\t");
                 currentValue = Double.parseDouble(targetValues[0]);
                 target = Double.parseDouble(targetValues[1]);
-                pl = zoneLink(indID, target, explanation.split("multi")[1]);
+                pl = zoneLink(indicator.getID(), target, explanation.split("multi")[1]);
             }
         }
 
         return new Parameter[]{new Function("indicator",
-                new Numeral(indID),
+                new Numeral(indicator.getID()),
                 new Numeral(currentValue),
                 new Numeral(target), pl)};
     }
