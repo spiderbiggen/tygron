@@ -18,10 +18,10 @@ import nl.tytech.core.client.event.EventManager;
 import nl.tytech.core.event.Event;
 import nl.tytech.core.event.EventListenerInterface;
 import nl.tytech.core.net.serializable.MapLink;
+import nl.tytech.core.net.serializable.PolygonItem;
 import nl.tytech.core.structure.ItemMap;
 import nl.tytech.data.engine.item.Building;
 import nl.tytech.data.engine.item.Stakeholder;
-import nl.tytech.data.engine.serializable.MapType;
 import nl.tytech.util.logger.TLogger;
 import tygronenv.TygronEntity;
 
@@ -54,26 +54,31 @@ public class GetRelevantAreas implements CustomAction, EventListenerInterface {
 		Number callID = ((Numeral) params.next()).getValue();
 		String actionType = ((Identifier) params.next()).getValue();
 		ParameterList filters = null;
-		Parameter filterParam = params.next();
-		// If the filter parameter is an Identifier, it is probably "[]", or someone called it wrong.
-		// Thus, there are no (valid) filters specified.
-		if (filterParam instanceof Identifier) {
-			filters = new ParameterList();
+		if (params.hasNext()) {
+			Parameter filterParam = params.next();
+			// If the filter parameter is an Identifier, it is probably "[]", or someone called it wrong.
+			// Thus, there are no (valid) filters specified.
+			if (filterParam instanceof ParameterList) {
+				filters = (ParameterList) filterParam;
+			} else {
+				filters = new ParameterList();
+			}
 		} else {
-			filters = (ParameterList) filterParam;
+			filters = new ParameterList();
 		}
 
 		// Get multiPolygons.
-		List<MultiPolygon> polygons = getUsableArea(caller, actionType);
+		List<PolygonItem> items = getUsableArea(caller, actionType);
 
 		// Filter resulting multiPolygons.
-		filterPolygons(polygons, filters);
+		filterPolygons(items, filters);
 
 		// Create result parameters.
 		result.addParameter(new Numeral(callID));
 		ParameterList areas = new ParameterList();
 		try {
-			for (MultiPolygon polygon : polygons) {
+			for (PolygonItem item : items) {
+				MultiPolygon polygon = item.getQTMultiPolygons()[0];
 				areas.add(new ParameterList(
 						TRANSLATOR.translate2Parameter(polygon)[0],
 						new Numeral(polygon.getArea())
@@ -102,7 +107,7 @@ public class GetRelevantAreas implements CustomAction, EventListenerInterface {
 	 * @param actionType The type of the action. Can be "build" or "demolish".
 	 * @return A list of MultiPolygons the stakeholder can use.
 	 */
-	private List<MultiPolygon> getUsableArea(final TygronEntity caller, final String actionType) {
+	private List<PolygonItem> getUsableArea(final TygronEntity caller, final String actionType) {
 		Stakeholder stakeholder = caller.getStakeholder();
 		switch (actionType) {
 		case "build":
@@ -110,7 +115,7 @@ public class GetRelevantAreas implements CustomAction, EventListenerInterface {
 		case "demolish":
 			return getDemolishableArea(stakeholder);
 		default:
-			return new ArrayList<MultiPolygon>();
+			return new ArrayList<PolygonItem>();
 		}
 	}
 
@@ -119,9 +124,9 @@ public class GetRelevantAreas implements CustomAction, EventListenerInterface {
 	 * @param stakeholder The stakeholder to compile a list for.
 	 * @return The list of MultiPolygons.
 	 */
-	private List<MultiPolygon> getBuildableArea(final Stakeholder stakeholder) {
+	private List<PolygonItem> getBuildableArea(final Stakeholder stakeholder) {
 		// TODO Create this method //
-		return new ArrayList<MultiPolygon>();
+		return new ArrayList<PolygonItem>();
 	}
 
 	/**
@@ -129,11 +134,11 @@ public class GetRelevantAreas implements CustomAction, EventListenerInterface {
 	 * @param stakeholder The stakeholder to compile a list for.
 	 * @return The list of MultiPolygons.
 	 */
-	private List<MultiPolygon> getDemolishableArea(final Stakeholder stakeholder) {
-		List<MultiPolygon> polygons = new ArrayList<MultiPolygon>();
+	private List<PolygonItem> getDemolishableArea(final Stakeholder stakeholder) {
+		List<PolygonItem> polygons = new ArrayList<PolygonItem>();
 		for (Building building : buildings) {
 			if (building.getOwner().getID() == stakeholder.getID()) {
-				polygons.add(building.getMultiPolygon(MapType.MAQUETTE));
+				polygons.add(building);
 			}
 		}
 		return polygons;
@@ -144,7 +149,7 @@ public class GetRelevantAreas implements CustomAction, EventListenerInterface {
 	 * @param polygons The list of polygons to filter on.
 	 * @param filters The filters.
 	 */
-	private void filterPolygons(final List<MultiPolygon> polygons, final ParameterList filters) {
+	private void filterPolygons(final List<PolygonItem> polygons, final ParameterList filters) {
 		// TODO Create this method //
 	}
 
