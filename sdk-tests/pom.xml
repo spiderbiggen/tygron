@@ -11,7 +11,7 @@
 
 	<groupId>tygron</groupId>
 	<artifactId>sdk-tests</artifactId>
-	<version>1.0.22</version>
+	<version>1.0.23-SNAPSHOT</version>
 	<name>${environmentname} sdk tests</name>
 	<description>Tests for the Tytech SDK</description>
 	<url>http://www.github.com/eishub/${environmentname}</url>
