@@ -55,15 +55,16 @@ public class J2Indicator implements Java2Parameter<Indicator> {
     }
 
     /**
-     * Translates a list of items into a ParameterList of zonelinks
+     * Translates a list of items into a ParameterList of zonelinks.
      *
      * @param id       The id of the indicator.
      * @param target   The target of the indicator.
      * @param itemList The list of items to parse.
      * @return ParameterList of zoneLinks
      */
-    public ParameterList zoneLink(int id, double target, String itemList) {
+    public ParameterList zoneLink(final int id, final double target, final String itemList) {
         ParameterList pList = new ParameterList();
+        final int three = 3; // Fuck you Checkstyle
 
         // Get all different zones into array
         String[] items = itemList.split("\\\\n");
@@ -75,11 +76,13 @@ public class J2Indicator implements Java2Parameter<Indicator> {
             if (types.length == 2) {
                 // Length 2 if there is no custom target for each zone
                 pList.add(new Function("zone_link", new Numeral(Integer.parseInt(types[0])),
-                        new Numeral(id), new Numeral(Double.parseDouble(types[1])), new Numeral(target)));
-            } else if (types.length == 3) {
+                        new Numeral(id), new Numeral(Double.parseDouble(types[1])),
+                        new Numeral(target)));
+            } else if (types.length == three) {
                 // Length 3 if there are custom targets for each zone
                 pList.add(new Function("zone_link", new Numeral(Integer.parseInt(types[0])),
-                        new Numeral(id), new Numeral(Double.parseDouble(types[1])), new Numeral(Double.parseDouble(types[2]))));
+                        new Numeral(id), new Numeral(Double.parseDouble(types[1])),
+                        new Numeral(Double.parseDouble(types[2]))));
             }
         }
 
