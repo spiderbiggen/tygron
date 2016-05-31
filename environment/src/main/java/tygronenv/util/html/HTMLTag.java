@@ -405,9 +405,10 @@ public class HTMLTag {
 		int count = 0;
 		for (int i = 0; i < elementnames.size(); i++) {
 			if (elementnames.get(i).equals(str)) {
-				count++;
 				if (count == it)
 					return i;
+				else
+					count++;
 			}
 		}
 		throw new NoSuchElementException();

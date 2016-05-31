@@ -8,7 +8,6 @@ import java.util.List;
 public class HTMLParser {
 
 	private String html;
-	private List items;
 	private HTMLTag root;
 
 	/**
@@ -23,11 +22,11 @@ public class HTMLParser {
 	 * Getter for the items.
 	 * @return items in the HTML.
 	 */
-	public List getItems() {
-		if(items == null)
+	public HTMLTag getItems() {
+		if(root == null)
 			parseHTML();
 
-		return items;
+		return root;
 	}
 
 	/**
