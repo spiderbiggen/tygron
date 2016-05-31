@@ -1,8 +1,13 @@
 package tygronenv.translators;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -40,60 +45,41 @@ public class J2BuildingsTest {
 
     private Translator translator = Translator.getInstance();
 
+    /**
+     * Test whether Java to Building({@link J2Building}) asks for
+     * the correct properties of the indicator.
+     * @throws TranslationException thrown if the translate method fails.
+     */
     @Test
     public void J2BuildingTest() throws TranslationException {
-        int buildingID = 10;
-        String name = "testBuilding";
-        int ownerID = 10;
-        int buildYr = 1950;
         GeometryFactory gf = new GeometryFactory();
-        Coordinate[] coordinates = new Coordinate[5];
-        coordinates[0] = new Coordinate(10, 10);
-        coordinates[1] = new Coordinate(10, 20);
-        coordinates[2] = new Coordinate(20, 20);
-        coordinates[3] = new Coordinate(20, 10);
-        coordinates[4] = new Coordinate(10, 10);
-        Polygon[] polygonArray = {gf.createPolygon(coordinates)};
-		MultiPolygon mp = gf.createMultiPolygon(polygonArray);
-        Collection<Category> categories = new ArrayList<>();
-        Category cat1 = Category.EDUCATION;
-        Category cat2 = Category.BRIDGE;
-        categories.add(cat1);
-        categories.add(cat2);
-        int floors = 5;
-
-        translator.registerJava2ParameterTranslator(new J2Building());
-        translator.registerJava2ParameterTranslator(new J2Category());
-        translator.registerJava2ParameterTranslator(new J2MultiPolygon());
+		MultiPolygon mp = gf.createMultiPolygon(new Polygon[0]);
+        Collection<Category> categories = Arrays.asList(Category.EDUCATION, Category.BRIDGE);
 
         Building b = PowerMockito.mock(Building.class);
 
-        PowerMockito.when(b.getName()).thenReturn(name);
-        PowerMockito.when(b.getID()).thenReturn(buildingID);
-        PowerMockito.when(b.getOwnerID()).thenReturn(ownerID);
-        PowerMockito.when(b.getConstructionYear()).thenReturn(buildYr);
-        PowerMockito.when(b.getFloors()).thenReturn(floors);
+        PowerMockito.when(b.getMultiPolygon(any())).thenReturn(mp);
         PowerMockito.when(b.getCategories()).thenReturn(categories);
-        PowerMockito.when(b.getMultiPolygon(MapType.MAQUETTE)).thenReturn(mp);
+
+        J2Category j2c = PowerMockito.spy(new J2Category());
+        J2MultiPolygon j2mp = PowerMockito.spy(new J2MultiPolygon());
+        translator.registerJava2ParameterTranslator(new J2Building());
+        translator.registerJava2ParameterTranslator(j2c);
+        translator.registerJava2ParameterTranslator(j2mp);
 
         Parameter[] params = translator.translate2Parameter(b);
         Function func = (Function) params[0];
-        LinkedList<Parameter> parameters = func.getParameters();
 
-        ParameterList paramCategories = new ParameterList();
-        paramCategories.add(new Identifier(cat1.name()));
-        paramCategories.add(new Identifier(cat2.name()));
-        Parameter multiPolygon = new Function("multipolygon", new Identifier(mp.toText()));
-
-        System.out.println(func);
         assertEquals("building", func.getName());
-        assertEquals(new Numeral(buildingID), parameters.get(0));
-        assertEquals(new Identifier(name), parameters.get(1));
-        assertEquals(new Numeral(ownerID), parameters.get(2));
-        assertEquals(new Numeral(floors), parameters.get(3));
-        assertEquals(new Numeral(buildYr), parameters.get(4));
-        assertEquals(paramCategories, parameters.get(5));
-        assertEquals(multiPolygon, parameters.get(6));
+        verify(b, times(1)).getID();
+        verify(b, times(1)).getName();
+        verify(b, times(1)).getOwnerID();
+        verify(b, times(1)).getConstructionYear();
+        verify(b, times(1)).getCategories();
+        verify(b, times(1)).getFloors();
+        verify(b, times(1)).getMultiPolygon(any());
+        verify(j2c, times(2)).translate(any());
+        verify(j2mp, times(1)).translate(any());
 
     }
 
