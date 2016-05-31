@@ -39,12 +39,12 @@ public class J2Indicator implements Java2Parameter<Indicator> {
             // If the indicator is an indicator with zones, we add multi
             if (explanation.contains("multi")) {
                 currentValue = Double.parseDouble(explanation.split("multi")[0]);
-                pl = zoneLink(indicator.getID(), target, explanation.split("multi")[1]);
+                pl = zoneLink(indicator, target, explanation.split("multi")[1]);
             } else if (explanation.contains("multiT")) {
                 String[] targetValues = explanation.split("MultiT")[0].split("\\\\t");
                 currentValue = Double.parseDouble(targetValues[0]);
                 target = Double.parseDouble(targetValues[1]);
-                pl = zoneLink(indicator.getID(), target, explanation.split("multi")[1]);
+                pl = zoneLink(indicator, target, explanation.split("multi")[1]);
             }
         }
 
@@ -57,12 +57,12 @@ public class J2Indicator implements Java2Parameter<Indicator> {
     /**
      * Translates a list of items into a ParameterList of zonelinks.
      *
-     * @param id       The id of the indicator.
+     * @param i        The indicator.
      * @param target   The target of the indicator.
      * @param itemList The list of items to parse.
      * @return ParameterList of zoneLinks
      */
-    public ParameterList zoneLink(final int id, final double target, final String itemList) {
+    public ParameterList zoneLink(final Indicator i, final double target, final String itemList) {
         ParameterList pList = new ParameterList();
         final int three = 3; // Fuck you Checkstyle
 
@@ -76,12 +76,12 @@ public class J2Indicator implements Java2Parameter<Indicator> {
             if (types.length == 2) {
                 // Length 2 if there is no custom target for each zone
                 pList.add(new Function("zone_link", new Numeral(Integer.parseInt(types[0])),
-                        new Numeral(id), new Numeral(Double.parseDouble(types[1])),
+                        new Numeral(i.getID()), new Numeral(Double.parseDouble(types[1])),
                         new Numeral(target)));
             } else if (types.length == three) {
                 // Length 3 if there are custom targets for each zone
                 pList.add(new Function("zone_link", new Numeral(Integer.parseInt(types[0])),
-                        new Numeral(id), new Numeral(Double.parseDouble(types[1])),
+                        new Numeral(i.getID()), new Numeral(Double.parseDouble(types[1])),
                         new Numeral(Double.parseDouble(types[2]))));
             }
         }
