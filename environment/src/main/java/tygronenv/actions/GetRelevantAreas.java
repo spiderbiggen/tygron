@@ -14,7 +14,9 @@ import eis.iilang.Numeral;
 import eis.iilang.Parameter;
 import eis.iilang.ParameterList;
 import eis.iilang.Percept;
+import nl.tytech.core.client.event.EventManager;
 import nl.tytech.core.event.Event;
+import nl.tytech.core.event.EventListenerInterface;
 import nl.tytech.core.net.serializable.MapLink;
 import nl.tytech.core.structure.ItemMap;
 import nl.tytech.data.engine.item.Building;
@@ -30,9 +32,18 @@ import tygronenv.TygronEntity;
  * only on pieces of land that are owned by the specified stakeholder, or are in the specified zone.
  * @author Max_G
  */
-public class GetRelevantAreas implements CustomAction {
+public class GetRelevantAreas implements CustomAction, EventListenerInterface {
 
 	private static final Translator TRANSLATOR = Translator.getInstance();
+
+	private ItemMap<Building> buildings;
+
+	/**
+	 * Constructor for this CustomAction. It adds an eventListener for Buildings and Lands.
+	 */
+	public GetRelevantAreas() {
+		EventManager.addListener(this, MapLink.BUILDINGS, MapLink.LANDS);
+	}
 
 	@Override
 	public Percept call(final TygronEntity caller, final LinkedList<Parameter> parameters) {
@@ -77,6 +88,8 @@ public class GetRelevantAreas implements CustomAction {
 				e.printStackTrace();
 			}
 			result.addParameter(areas);
+			System.out.println("Resulting Percept:");
+			System.out.println(result);
 
 			return result;
 		} catch (Exception e) {
@@ -110,7 +123,7 @@ public class GetRelevantAreas implements CustomAction {
 	 * @return The list of MultiPolygons.
 	 */
 	private List<MultiPolygon> getBuildableArea(final Stakeholder stakeholder) {
-		// TODO (Max) Create this method //
+		// TODO Create this method //
 		return new ArrayList<MultiPolygon>();
 	}
 
@@ -120,8 +133,6 @@ public class GetRelevantAreas implements CustomAction {
 	 * @return The list of MultiPolygons.
 	 */
 	private List<MultiPolygon> getDemolishableArea(final Stakeholder stakeholder) {
-		Event event = new Event();
-		ItemMap<Building> buildings = event.<ItemMap<Building>>getContent(MapLink.COMPLETE_COLLECTION);
 		List<MultiPolygon> polygons = new ArrayList<MultiPolygon>(buildings.size());
 		buildings.forEach((building) -> polygons.add(building.getMultiPolygon(MapType.MAQUETTE)));
 		return polygons;
@@ -133,11 +144,21 @@ public class GetRelevantAreas implements CustomAction {
 	 * @param filters The filters.
 	 */
 	private void filterPolygons(final List<MultiPolygon> polygons, final ParameterList filters) {
-		// TODO (Max) Create this method //
+		// TODO Create this method //
 	}
 
 	@Override
 	public String getName() {
 		return "get_relevant_areas";
+	}
+
+	@Override
+	public void notifyListener(final Event event) {
+		switch ((MapLink) event.getType()) {
+		case BUILDINGS:
+			buildings = event.<ItemMap<Building>>getContent(MapLink.COMPLETE_COLLECTION);
+		default:
+			break;
+		}
 	}
 }
