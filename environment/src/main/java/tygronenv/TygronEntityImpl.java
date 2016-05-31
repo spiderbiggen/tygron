@@ -216,7 +216,7 @@ public class TygronEntityImpl implements TygronEntity, EntityEventListener {
 	 * @throws TranslationException
 	 *             if there is something wrong with action type or parameters.
 	 */
-	public static Object[] translateParameters(Action action, int stakeholderID) throws TranslationException {
+	protected Object[] translateParameters(Action action, int stakeholderID) throws TranslationException {
 		ParticipantEventType type = getActionType(action.getName());
 
 		LinkedList<Parameter> parameters = action.getParameters();
@@ -246,7 +246,7 @@ public class TygronEntityImpl implements TygronEntity, EntityEventListener {
 	 *            the action as string
 	 * @return the {@link ParticipantEventType} action.
 	 */
-	public static ParticipantEventType getActionType(String actionName) throws TranslationException {
+	protected ParticipantEventType getActionType(String actionName) throws TranslationException {
 		try {
 			return ParticipantEventType.valueOf(actionName.toUpperCase());
 		} catch (IllegalArgumentException e) {
