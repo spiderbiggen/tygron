@@ -14,7 +14,7 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import login.Login;
 import nl.tytech.core.client.event.EventManager;
 import nl.tytech.core.client.net.ServicesManager;
-import nl.tytech.core.client.net.SlotConnection;
+import nl.tytech.core.client.net.TSlotConnection;
 import nl.tytech.core.net.Network.AppType;
 import nl.tytech.core.net.Network.SessionType;
 import nl.tytech.core.net.event.IOServiceEventType;
@@ -46,7 +46,7 @@ public class ExampleTest {
 
 	private static ProjectData data;
 
-	private static SlotConnection slotConnection;
+	private static TSlotConnection slotConnection;
 
 	private static ExampleEventHandler eventHandler;
 
@@ -93,14 +93,14 @@ public class ExampleTest {
 		reply = ServicesManager.fireServiceEvent(IOServiceEventType.JOIN_SESSION, slotID, AppType.EDITOR);
 		assertNotNull(reply);
 
-		slotConnection = new SlotConnection();
+		slotConnection = TSlotConnection.createSlotConnection();
 		slotConnection.initSettings(AppType.EDITOR, SettingsManager.getServerIP(), slotID, reply.serverToken,
 				reply.client.getClientToken());
 
 		assertTrue(slotConnection.connect());
 
 		// add event handler to receive updates on
-		eventHandler = new ExampleEventHandler();
+		eventHandler = new ExampleEventHandler(slotConnection);
 	}
 
 	@Test
@@ -153,21 +153,22 @@ public class ExampleTest {
 		reply = ServicesManager.fireServiceEvent(IOServiceEventType.JOIN_SESSION, slotID, AppType.PARTICIPANT);
 		assertNotNull(reply);
 
-		slotConnection = new SlotConnection();
+		slotConnection = TSlotConnection.createSlotConnection();
 		slotConnection.initSettings(AppType.PARTICIPANT, SettingsManager.getServerIP(), slotID, reply.serverToken,
 				reply.client.getClientToken());
 
 		assertTrue(slotConnection.connect());
 
 		// add event handler to receive updates on
-		eventHandler = new ExampleEventHandler();
+		eventHandler = new ExampleEventHandler(slotConnection);
 	}
 
 	@Test
 	public void test08selectStakeholderToPlay() throws Exception {
 
 		stakeholderID = 0;
-		ItemMap<Stakeholder> stakeholders = EventManager.getItemMap(MapLink.STAKEHOLDERS);
+		ItemMap<Stakeholder> stakeholders = EventManager.getItemMap(slotConnection.getConnectionID(),
+				MapLink.STAKEHOLDERS);
 		for (Stakeholder stakeholder : stakeholders) {
 			stakeholderID = stakeholder.getID();
 			TLogger.info("Selecting first stakeholder: " + stakeholder.getName() + " to play!");
@@ -185,7 +186,7 @@ public class ExampleTest {
 		 */
 		Integer functionID = 0;
 		int floors = 1;
-		ItemMap<Function> functions = EventManager.getItemMap(MapLink.FUNCTIONS);
+		ItemMap<Function> functions = EventManager.getItemMap(slotConnection.getConnectionID(), MapLink.FUNCTIONS);
 		for (Function function : functions) {
 			if (function.getCategories().contains(Category.ROAD)) {
 				functionID = function.getID();

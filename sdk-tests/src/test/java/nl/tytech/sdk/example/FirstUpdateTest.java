@@ -15,7 +15,7 @@ import login.ProjectException;
 import login.ProjectFactory;
 import nl.tytech.core.client.event.EventManager;
 import nl.tytech.core.client.net.ServicesManager;
-import nl.tytech.core.client.net.SlotConnection;
+import nl.tytech.core.client.net.TSlotConnection;
 import nl.tytech.core.net.Network.AppType;
 import nl.tytech.core.net.Network.SessionType;
 import nl.tytech.core.net.event.IOServiceEventType;
@@ -35,7 +35,7 @@ public class FirstUpdateTest {
 
 	/**
 	 * login, create test project.
-	 * 
+	 *
 	 * @throws LoginException
 	 * @throws ProjectException
 	 */
@@ -55,18 +55,18 @@ public class FirstUpdateTest {
 
 		/**
 		 * FIXME this throws and I have no idea why. Can be many problems:
-		 * 
+		 *
 		 * De client niet de eigenaar is van het project
-		 * 
+		 *
 		 * Het project nog draait op de server en nog niet is afgesloten
-		 * 
+		 *
 		 * Het project niet meer bestaat
-		 * 
+		 *
 		 * Het project kan nog draaien indien:
-		 * 
+		 *
 		 * Het afsluiten langer duurt doordat er nog voor het afsluiten een
 		 * bewerking is uitgevoerd die eerst afgehandeld moet worden.
-		 * 
+		 *
 		 * Een ander client zich nog bevind in de draaiende sessie.
 		 */
 		// factory.deleteProject(project);
@@ -75,26 +75,27 @@ public class FirstUpdateTest {
 	@Test
 	public void checkInitialStakeholders() throws InterruptedException {
 		// add event handler to receive updates on
-		ExampleEventHandler eventHandler = new ExampleEventHandler();
+		TSlotConnection participant1 = participate();
+		ExampleEventHandler eventHandler = new ExampleEventHandler(participant1);
 
-		SlotConnection participant1 = participate();
 		eventHandler.waitForFirstUpdate(5000);
 
-		ItemMap<Item> map = EventManager.getItemMap(MapLink.STAKEHOLDERS);
+		ItemMap<Item> map = EventManager.getItemMap(participant1.getConnectionID(), MapLink.STAKEHOLDERS);
 		assertEquals(2, map.size());
 		participant1.disconnect(false);
 	}
 
 	@Test
 	public void checkExactlyOneFirstUpdate() throws InterruptedException {
+
 		// add event handler to receive updates on
-		ExampleEventHandler eventHandler = new ExampleEventHandler();
-		SlotConnection participant1 = participate();
+		TSlotConnection participant1 = participate();
+		ExampleEventHandler eventHandler = new ExampleEventHandler(participant1);
 
 		eventHandler.waitForFirstUpdate(5000);
 
-		ExampleEventHandler eventHandler2 = new ExampleEventHandler();
-		SlotConnection participant2 = participate();
+		TSlotConnection participant2 = participate();
+		ExampleEventHandler eventHandler2 = new ExampleEventHandler(participant2);
 		eventHandler2.waitForFirstUpdate(5000);
 
 		assertEquals(1, eventHandler.getNumberOfFirstUpdates());
@@ -107,18 +108,19 @@ public class FirstUpdateTest {
 	/******************** SUPPORT FUNCS ***********************/
 
 	/**
-	 * 
+	 *
 	 * @return a slotconnection for a new participant.
 	 */
-	private SlotConnection participate() {
+	private TSlotConnection participate() {
 		Integer slotID = ServicesManager.fireServiceEvent(IOServiceEventType.START_NEW_SESSION, SessionType.MULTI,
 				project.getFileName(), TLanguage.EN);
 		assertTrue(slotID != null && slotID >= 0);
+
 		JoinReply reply = ServicesManager.fireServiceEvent(IOServiceEventType.JOIN_SESSION, slotID,
 				AppType.PARTICIPANT);
 		assertNotNull(reply);
 
-		SlotConnection slotConnection = new SlotConnection();
+		TSlotConnection slotConnection = TSlotConnection.createSlotConnection();
 		slotConnection.initSettings(AppType.PARTICIPANT, SettingsManager.getServerIP(), slotID, reply.serverToken,
 				reply.client.getClientToken());
 		slotConnection.fireServerEvent(true, LogicEventType.SETTINGS_ALLOW_INTERACTION, true);

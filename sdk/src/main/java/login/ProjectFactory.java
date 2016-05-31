@@ -2,6 +2,7 @@ package login;
 
 import nl.tytech.core.client.net.ServicesManager;
 import nl.tytech.core.client.net.SlotConnection;
+import nl.tytech.core.client.net.TSlotConnection;
 import nl.tytech.core.net.Network.AppType;
 import nl.tytech.core.net.Network.SessionType;
 import nl.tytech.core.net.event.IOServiceEventType;
@@ -62,7 +63,7 @@ public class ProjectFactory {
 			throw new ProjectException("Failed to create edit slot to create new project");
 		}
 
-		SlotConnection editSlot = editProject(slotID);
+		TSlotConnection editSlot = editProject(slotID);
 		addCivilianMap(editSlot);
 
 		String result = ServicesManager.fireServiceEvent(IOServiceEventType.SAVE_PROJECT_INIT, slotID);
@@ -84,14 +85,15 @@ public class ProjectFactory {
 	 *         project.
 	 * @throws ManagementException
 	 */
-	private SlotConnection editProject(Integer slotID) throws ProjectException {
+	private TSlotConnection editProject(Integer slotID) throws ProjectException {
 
-		JoinReply reply = ServicesManager.fireServiceEvent(IOServiceEventType.JOIN_SESSION, slotID, AppType.EDITOR);
+		JoinReply reply = ServicesManager.fireServiceEvent(IOServiceEventType.JOIN_SESSION, slotID,
+				AppType.EDITOR);
 		if (reply == null) {
 			throw new ProjectException("failed to edit project:" + reply);
 		}
 
-		SlotConnection slotConnection = new SlotConnection();
+		TSlotConnection slotConnection = TSlotConnection.createSlotConnection();
 		slotConnection.initSettings(AppType.EDITOR, SettingsManager.getServerIP(), slotID, reply.serverToken,
 				reply.client.getClientToken());
 		if (!slotConnection.connect()) {

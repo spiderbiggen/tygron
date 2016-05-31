@@ -12,6 +12,7 @@ import eis.iilang.Percept;
 import nl.tytech.core.client.event.EventManager;
 import nl.tytech.core.client.net.ServicesManager;
 import nl.tytech.core.client.net.SlotConnection;
+import nl.tytech.core.client.net.TSlotConnection;
 import nl.tytech.core.net.Network.AppType;
 import nl.tytech.core.net.event.IOServiceEventType;
 import nl.tytech.core.net.serializable.JoinReply;
@@ -24,13 +25,13 @@ import nl.tytech.data.engine.item.Stakeholder;
 
 /**
  * Default implementation for a TygronEntity
- * 
+ *
  * @author W.Pasman
  *
  */
 public class TygronEntityImpl implements TygronEntity, EntityEventListener {
 
-	private SlotConnection slotConnection = null;
+	private TSlotConnection slotConnection = null;
 	/**
 	 * the confirmation from the server that we joined.
 	 */
@@ -38,6 +39,7 @@ public class TygronEntityImpl implements TygronEntity, EntityEventListener {
 	private EntityEventHandler eventHandler;
 	private Stakeholder stakeholder = null; // set when we get connected.
 	private EntityListener environment;
+
 	/**
 	 * The name that this entity should represent. At construction time we do
 	 * not yet know if such a stakeholder actually exists in the project.
@@ -50,7 +52,7 @@ public class TygronEntityImpl implements TygronEntity, EntityEventListener {
 	 * Create new Tygron entity. It will report to env when the entity is ready
 	 * to run. This happens when initial percepts have been prepared and the
 	 * name matches one of the actual stakeholder names
-	 * 
+	 *
 	 * @param env
 	 *            the environment to report back to.
 	 * @param intendedStakeholder
@@ -64,22 +66,23 @@ public class TygronEntityImpl implements TygronEntity, EntityEventListener {
 		}
 		this.environment = env;
 		this.intendedStakeholderName = intendedStakeholder;
-		eventHandler = createEntityEventhandler();
 		getSlotConnection(slotID);
 	}
 
 	/**
 	 * Factory pattern, can be overriden for eg testing or extending
-	 * 
+	 *
+	 * @param slotConnection
+	 *
 	 * @return new {@link EntityEventHandler}
 	 */
-	public EntityEventHandler createEntityEventhandler() {
-		return new EntityEventHandler(this);
+	public EntityEventHandler createEntityEventhandler(TSlotConnection slotConnection) {
+		return new EntityEventHandler(this, slotConnection.getConnectionID());
 	}
 
 	/**
 	 * called when the entity has received initial percepts.
-	 * 
+	 *
 	 * @param entity
 	 * @throws EntityException
 	 */
@@ -96,15 +99,16 @@ public class TygronEntityImpl implements TygronEntity, EntityEventListener {
 	/**
 	 * Connect with the stakeholder that has the
 	 * {@link #intendedStakeholderName}.
-	 * 
+	 *
 	 * @throws EntityException
 	 *             when this entity can not be connected, eg when the requested
 	 *             stakeholder name does not exist.
-	 * 
+	 *
 	 */
 	private void connectStakeholder() throws EntityException {
 
-		ItemMap<Stakeholder> stakeholders = EventManager.getItemMap(MapLink.STAKEHOLDERS);
+		ItemMap<Stakeholder> stakeholders = EventManager.getItemMap(slotConnection.getConnectionID(),
+				MapLink.STAKEHOLDERS);
 
 		// safety check
 		if (stakeholders.size() == 0) {
@@ -132,7 +136,7 @@ public class TygronEntityImpl implements TygronEntity, EntityEventListener {
 
 	/**
 	 * Join the existing session on the given slot.
-	 * 
+	 *
 	 * @param slotID
 	 *            the slot where our team is on.
 	 */
@@ -142,7 +146,9 @@ public class TygronEntityImpl implements TygronEntity, EntityEventListener {
 			throw new IllegalStateException("Failed to join session " + slotID + " as participant");
 		}
 
-		slotConnection = new SlotConnection();
+		slotConnection = TSlotConnection.createSlotConnection();
+		eventHandler = createEntityEventhandler(slotConnection);
+
 		slotConnection.initSettings(AppType.PARTICIPANT, SettingsManager.getServerIP(), slotID,
 				joinedConfirm.serverToken, joinedConfirm.client.getClientToken());
 
@@ -173,7 +179,7 @@ public class TygronEntityImpl implements TygronEntity, EntityEventListener {
 
 	/**
 	 * Perform given action
-	 * 
+	 *
 	 * @param action
 	 *            action of the form action(p1,...). Action must be a
 	 *            {@link ParticipantEventType}. The arguments are those as
@@ -188,7 +194,7 @@ public class TygronEntityImpl implements TygronEntity, EntityEventListener {
 	public void performAction(Action action) throws TranslationException {
 		/**
 		 * Action is of the form 'BUILDING_PLAN_CONSTRUCTION'(p1,p2,p3...).
-		 * 
+		 *
 		 * We must call something like this: <code>
 		Integer newBuildingID = slotConnection.fireServerEvent(true, ParticipantEventType.BUILDING_PLAN_CONSTRUCTION,
 				stakeholderID, functionID, floors, roadMultiPolygon);
@@ -208,7 +214,7 @@ public class TygronEntityImpl implements TygronEntity, EntityEventListener {
 
 	/**
 	 * Translate parameters into object[] for tygron call.
-	 * 
+	 *
 	 * @param action
 	 *            the action to translate.
 	 * @return the translated object[], ready to use for the call to
@@ -241,7 +247,7 @@ public class TygronEntityImpl implements TygronEntity, EntityEventListener {
 
 	/**
 	 * Find the action associated with given name.
-	 * 
+	 *
 	 * @param actionName
 	 *            the action as string
 	 * @return the {@link ParticipantEventType} action.

@@ -23,13 +23,13 @@ import nl.tytech.util.logger.TLogger;
 
 public class SDKTestUtil {
 
-	public static List<Polygon> getBuildableLand(MapType mapType, Integer stakeholderID, Integer zoneID,
+	public static List<Polygon> getBuildableLand(Integer connectionID, MapType mapType, Integer stakeholderID, Integer zoneID,
 			PlacementType placementType) {
-		Zone zone = EventManager.getItem(MapLink.ZONES, zoneID);
+		Zone zone = EventManager.getItem(connectionID, MapLink.ZONES, zoneID);
 
 		//
 		MultiPolygon constructableLand = zone.getMultiPolygon();
-		for (Terrain terrain : EventManager.<Terrain> getItemMap(MapLink.TERRAINS)) {
+		for (Terrain terrain : EventManager.<Terrain> getItemMap(connectionID, MapLink.TERRAINS)) {
 			if (placementType == PlacementType.LAND && terrain.getType().isWater()) {
 				constructableLand = JTSUtils.difference(constructableLand, terrain.getMultiPolygon(mapType));
 
@@ -40,14 +40,14 @@ public class SDKTestUtil {
 		}
 
 		// Reserved land is land currently awaiting land transaction
-		Setting reservedLandSetting = EventManager.getItem(MapLink.SETTINGS, Setting.Type.RESERVED_LAND);
+		Setting reservedLandSetting = EventManager.getItem(connectionID, MapLink.SETTINGS, Setting.Type.RESERVED_LAND);
 		MultiPolygon reservedLand = reservedLandSetting.getMultiPolygon();
 		if (JTSUtils.containsData(reservedLand)) {
 			constructableLand = JTSUtils.difference(constructableLand, reservedLand);
 		}
 
 		List<Geometry> myLands = new ArrayList<>();
-		for (Land land : EventManager.<Land> getItemMap(MapLink.LANDS)) {
+		for (Land land : EventManager.<Land> getItemMap(connectionID, MapLink.LANDS)) {
 			if (land.getOwnerID().equals(stakeholderID)) {
 				MultiPolygon mp = JTSUtils.intersection(constructableLand, land.getMultiPolygon());
 				if (JTSUtils.containsData(mp)) {
@@ -59,7 +59,7 @@ public class SDKTestUtil {
 		MultiPolygon myLandsMP = JTSUtils.createMP(myLands);
 		// (Frank) For faster intersection checks, used prepared geometries.
 		PreparedGeometry prepMyLand = PreparedGeometryFactory.prepare(myLandsMP);
-		for (Building building : EventManager.<Building> getItemMap(MapLink.BUILDINGS)) {
+		for (Building building : EventManager.<Building> getItemMap(connectionID, MapLink.BUILDINGS)) {
 			if (prepMyLand.intersects(building.getMultiPolygon(mapType))) {
 				myLandsMP = JTSUtils.difference(myLandsMP, building.getMultiPolygon(mapType));
 			}
@@ -72,22 +72,22 @@ public class SDKTestUtil {
 		return buildablePolygons;
 	}
 
-	public static List<Polygon> getBuyableLand(Integer stakeholderID, Integer zoneID) {
+	public static List<Polygon> getBuyableLand(Integer connectionID, Integer stakeholderID, Integer zoneID) {
 
-		Zone zone = EventManager.getItem(MapLink.ZONES, zoneID);
+		Zone zone = EventManager.getItem(connectionID, MapLink.ZONES, zoneID);
 
 		//
 		MultiPolygon constructableLand = zone.getMultiPolygon();
 
 		// Reserved land is land currently awaiting land transaction
-		Setting reservedLandSetting = EventManager.getItem(MapLink.SETTINGS, Setting.Type.RESERVED_LAND);
+		Setting reservedLandSetting = EventManager.getItem(connectionID, MapLink.SETTINGS, Setting.Type.RESERVED_LAND);
 		MultiPolygon reservedLand = reservedLandSetting.getMultiPolygon();
 		if (JTSUtils.containsData(reservedLand)) {
 			constructableLand = JTSUtils.difference(constructableLand, reservedLand);
 		}
 
 		List<Geometry> buyableLands = new ArrayList<>();
-		for (Land land : EventManager.<Land> getItemMap(MapLink.LANDS)) {
+		for (Land land : EventManager.<Land> getItemMap(connectionID, MapLink.LANDS)) {
 			if (!land.getOwnerID().equals(stakeholderID)) {
 				MultiPolygon mp = JTSUtils.intersection(constructableLand, land.getMultiPolygon());
 				if (JTSUtils.containsData(mp)) {

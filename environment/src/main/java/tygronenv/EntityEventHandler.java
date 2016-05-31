@@ -11,6 +11,7 @@ import eis.exceptions.EntityException;
 import eis.iilang.Parameter;
 import eis.iilang.Percept;
 import nl.tytech.core.client.event.EventManager;
+import nl.tytech.core.client.event.SlotEvent;
 import nl.tytech.core.event.Event;
 import nl.tytech.core.event.Event.EventTypeEnum;
 import nl.tytech.core.event.EventListenerInterface;
@@ -49,9 +50,11 @@ public class EntityEventHandler implements EventListenerInterface {
 	 */
 	private Map<EventTypeEnum, List<Percept>> collectedPercepts = new HashMap<>();
 	private EntityEventListener entity;
+	private Integer connectionID;
 
-	public EntityEventHandler(EntityEventListener entity) {
+	public EntityEventHandler(EntityEventListener entity, Integer connectionID) {
 		this.entity = entity;
+		this.connectionID = connectionID;
 
 		EventManager.addListener(this, MapLink.STAKEHOLDERS, MapLink.ACTION_MENUS, MapLink.ACTION_LOGS,
 				MapLink.FUNCTIONS, MapLink.BUILDINGS, MapLink.SETTINGS, MapLink.ZONES, MapLink.LANDS, MapLink.POPUPS);
@@ -82,10 +85,21 @@ public class EntityEventHandler implements EventListenerInterface {
 	@Override
 	public void notifyListener(Event event) {
 		try {
+			if (!isForMe(event)) {
+				return;
+			}
 			notifyListener1(event);
 		} catch (EntityException e) {
 			e.printStackTrace(); // can we do more?
 		}
+	}
+
+	private boolean isForMe(Event event) {
+		if (event instanceof SlotEvent) {
+			SlotEvent slotEvent = (SlotEvent) event;
+			return connectionID.equals(slotEvent.getConnectionID());
+		}
+		return true;
 	}
 
 	private void notifyListener1(Event event) throws EntityException {
@@ -137,7 +151,7 @@ public class EntityEventHandler implements EventListenerInterface {
 	/**
 	 * see {@link #createPercepts(ItemMap, EventTypeEnum, String)}. The
 	 * perceptname is {@link EventTypeEnum#name()}.
-	 * 
+	 *
 	 * @param itemMap
 	 * @param type
 	 */

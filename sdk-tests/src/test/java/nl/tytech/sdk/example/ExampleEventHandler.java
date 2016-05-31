@@ -6,6 +6,8 @@ import java.util.Map;
 
 import nl.tytech.core.client.event.EventIDListenerInterface;
 import nl.tytech.core.client.event.EventManager;
+import nl.tytech.core.client.event.SlotEvent;
+import nl.tytech.core.client.net.TSlotConnection;
 import nl.tytech.core.event.Event;
 import nl.tytech.core.event.EventListenerInterface;
 import nl.tytech.core.net.Network;
@@ -23,7 +25,14 @@ public class ExampleEventHandler implements EventListenerInterface, EventIDListe
 	 **/
 	private int firstUpdate = 0;
 
-	public ExampleEventHandler() {
+	private Integer connectionID;
+
+	public ExampleEventHandler(TSlotConnection slotConnection) {
+		this(slotConnection.getConnectionID());
+	}
+
+	public ExampleEventHandler(Integer connectionID) {
+		this.connectionID = connectionID;
 
 		EventManager.addListener(this, MapLink.class);
 		EventManager.addEnumListener(this, MapLink.SETTINGS, Setting.Type.MAP_WIDTH_METERS);
@@ -63,19 +72,37 @@ public class ExampleEventHandler implements EventListenerInterface, EventIDListe
 	@Override
 	public void notifyEnumListener(Event event, Enum<?> enhum) {
 
+		if (event instanceof SlotEvent) {
+			SlotEvent slotEvent = (SlotEvent) event;
+			if (!connectionID.equals(slotEvent.getConnectionID())) {
+				return;
+			}
+		}
+
 		if (enhum == Setting.Type.MAP_WIDTH_METERS) {
-			Setting setting = EventManager.getItem(MapLink.SETTINGS, Setting.Type.MAP_WIDTH_METERS);
+			Setting setting = EventManager.getItem(connectionID, MapLink.SETTINGS, Setting.Type.MAP_WIDTH_METERS);
 			mapUpdate = true;
 		}
 	}
 
 	@Override
-	public void notifyIDListener(Event arg0, Integer arg1) {
-
+	public void notifyIDListener(Event event, Integer arg1) {
+		if (event instanceof SlotEvent) {
+			SlotEvent slotEvent = (SlotEvent) event;
+			if (!connectionID.equals(slotEvent.getConnectionID())) {
+				return;
+			}
+		}
 	}
 
 	@Override
 	public void notifyListener(Event event) {
+		if (event instanceof SlotEvent) {
+			SlotEvent slotEvent = (SlotEvent) event;
+			if (!connectionID.equals(slotEvent.getConnectionID())) {
+				return;
+			}
+		}
 
 		if (event.getType() instanceof MapLink) {
 			mapLinkUpdated.put((MapLink) event.getType(), true);
@@ -98,7 +125,7 @@ public class ExampleEventHandler implements EventListenerInterface, EventIDListe
 	}
 
 	/**
-	 * 
+	 *
 	 * @return number of calls to Network.ConnectionEvent.FIRST_UPDATE_FINISHED
 	 */
 	public int getNumberOfFirstUpdates() {
@@ -107,7 +134,7 @@ public class ExampleEventHandler implements EventListenerInterface, EventIDListe
 
 	/**
 	 * Wait for FIRST_UPDATE_FINISHED
-	 * 
+	 *
 	 * @param timeoutMs
 	 *            the max time to wait (ms)
 	 * @throws InterruptedException
