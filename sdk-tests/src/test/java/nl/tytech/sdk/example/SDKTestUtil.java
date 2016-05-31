@@ -3,11 +3,15 @@ package nl.tytech.sdk.example;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.prep.PreparedGeometry;
 import com.vividsolutions.jts.geom.prep.PreparedGeometryFactory;
+import com.vividsolutions.jts.math.Vector2D;
 
 import nl.tytech.core.client.event.EventManager;
 import nl.tytech.core.net.serializable.MapLink;
@@ -17,14 +21,14 @@ import nl.tytech.data.engine.item.Land;
 import nl.tytech.data.engine.item.Setting;
 import nl.tytech.data.engine.item.Terrain;
 import nl.tytech.data.engine.item.Zone;
+import nl.tytech.data.engine.serializable.Category;
 import nl.tytech.data.engine.serializable.MapType;
 import nl.tytech.util.JTSUtils;
-import nl.tytech.util.logger.TLogger;
 
 public class SDKTestUtil {
 
-	public static List<Polygon> getBuildableLand(Integer connectionID, MapType mapType, Integer stakeholderID, Integer zoneID,
-			PlacementType placementType) {
+	public static List<Polygon> getBuildableLand(Integer connectionID, MapType mapType, Integer stakeholderID,
+			Integer zoneID, PlacementType placementType) {
 		Zone zone = EventManager.getItem(connectionID, MapLink.ZONES, zoneID);
 
 		//
@@ -66,10 +70,93 @@ public class SDKTestUtil {
 		}
 
 		List<Polygon> buildablePolygons = JTSUtils.getPolygons(myLandsMP);
-		for (Polygon polygon : buildablePolygons) {
-			TLogger.info(polygon.toString());
-		}
 		return buildablePolygons;
+	}
+
+	public static List<MultiPolygon> createBlueprintMPs(Integer connectionID, MapType mapType, Integer stakeholderID,
+			Integer zoneID, PlacementType placementType, double width, double depth, double distanceToRoad) {
+
+		List<Polygon> polygons = getBuildableLand(connectionID, mapType, stakeholderID, zoneID, placementType);
+		List<MultiPolygon> result = new ArrayList<>();
+
+		List<Building> buildings = new ArrayList<>(
+				EventManager.<Building> getItemMap(connectionID, MapLink.BUILDINGS).values());
+
+		for (Polygon polygon : polygons) {
+			List<LineString> lineSegments = new ArrayList<>();
+
+			for (int i = 0; i < polygon.getExteriorRing().getNumGeometries(); i++) {
+				Geometry geom = polygon.getExteriorRing().getGeometryN(i);
+				if ((geom instanceof LinearRing)) {
+					lineSegments.add((LineString) geom);
+				}
+			}
+			for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
+				LinearRing ring = (LinearRing) polygon.getInteriorRingN(i);
+				for (int j = 0; j < ring.getNumGeometries(); j++) {
+					Geometry geom = ring.getGeometryN(i);
+					if ((geom instanceof LineString)) {
+						lineSegments.add((LineString) geom);
+					}
+				}
+			}
+
+			for (LineString lineString : lineSegments) {
+				for (int c = 0; c < lineString.getCoordinates().length - 1; ++c) {
+
+					Coordinate c1 = lineString.getCoordinates()[c];
+					Coordinate c2 = lineString.getCoordinates()[c + 1];
+					int sectionsOnLine = (int) Math.floor(c1.distance(c2) / width);
+					if (sectionsOnLine <= 0) {
+						continue;
+					}
+
+					Vector2D vec = new Vector2D(c1, c2);
+					vec = vec.normalize();
+					vec = vec.multiply(width);
+
+					for (int s = 0; s < sectionsOnLine; ++s) {
+
+						Coordinate nc1 = new Coordinate(s * vec.getX() + c1.x, s * vec.getY() + c1.y);
+						Coordinate nc2 = new Coordinate((s + 1) * vec.getX() + c1.x, (s + 1) * vec.getY() + c1.y);
+
+						LineString segment = JTSUtils.sourceFactory.createLineString(new Coordinate[] { nc1, nc2 });
+
+						Geometry bufferedLine = JTSUtils.bufferSimple(segment, depth);
+
+						if (distanceToRoad > 0) {
+
+							Geometry roadQueryGeometry = JTSUtils.bufferSimple(segment, distanceToRoad);
+							PreparedGeometry roadQueryPrepGeom = PreparedGeometryFactory.prepare(roadQueryGeometry);
+
+							boolean roadsCloseby = false;
+							for (Building building : buildings) {
+								if (building.getCategories().contains(Category.ROAD)
+										|| building.getCategories().contains(Category.INTERSECTION)
+										|| building.getCategories().contains(Category.BRIDGE)) {
+
+									if (JTSUtils.intersectsBorderIncluded(roadQueryPrepGeom,
+											building.getMultiPolygon(mapType))) {
+										roadsCloseby = true;
+										break;
+									}
+								}
+							}
+							if (!roadsCloseby) {
+								continue;
+							}
+						}
+
+						MultiPolygon mp = JTSUtils.intersection(polygon, bufferedLine);
+						if (JTSUtils.containsData(mp)) {
+							result.add(mp);
+						}
+					}
+				}
+			}
+
+		}
+		return result;
 	}
 
 	public static List<Polygon> getBuyableLand(Integer connectionID, Integer stakeholderID, Integer zoneID) {
