@@ -5,8 +5,8 @@ import eis.eis2java.translation.Java2Parameter;
 import eis.iilang.Function;
 import eis.iilang.Numeral;
 import eis.iilang.Parameter;
+import eis.iilang.ParameterList;
 import nl.tytech.data.engine.item.Indicator;
-import nl.tytech.data.engine.serializable.MapType;
 
 
 /**
@@ -22,40 +22,53 @@ public class J2Indicator implements Java2Parameter<Indicator> {
 	 */
 	@Override
 	public Parameter[] translate(final Indicator indicator) throws TranslationException {
-		//getExactNumberValue gives the actual current value of the indicator
-		//in the sense that if you have a budget indicator
-		//and currently 1,000,000 euros it will give back 1,000,000
-		//(regardless of the target value).
-
-		//The Current value returned can't be null.
-		Double value = indicator.getExactNumberValue(MapType.MAQUETTE);
-		if (value == null) {
-			value = 0.0;
-		}
-		//List items = parseExcel(indicator.getExplanation())
-		//if items size <=1 else add parameterlist
+	  String explanation = indicator.getExplanation();
+	  int indID = indicator.getID();
+	  double target = indicator.getTarget();
+	  double currentValue = 0;
+	  ParameterList pl = new ParameterList();
+	  if(explanation.contains("<p hidden>")){
+      explanation = indicator.getExplanation().split("<p hidden>")[1].split("</p>")[0];
+      if(explanation.contains("multi")){
+        currentValue = Double.parseDouble(explanation.split("multi")[0]);
+        pl = zoneLink(indID, target, explanation.split("multi")[1]);
+      } else if (explanation.contains("multiT")){
+        String[] targetValues = explanation.split("MultiT")[0].split("\\\\t");
+        currentValue = Double.parseDouble(targetValues[0]);
+        target = Double.parseDouble(targetValues[1]);
+        pl = zoneLink(indID, target, explanation.split("multi")[1]);
+      }
+    } 
 		return new Parameter[] {new Function("indicator",
-				new Numeral(indicator.getID()),
-				new Numeral(value), //new Numeral(get current total score from items)
-				new Numeral(indicator.getTarget()))
-		    };
-		/*else
-		  return new Parameter[] {new Function("indicator",
-        new Numeral(indicator.getID()),
-        new Numeral(value), //new Numeral(get current total score from items)
-        new Numeral(indicator.getTarget())
-        zoneLink(items))
-        };*/
+		    new Numeral(indID),
+				new Numeral(currentValue),
+				new Numeral(target), pl
+		    )};
 	}
 
-/*private ParameterList zoneLink(List items, Indicator i) {
-	  ParameterList pl = new ParameterList();
-	  for(Item i: items) {
-	    pl.add(new Parameter[] {new Function("zone_link", new Numeral(get zone from i), new Numeral(i.getID()),
-	      new Numeral(get current value from i), new Numeral(i.getTarget()))});
-	  }
-	  return pl;
-	*/
+	/**
+	 * Translates a list of items into a ParameterList of zonelinks
+	 * @param id The id of the indicator.
+	 * @param target The target of the indicator.
+	 * @param itemList The list of items to parse.
+	 * @return ParameterList of zoneLinks
+	 */
+  public ParameterList zoneLink(int id, double target, String itemList) {
+    ParameterList pList = new ParameterList();
+    String[] items = itemList.split("\\\\n");
+    for (String item : items) {
+      String[] types = item.split("\\\\t");
+      if(types.length==2){
+      pList.add(new Function("zone_link",  new Numeral(Integer.parseInt(types[0])), 
+          new Numeral(id), new Numeral(Double.parseDouble(types[1])), new Numeral(target)));
+      } else if(types.length==3) {
+        pList.add(new Function("zone_link",  new Numeral(Integer.parseInt(types[0])), 
+            new Numeral(id), new Numeral(Double.parseDouble(types[1])), new Numeral(Double.parseDouble(types[2]))));
+      }
+    }
+    return pList;
+  }
+
 	/**
 	 * Get the class which is translated from.
 	 */
