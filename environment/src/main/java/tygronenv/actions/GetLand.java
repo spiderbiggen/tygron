@@ -12,7 +12,6 @@ import com.vividsolutions.jts.geom.prep.PreparedGeometryFactory;
 
 import eis.eis2java.exception.TranslationException;
 import eis.eis2java.translation.Translator;
-import eis.iilang.Identifier;
 import eis.iilang.Numeral;
 import eis.iilang.Parameter;
 import eis.iilang.ParameterList;
@@ -20,8 +19,6 @@ import eis.iilang.Percept;
 import nl.tytech.core.client.event.EventManager;
 import nl.tytech.core.client.net.SlotConnection;
 import nl.tytech.core.net.serializable.MapLink;
-import nl.tytech.data.core.item.Item;
-import nl.tytech.data.engine.event.ParticipantEventType;
 import nl.tytech.data.engine.item.ActionMenu;
 import nl.tytech.data.engine.item.Building;
 import nl.tytech.data.engine.item.Function;
@@ -33,7 +30,6 @@ import nl.tytech.data.engine.item.Terrain;
 import nl.tytech.data.engine.item.Zone;
 import nl.tytech.data.engine.serializable.MapType;
 import nl.tytech.util.JTSUtils;
-import nl.tytech.util.logger.TLogger;
 import tygronenv.TygronEntity;
 
 public class GetLand implements CustomAction {
@@ -46,17 +42,39 @@ public class GetLand implements CustomAction {
 		Percept res = new Percept("resultPercept");
 		
 		List<Polygon> polys = getBuildablePolygons(st.getID(),0);
+		//List<Polygon> polys = getBuildableLand(MapType.MAQUETTE, 4, 0, PlacementType.LAND);
 		try {
 			if(polys.size() == 0) {
 				System.out.println("LEGEEEEEEEEEE LIJST");
 			}
 			for(int i=0; i< 5 && i < polys.size(); i++) {
-					Geometry geo = polys.get(i).getGeometryN(0);
+					Geometry geo = polys.get(i);
 					MultiPolygon multi = JTSUtils.createMP(geo);
-					res.addParameter(new ParameterList(
+					multi = JTSUtils.createSquare(multi.getEnvelopeInternal());
+					List<Polygon> listPolygon = JTSUtils.getTriangles(polys.get(i), 200);
+
+					
+					ParameterList parameterList = new ParameterList();
+					for(Polygon p: listPolygon) {
+						if(i  > 7) break;
+						if(!(p.getArea() < 500 && p.getArea() > 200)) continue;
+						System.out.println("Letting through: " + p.getArea());
+						
+						Geometry g = p;
+						MultiPolygon mp = JTSUtils.createMP(g);
+						parameterList.add(new ParameterList(
+								TRANSLATOR.translate2Parameter(mp)[0],
+								new Numeral(mp.getArea())
+						));
+					//	System.out.println("adding");
+						i++;
+					}
+					res.addParameter(parameterList);
+					
+				/*	res.addParameter(new ParameterList(
 							TRANSLATOR.translate2Parameter(multi)[0],
 							new Numeral(polys.get(i).getArea())
-					));
+					));*/
 			}
 			
 		} catch (TranslationException e) {
@@ -79,7 +97,7 @@ public class GetLand implements CustomAction {
 	}
 	
 	
-	public static List<Polygon> getBuildableLand(MapType mapType, Integer stakeholderID, Integer zoneID,
+	public List<Polygon> getBuildableLand(MapType mapType, Integer stakeholderID, Integer zoneID,
 			PlacementType placementType) {
 		Zone zone = EventManager.getItem(MapLink.ZONES, zoneID);
 
@@ -122,13 +140,13 @@ public class GetLand implements CustomAction {
 		}
 
 		List<Polygon> buildablePolygons = JTSUtils.getPolygons(myLandsMP);
-		for (Polygon polygon : buildablePolygons) {
-			TLogger.info(polygon.toString());
-		}
+	//	for (Polygon polygon : buildablePolygons) {
+	//		TLogger.info(polygon.toString());
+	//	}
 		return buildablePolygons;
 	}
 
-	public static List<Polygon> getBuildablePolygons(Integer stakeholderID, Integer zoneID) {
+	public List<Polygon> getBuildablePolygons(Integer stakeholderID, Integer zoneID) {
 		zoneID = 0;
 		
 		
