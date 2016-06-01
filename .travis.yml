@@ -31,7 +31,6 @@ script:
 - cd ..
 # run cobertura only in environment build fails when coverage is too low
 - mvn cobertura:check
-- mvn -DrepoToken=$repoToken cobertura:cobertura coveralls:report
 jdk:
 - oraclejdk8
 
