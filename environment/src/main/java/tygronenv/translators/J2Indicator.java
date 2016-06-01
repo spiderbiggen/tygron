@@ -24,7 +24,6 @@ public class J2Indicator implements Java2Parameter<Indicator> {
     @Override
     public Parameter[] translate(final Indicator indicator) throws TranslationException {
         String explanation = indicator.getExplanation();
-//        int indID = indicator.getID();
         double target = indicator.getTarget();
         Double currentValue = indicator.getExactNumberValue(MapType.MAQUETTE);
         if (currentValue == null) {
@@ -44,9 +43,11 @@ public class J2Indicator implements Java2Parameter<Indicator> {
                 String[] targetValues = explanation.split("multiT")[0].split("\\\\t");
                 currentValue = Double.parseDouble(targetValues[0]);
                 target = Double.parseDouble(targetValues[1]);
-                double[] targets = new double[1];
-                targets[0] = target;
                 pl = zoneLink(indicator, target, explanation.split("multiT")[1]);
+            } else if (explanation.contains("single")) {
+                String[] targetValues = explanation.split("single")[0].split("\\\\t");
+            	currentValue = Double.parseDouble(targetValues[0]);
+            	target = Double.parseDouble(targetValues[1]);
             }
         }
 
