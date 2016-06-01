@@ -45,7 +45,7 @@ public class J2Indicator implements Java2Parameter<Indicator> {
                 currentValue = Double.parseDouble(targetValues[0]);
                 target = Double.parseDouble(targetValues[1]);
                 double[] targets = new double[1];
-                targets[0]=target;
+                targets[0] = target;
                 pl = zoneLink(indicator, target, explanation.split("multiT")[1]);
             }
         }
@@ -66,7 +66,7 @@ public class J2Indicator implements Java2Parameter<Indicator> {
      */
     public ParameterList zoneLink(final Indicator i, final double target, final String itemList) {
         ParameterList pList = new ParameterList();
-        final int three = 3; 
+        final int three = 3;
 
         // Get all different zones into array
         String[] items = itemList.split("\\\\n");
