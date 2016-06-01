@@ -7,6 +7,8 @@ import java.util.List;
 
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.prep.PreparedGeometry;
+import com.vividsolutions.jts.geom.prep.PreparedGeometryFactory;
 
 import eis.eis2java.exception.TranslationException;
 import eis.eis2java.translation.Translator;
@@ -79,6 +81,7 @@ public class GetRelevantAreas implements CustomAction {
 	 */
 	private Percept createPercept(final TygronEntity caller, final String actionType, final Number callID, final ParameterList filters) {
 		Percept result = new Percept("relevant_areas");
+		debug("action called");
 
 		// Get multiPolygons and filter them.
 		List<PolygonItem> items = getUsableArea(caller, actionType);
@@ -130,20 +133,23 @@ public class GetRelevantAreas implements CustomAction {
 	 * @return The list of MultiPolygons.
 	 */
 	private List<PolygonItem> getBuildableArea(final Stakeholder stakeholder) {
+		debug("function called");
 		// Fetch all necessary data from the SDK.
-		Integer stakeholderID = stakeholder.getID();
-		ItemMap<Land> lands = EventManager.<Land>getItemMap(MapLink.LANDS);
-		ItemMap<Terrain> terrains = EventManager.<Terrain> getItemMap(MapLink.TERRAINS);
-		Setting reservedLandSetting = EventManager.getItem(MapLink.SETTINGS, Setting.Type.RESERVED_LAND);
-		ItemMap<Building> buildings = EventManager.<Building> getItemMap(MapLink.BUILDINGS);
+		final Integer stakeholderID = stakeholder.getID();
+		final ItemMap<Land> lands = EventManager.getItemMap(MapLink.LANDS);
+		final ItemMap<Terrain> terrains = EventManager.getItemMap(MapLink.TERRAINS);
+		final Setting reservedLandSetting = EventManager.getItem(MapLink.SETTINGS, Setting.Type.RESERVED_LAND);
+		final ItemMap<Building> buildings = EventManager.getItemMap(MapLink.BUILDINGS);
+		debug("fetched data");
 
 		// Get a MultiPolygon of all lands combined.
 		MultiPolygon constructableLand = JTSUtils.EMPTY;
 		for (Land land : lands) {
 			if (land.getOwnerID() == stakeholderID) {
-				JTSUtils.union(constructableLand, land.getMultiPolygon());
+				constructableLand = JTSUtils.union(constructableLand, land.getMultiPolygon());
 			}
 		}
+		debug("combined land");
 
 		// Remove all pieces of land that cannot be build on (water).
 		for (Terrain terrain : terrains) {
@@ -151,26 +157,40 @@ public class GetRelevantAreas implements CustomAction {
 				constructableLand = JTSUtils.difference(constructableLand, terrain.getMultiPolygon(DEFAULT_MAPTYPE));
 			}
 		}
+		debug("removed water");
 
 		// Remove all pieces of reserved land.
 		MultiPolygon reservedLand = reservedLandSetting.getMultiPolygon();
 		if (JTSUtils.containsData(reservedLand)) {
 			constructableLand = JTSUtils.difference(constructableLand, reservedLand);
 		}
+		debug("removed reserved");
 
 		// Remove all pieces of occupied land.
+		PreparedGeometry prepped = PreparedGeometryFactory.prepare(constructableLand);
 		for (Building building : buildings) {
-			constructableLand = JTSUtils.difference(constructableLand, building.getMultiPolygon(DEFAULT_MAPTYPE));
+			final MultiPolygon buildingMP = building.getMultiPolygon(DEFAULT_MAPTYPE);
+			if (prepped.intersects(buildingMP)) {
+				constructableLand = JTSUtils.difference(constructableLand, buildingMP);
+			}
 		}
+		debug("removed buildings");
 
 		// Prepare a list of multiPolygons to return.
 		List<PolygonItem> polygons = new LinkedList<PolygonItem>();
 		List<Polygon> buildablePolygons = JTSUtils.getPolygons(constructableLand);
 		for (Polygon polygon : buildablePolygons) {
 			MultiPolygon mp = JTSUtils.createMP(polygon);
-			polygons.add(new PolygonWrapper(mp));
+			if (mp.getArea() > 0.1) {
+				polygons.add(new PolygonWrapper(mp));
+			}
 		}
+		debug("created result");
 		return polygons;
+	}
+
+	private void debug(String message) {
+		System.out.println(message);
 	}
 
 	/**
