@@ -1,4 +1,4 @@
-package nl.tytech.sdk.example;
+package nl.tytech.sdk.e2eTests;
 
 import javax.security.auth.login.LoginException;
 
