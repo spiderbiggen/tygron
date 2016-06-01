@@ -17,7 +17,6 @@ import eis.iilang.Parameter;
 import eis.iilang.ParameterList;
 import eis.iilang.Percept;
 import nl.tytech.core.client.event.EventManager;
-import nl.tytech.core.client.net.SlotConnection;
 import nl.tytech.core.net.serializable.MapLink;
 import nl.tytech.data.engine.item.ActionMenu;
 import nl.tytech.data.engine.item.Building;
@@ -36,7 +35,7 @@ public class GetLand implements CustomAction {
 	private static final Translator TRANSLATOR = Translator.getInstance();
 
 	@Override
-	public Percept call(TygronEntity caller, SlotConnection slotConnection, LinkedList<Parameter> parameters) {
+	public Percept call(TygronEntity caller, LinkedList<Parameter> parameters) {
 		Stakeholder st = caller.getStakeholder();
 		
 		Percept res = new Percept("resultPercept");
