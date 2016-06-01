@@ -1,0 +1,242 @@
+package nl.tytech.sdk.example;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.security.auth.login.LoginException;
+
+import com.vividsolutions.jts.geom.MultiPolygon;
+
+import login.Login;
+import login.ProjectException;
+import login.ProjectFactory;
+import nl.tytech.core.client.event.EventManager;
+import nl.tytech.core.client.net.ServicesManager;
+import nl.tytech.core.client.net.TSlotConnection;
+import nl.tytech.core.net.Network.AppType;
+import nl.tytech.core.net.Network.SessionType;
+import nl.tytech.core.net.event.IOServiceEventType;
+import nl.tytech.core.net.serializable.JoinReply;
+import nl.tytech.core.net.serializable.MapLink;
+import nl.tytech.core.net.serializable.ProjectData;
+import nl.tytech.core.structure.ItemMap;
+import nl.tytech.core.util.SettingsManager;
+import nl.tytech.data.core.item.Answer;
+import nl.tytech.data.engine.event.LogicEventType;
+import nl.tytech.data.engine.event.ParticipantEventType;
+import nl.tytech.data.engine.item.Land;
+import nl.tytech.data.engine.item.PopupData;
+import nl.tytech.data.engine.item.SpecialOption;
+import nl.tytech.data.engine.item.Stakeholder;
+import nl.tytech.data.engine.item.Stakeholder.Type;
+import nl.tytech.locale.TLanguage;
+
+/**
+ * Game field where general testing of interactions can be done for testing.
+ * 
+ * @author W.Pasman
+ *
+ */
+public class GameField {
+
+	private ProjectData project;
+	private Map<Stakeholder.Type, MyStakeholder> stakeholders = new HashMap<Stakeholder.Type, MyStakeholder>();
+
+	public GameField() throws LoginException, ProjectException {
+		Login login = new Login();
+		login.doLogin();
+
+		ProjectFactory factory = new ProjectFactory();
+		String projectName = "test" + System.currentTimeMillis();
+		project = factory.createProject(projectName);
+		if (project == null) {
+			throw new IllegalStateException("createProject returned null");
+		}
+	}
+
+	/**
+	 * Call this once for each expected stakeholder. You may then use the
+	 * returned stakeholder immediately
+	 * 
+	 */
+	public MyStakeholder addStakeholder(Stakeholder.Type type) {
+		MyStakeholder stakeholder = new MyStakeholder(type, project);
+		stakeholders.put(type, stakeholder);
+		return stakeholder;
+	}
+
+	public void close() throws ProjectException {
+		new ProjectFactory().deleteProject(project);
+		project = null;
+	}
+
+}
+
+/**
+ * Test stakeholder.
+ * 
+ * @author W.Pasman
+ *
+ */
+class MyStakeholder {
+
+	private Type type;
+	private ExampleEventHandler events;
+	private TSlotConnection connection;
+	/**
+	 * The actual matched stakeholder object that we found
+	 */
+	Stakeholder actualStakeholder;
+
+	MyStakeholder(Stakeholder.Type type, ProjectData project) {
+		if (project == null) {
+			throw new NullPointerException("project=null");
+		}
+		this.type = type;
+		participate(project);
+		events = new ExampleEventHandler(connection);
+	}
+
+	/**
+	 * @return event handler for this stakeholder
+	 */
+	public ExampleEventHandler getEventHandler() {
+		return events;
+	}
+
+	/**
+	 * @return the actual stakeholder. null until we have been connected with
+	 *         the real stakeholder on the server.
+	 */
+	public Stakeholder getStakeholder() {
+		return actualStakeholder;
+	}
+
+	/**
+	 * Wait till this stakeholder appeared.
+	 * 
+	 * @param timeoutMs
+	 * @throws InterruptedException
+	 */
+	public void waitForAppearance(int timeoutMs) throws InterruptedException {
+		events.waitForFirstUpdate(timeoutMs);
+		ItemMap<Stakeholder> allstakeholders = EventManager.getItemMap(connection.getConnectionID(),
+				MapLink.STAKEHOLDERS);
+		for (Stakeholder s : allstakeholders) {
+			if (s.getType() == type) {
+				actualStakeholder = s;
+				return;
+			}
+		}
+		throw new IllegalStateException("requested stakeholder never appeared!");
+	}
+
+	/**
+	 * Make listener for the session.
+	 * 
+	 * @return slotconnection on which to
+	 */
+	private TSlotConnection participate(ProjectData project) {
+		if (project == null) {
+			throw new NullPointerException("project=null");
+		}
+		Integer slotID = ServicesManager.fireServiceEvent(IOServiceEventType.START_NEW_SESSION, SessionType.MULTI,
+				project.getFileName(), TLanguage.EN);
+		assertTrue(slotID != null && slotID >= 0);
+
+		JoinReply reply = ServicesManager.fireServiceEvent(IOServiceEventType.JOIN_SESSION, slotID,
+				AppType.PARTICIPANT);
+		assertNotNull(reply);
+
+		connection = TSlotConnection.createSlotConnection();
+		connection.initSettings(AppType.PARTICIPANT, SettingsManager.getServerIP(), slotID, reply.serverToken,
+				reply.client.getClientToken());
+		connection.fireServerEvent(true, LogicEventType.SETTINGS_ALLOW_INTERACTION, true);
+		assertTrue(connection.connect());
+		return connection;
+	}
+
+	/**
+	 * Sell some piece of land.
+	 * 
+	 * @param land
+	 *            sellable land, see {@link #getSellableLand()}.
+	 * @param buyer
+	 *            stakeholder id, see {@link #getStakeholder()}
+	 * @throws Exception
+	 */
+	public void sellLand(Land land, Integer buyerStakeholderID) {
+		Integer sellerID = actualStakeholder.getID();
+
+		MultiPolygon multiPolygon = land.getMultiPolygon();
+		double sellPrice = 400;
+		connection.fireServerEvent(true, ParticipantEventType.MAP_SELL_LAND, sellerID, buyerStakeholderID, multiPolygon,
+				sellPrice);
+
+	}
+
+	/**
+	 * @return a piece of sellable land, or null if no such land.
+	 * 
+	 */
+	public Land getSellableLand() {
+		ItemMap<Land> lands = EventManager.getItemMap(connection.getConnectionID(), MapLink.LANDS);
+
+		Integer myId = actualStakeholder.getID();
+
+		for (Land land : lands) {
+			if (land.getOwnerID() == myId) {
+				return land;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Confirm that land has been bought
+	 * 
+	 * @param buyerID
+	 *            the buyer ID
+	 * @param direction
+	 *            SpecialOption.Type
+	 * @throws InterruptedException
+	 */
+	public void confirmLandTransaction(SpecialOption.Type direction) throws InterruptedException {
+		System.out.println("" + actualStakeholder.getType() + " confirms land transaction");
+		events.waitFor(5000, MapLink.POPUPS);
+		Integer me = actualStakeholder.getID();
+
+		ItemMap<PopupData> popups = EventManager.getItemMap(connection.getConnectionID(), MapLink.POPUPS);
+		for (PopupData popupData : popups) {
+			boolean forMe = popupData.getVisibleForStakeholderIDs().contains(me);
+			boolean correctMapLink = popupData.getContentMapLink() == MapLink.SPECIAL_OPTIONS;
+			SpecialOption specialOption = EventManager.getItem(connection.getConnectionID(), MapLink.SPECIAL_OPTIONS,
+					popupData.getContentLinkID());
+			boolean isSellLand = specialOption != null && specialOption.getType() == direction;
+
+			if (forMe && correctMapLink && isSellLand) {
+				// time to react:
+				Answer defaultAnswer = popupData.getAnswers().get(0);
+				connection.fireServerEvent(true, ParticipantEventType.POPUP_ANSWER, me, popupData.getID(),
+						defaultAnswer.getID());
+				return;
+			}
+
+		}
+		throw new IllegalStateException("Failed to confirm land transaction, the expected request didn't appear");
+
+	}
+
+	/**
+	 * Close down connections and finish stakeholder
+	 */
+	public void close() {
+		connection.disconnect(true);
+		events = null;
+		actualStakeholder = null;
+	}
+
+}

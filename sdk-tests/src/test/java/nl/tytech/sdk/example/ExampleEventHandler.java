@@ -145,4 +145,25 @@ public class ExampleEventHandler implements EventListenerInterface, EventIDListe
 		}
 	}
 
+	public void waitFor(int timeoutMs, MapLink... type) throws InterruptedException {
+		// time to sleep if firstUpdate not yet
+		final int SLEEPTIME = 100;
+
+		while (!isUpdated(type) && timeoutMs > 0) {
+			Thread.sleep(SLEEPTIME);
+			timeoutMs -= SLEEPTIME;
+		}
+		if (!isUpdated(type)) {
+			throw new InterruptedException("Timed out on waiting for Maplinks ." + toString(type));
+		}
+	}
+
+	private String toString(MapLink... links) {
+		String value = "";
+		for (MapLink link : links) {
+			value += link + ",";
+		}
+		return value;
+	}
+
 }
