@@ -89,7 +89,9 @@ class MyStakeholder {
 	/**
 	 * The actual matched stakeholder object that we found
 	 */
-	Stakeholder actualStakeholder;
+	private Stakeholder actualStakeholder;
+
+	final static int TIMEOUT = 5000;
 
 	MyStakeholder(Stakeholder.Type type, ProjectData project) {
 		if (project == null) {
@@ -121,8 +123,8 @@ class MyStakeholder {
 	 * @param timeoutMs
 	 * @throws InterruptedException
 	 */
-	public void waitForAppearance(int timeoutMs) throws InterruptedException {
-		events.waitForFirstUpdate(timeoutMs);
+	public void waitForAppearance() throws InterruptedException {
+		events.waitForFirstUpdate(TIMEOUT);
 		ItemMap<Stakeholder> allstakeholders = EventManager.getItemMap(connection.getConnectionID(),
 				MapLink.STAKEHOLDERS);
 		for (Stakeholder s : allstakeholders) {
@@ -206,7 +208,7 @@ class MyStakeholder {
 	 */
 	public void confirmLandTransaction(SpecialOption.Type direction) throws InterruptedException {
 		System.out.println("" + actualStakeholder.getType() + " confirms land transaction");
-		events.waitFor(5000, MapLink.POPUPS);
+		events.waitFor(MapLink.POPUPS);
 		Integer me = actualStakeholder.getID();
 
 		ItemMap<PopupData> popups = EventManager.getItemMap(connection.getConnectionID(), MapLink.POPUPS);

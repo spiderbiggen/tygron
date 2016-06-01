@@ -21,6 +21,7 @@ public class ExampleEventHandler implements EventListenerInterface, EventIDListe
 	 * increments after every FIRST_UPDATE_FINISHED comes in
 	 **/
 	private int firstUpdate = 0;
+	private final int TIMEOUT = 5000;
 
 	private Integer connectionID;
 
@@ -145,7 +146,8 @@ public class ExampleEventHandler implements EventListenerInterface, EventIDListe
 		}
 	}
 
-	public void waitFor(int timeoutMs, MapLink... type) throws InterruptedException {
+	public void waitFor(MapLink... type) throws InterruptedException {
+		int timeoutMs = TIMEOUT;
 		// time to sleep if firstUpdate not yet
 		final int SLEEPTIME = 100;
 

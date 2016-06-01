@@ -21,8 +21,6 @@ public class BuyerReceivesLandTest {
 
 	private GameField gameField;
 
-	private int TIMEOUT = 3000;
-
 	/**
 	 * login, create Game field.
 	 */
@@ -43,8 +41,8 @@ public class BuyerReceivesLandTest {
 		MyStakeholder municipality = gameField.addStakeholder(Stakeholder.Type.MUNICIPALITY);
 		MyStakeholder inhabitant = gameField.addStakeholder(Stakeholder.Type.CIVILIAN); // inhabitant
 
-		municipality.waitForAppearance(TIMEOUT);
-		inhabitant.waitForAppearance(TIMEOUT);
+		municipality.waitForAppearance();
+		inhabitant.waitForAppearance();
 
 		inhabitant.getEventHandler().resetUpdate(MapLink.LANDS, MapLink.POPUPS);
 		municipality.getEventHandler().resetUpdate(MapLink.LANDS, MapLink.POPUPS);
@@ -56,7 +54,7 @@ public class BuyerReceivesLandTest {
 
 		municipality.confirmLandTransaction(Type.SELL_LAND);
 		// check that the LANDS is sold
-		municipality.getEventHandler().waitFor(TIMEOUT, MapLink.LANDS);
+		municipality.getEventHandler().waitFor(MapLink.LANDS);
 
 		municipality.close();
 		inhabitant.close();
