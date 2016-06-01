@@ -37,14 +37,16 @@ public class J2Indicator implements Java2Parameter<Indicator> {
             explanation = indicator.getExplanation().split("<p hidden>")[1].split("</p>")[0];
 
             // If the indicator is an indicator with zones, we add multi
-            if (explanation.contains("multi")) {
-                currentValue = Double.parseDouble(explanation.split("multi")[0]);
-                pl = zoneLink(indicator, target, explanation.split("multi")[1]);
+            if (explanation.contains("multiN")) {
+                currentValue = Double.parseDouble(explanation.split("multiN")[0]);
+                pl = zoneLink(indicator, target, explanation.split("multiN")[1]);
             } else if (explanation.contains("multiT")) {
-                String[] targetValues = explanation.split("MultiT")[0].split("\\\\t");
+                String[] targetValues = explanation.split("multiT")[0].split("\\\\t");
                 currentValue = Double.parseDouble(targetValues[0]);
                 target = Double.parseDouble(targetValues[1]);
-                pl = zoneLink(indicator, target, explanation.split("multi")[1]);
+                double[] targets = new double[1];
+                targets[0]=target;
+                pl = zoneLink(indicator, target, explanation.split("multiT")[1]);
             }
         }
 
