@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Polygon;
 
 import eis.eis2java.exception.TranslationException;
 import eis.eis2java.translation.Translator;
@@ -15,52 +16,39 @@ import eis.iilang.Parameter;
 import eis.iilang.ParameterList;
 import eis.iilang.Percept;
 import nl.tytech.core.client.event.EventManager;
-import nl.tytech.core.client.net.SlotConnection;
-import nl.tytech.core.event.Event;
-import nl.tytech.core.event.EventListenerInterface;
 import nl.tytech.core.net.serializable.MapLink;
 import nl.tytech.core.net.serializable.PolygonItem;
 import nl.tytech.core.structure.ItemMap;
 import nl.tytech.data.engine.item.Building;
 import nl.tytech.data.engine.item.Land;
+import nl.tytech.data.engine.item.Setting;
 import nl.tytech.data.engine.item.Stakeholder;
-import nl.tytech.data.engine.item.Zone;
+import nl.tytech.data.engine.item.Terrain;
+import nl.tytech.data.engine.serializable.MapType;
+import nl.tytech.util.JTSUtils;
 import nl.tytech.util.logger.TLogger;
 import tygronenv.TygronEntity;
 
 /**
  * Creates a list of areas that can be used with the corresponding actionType.
  * Possible actionTypes are "build", "demolish" and "sell".
- * It is also possible to specify a filter, with zone,<id1>,<id2> or stakeholder,<id1>,<id2> pairs, filtering
+ * It is also possible to specify a filter, with zone,[id1],[id2] or stakeholder,[id1],[id2] pairs, filtering
  * only on pieces of land that are owned by the specified stakeholder, or are in the specified zone.
  * @author Max Groenenboom
  */
-public class GetRelevantAreas implements CustomAction, EventListenerInterface {
+public class GetRelevantAreas implements CustomAction {
 
 	private static final Translator TRANSLATOR = Translator.getInstance();
-	
-	private SlotConnection slotConnection;
 
-	private ItemMap<Building> buildings;
-	private ItemMap<Land> lands;
-	private ItemMap<Zone> zones;
+	private static final MapType DEFAULT_MAPTYPE = MapType.MAQUETTE;
 
-	
-	
-	/**
-	 * Constructor for this CustomAction. It adds itself as an eventlistener for all needed Items.
-	 */
-	public GetRelevantAreas() {
-		EventManager.addListener(this, MapLink.BUILDINGS, MapLink.LANDS, MapLink.ZONES);
+	@Override
+	public String getName() {
+		return "get_relevant_areas";
 	}
 
 	@Override
-	public Percept call(final TygronEntity caller, SlotConnection connection, 
-			final LinkedList<Parameter> parameters) {
-		Percept result = new Percept("relevant_areas");
-		
-		slotConnection = connection;
-
+	public Percept call(final TygronEntity caller, final LinkedList<Parameter> parameters) {
 		// Get and translate parameters.
 		Iterator<Parameter> params = parameters.iterator();
 		Number callID = ((Numeral) params.next()).getValue();
@@ -77,6 +65,20 @@ public class GetRelevantAreas implements CustomAction, EventListenerInterface {
 		} else {
 			filters = new ParameterList();
 		}
+
+		return createPercept(caller, actionType, callID, filters);
+	}
+
+	/**
+	 * Create the actual Percept, after the parameters have been parsed.
+	 * @param caller		The TygronEntity that called the action.
+	 * @param actionType	The type of the action.
+	 * @param callID		The ID of the call.
+	 * @param filters		The ParameterList of filters.
+	 * @return The constructed Percept.
+	 */
+	private Percept createPercept(final TygronEntity caller, final String actionType, final Number callID, final ParameterList filters) {
+		Percept result = new Percept("relevant_areas");
 
 		// Get multiPolygons and filter them.
 		List<PolygonItem> items = getUsableArea(caller, actionType);
@@ -128,11 +130,45 @@ public class GetRelevantAreas implements CustomAction, EventListenerInterface {
 	 * @return The list of MultiPolygons.
 	 */
 	private List<PolygonItem> getBuildableArea(final Stakeholder stakeholder) {
-		List<PolygonItem> polygons = new LinkedList<PolygonItem>();
+		// Fetch all necessary data from the SDK.
+		Integer stakeholderID = stakeholder.getID();
+		ItemMap<Land> lands = EventManager.<Land>getItemMap(MapLink.LANDS);
+		ItemMap<Terrain> terrains = EventManager.<Terrain> getItemMap(MapLink.TERRAINS);
+		Setting reservedLandSetting = EventManager.getItem(MapLink.SETTINGS, Setting.Type.RESERVED_LAND);
+		ItemMap<Building> buildings = EventManager.<Building> getItemMap(MapLink.BUILDINGS);
+
+		// Get a MultiPolygon of all lands combined.
+		MultiPolygon constructableLand = JTSUtils.EMPTY;
 		for (Land land : lands) {
-			if (land.getOwner().getID() == stakeholder.getID()) {
-				polygons.add(land);
+			if (land.getOwnerID() == stakeholderID) {
+				JTSUtils.union(constructableLand, land.getMultiPolygon());
 			}
+		}
+
+		// Remove all pieces of land that cannot be build on (water).
+		for (Terrain terrain : terrains) {
+			if (terrain.getType().isWater()) {
+				constructableLand = JTSUtils.difference(constructableLand, terrain.getMultiPolygon(DEFAULT_MAPTYPE));
+			}
+		}
+
+		// Remove all pieces of reserved land.
+		MultiPolygon reservedLand = reservedLandSetting.getMultiPolygon();
+		if (JTSUtils.containsData(reservedLand)) {
+			constructableLand = JTSUtils.difference(constructableLand, reservedLand);
+		}
+
+		// Remove all pieces of occupied land.
+		for (Building building : buildings) {
+			constructableLand = JTSUtils.difference(constructableLand, building.getMultiPolygon(DEFAULT_MAPTYPE));
+		}
+
+		// Prepare a list of multiPolygons to return.
+		List<PolygonItem> polygons = new LinkedList<PolygonItem>();
+		List<Polygon> buildablePolygons = JTSUtils.getPolygons(constructableLand);
+		for (Polygon polygon : buildablePolygons) {
+			MultiPolygon mp = JTSUtils.createMP(polygon);
+			polygons.add(new PolygonWrapper(mp));
 		}
 		return polygons;
 	}
@@ -144,6 +180,8 @@ public class GetRelevantAreas implements CustomAction, EventListenerInterface {
 	 */
 	private List<PolygonItem> getDemolishableArea(final Stakeholder stakeholder) {
 		List<PolygonItem> polygons = new LinkedList<PolygonItem>();
+		ItemMap<Building> buildings = EventManager.<Building> getItemMap(MapLink.BUILDINGS);
+
 		for (Building building : buildings) {
 			if (building.getOwner().getID() == stakeholder.getID()) {
 				polygons.add(building);
@@ -159,24 +197,5 @@ public class GetRelevantAreas implements CustomAction, EventListenerInterface {
 	 */
 	private void filterPolygons(final List<PolygonItem> polygons, final ParameterList filters) {
 		// TODO Create this method //
-	}
-
-	@Override
-	public String getName() {
-		return "get_relevant_areas";
-	}
-
-	@Override
-	public void notifyListener(final Event event) {
-		switch ((MapLink) event.getType()) {
-		case BUILDINGS:
-			buildings = event.<ItemMap<Building>>getContent(MapLink.COMPLETE_COLLECTION);
-		case LANDS:
-			lands = event.<ItemMap<Land>>getContent(MapLink.COMPLETE_COLLECTION);
-		case ZONES:
-			zones = event.<ItemMap<Zone>>getContent(MapLink.COMPLETE_COLLECTION);
-		default:
-			break;
-		}
 	}
 }
