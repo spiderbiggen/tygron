@@ -204,7 +204,7 @@ public class TygronEntity {
 		CustomAction customAction = customActions.get(actionName);
 
 		if (customAction != null) {
-			return customAction.call(this, action.getParameters());
+			return customAction.call(this, slotConnection, action.getParameters());
 		} else {
 			ParticipantEventType type = getActionType(actionName);
 			if (type == null) {

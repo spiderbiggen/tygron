@@ -4,6 +4,7 @@ import java.util.LinkedList;
 
 import eis.iilang.Parameter;
 import eis.iilang.Percept;
+import nl.tytech.core.client.net.SlotConnection;
 import tygronenv.TygronEntity;
 
 /**
@@ -17,7 +18,7 @@ public interface CustomAction {
 	 * @param parameters The parameters provided by the agent.
 	 * @return List of percepts resulting from the action. This list can be empty or null.
 	 */
-	Percept call(TygronEntity caller, LinkedList<Parameter> parameters);
+	Percept call(TygronEntity caller,SlotConnection slotConnection, LinkedList<Parameter> parameters);
 
 	/**
 	 * This method provides the name of the action, which the agent

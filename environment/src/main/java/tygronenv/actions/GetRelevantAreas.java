@@ -15,6 +15,7 @@ import eis.iilang.Parameter;
 import eis.iilang.ParameterList;
 import eis.iilang.Percept;
 import nl.tytech.core.client.event.EventManager;
+import nl.tytech.core.client.net.SlotConnection;
 import nl.tytech.core.event.Event;
 import nl.tytech.core.event.EventListenerInterface;
 import nl.tytech.core.net.serializable.MapLink;
@@ -37,11 +38,15 @@ import tygronenv.TygronEntity;
 public class GetRelevantAreas implements CustomAction, EventListenerInterface {
 
 	private static final Translator TRANSLATOR = Translator.getInstance();
+	
+	private SlotConnection slotConnection;
 
 	private ItemMap<Building> buildings;
 	private ItemMap<Land> lands;
 	private ItemMap<Zone> zones;
 
+	
+	
 	/**
 	 * Constructor for this CustomAction. It adds itself as an eventlistener for all needed Items.
 	 */
@@ -50,8 +55,11 @@ public class GetRelevantAreas implements CustomAction, EventListenerInterface {
 	}
 
 	@Override
-	public Percept call(final TygronEntity caller, final LinkedList<Parameter> parameters) {
+	public Percept call(final TygronEntity caller, SlotConnection connection, 
+			final LinkedList<Parameter> parameters) {
 		Percept result = new Percept("relevant_areas");
+		
+		slotConnection = connection;
 
 		// Get and translate parameters.
 		Iterator<Parameter> params = parameters.iterator();
