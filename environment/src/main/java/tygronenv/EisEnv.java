@@ -46,7 +46,7 @@ import tygronenv.translators.Stakeholder2J;
  *
  */
 @SuppressWarnings("serial")
-public class EisEnv extends EIDefaultImpl {
+public class EisEnv extends EIDefaultImpl implements EntityListener {
 
 	private ServerConnection serverConnection = null;
 
@@ -78,13 +78,6 @@ public class EisEnv extends EIDefaultImpl {
 
 	@Override
 	protected boolean isSupportedByEnvironment(Action action) {
-		try {
-			TygronEntity.getActionType(action.getName());
-			TygronEntity.translateParameters(action, 0);
-		} catch (TranslationException e) {
-			return false;
-		}
-
 		return true;
 	}
 
@@ -95,7 +88,7 @@ public class EisEnv extends EIDefaultImpl {
 
 	@Override
 	protected boolean isSupportedByEntity(Action action, String entity) {
-		return isSupportedByEnvironment(action); // ignore entity.
+		return getEntity(entity).isSupported(action);
 	}
 
 	@Override
@@ -122,11 +115,21 @@ public class EisEnv extends EIDefaultImpl {
 
 		for (String st : config.getStakeholders()) {
 			String stakeholder = st.toUpperCase();
-			TygronEntity entity = new TygronEntity(this, stakeholder, serverConnection.getSession().getTeamSlot());
+			TygronEntity entity = createNewEntity(this, stakeholder, serverConnection.getSession().getTeamSlot());
 			// These will report themselves to EIS when they are ready.
 			entities.put(stakeholder, entity);
 		}
 
+	}
+
+	/**
+	 * Factory method. Creates new entity. The entity should announce itself to
+	 * GOAL, but only when it is ready to handle getPercepts.
+	 * 
+	 * @return new entity
+	 */
+	public TygronEntity createNewEntity(EntityListener listener, String stakeholder, Integer slot) {
+		return new TygronEntityImpl(listener, stakeholder, slot);
 	}
 
 	@Override
@@ -156,8 +159,13 @@ public class EisEnv extends EIDefaultImpl {
 	 *            the identifier of the entity
 	 * @throws EntityException
 	 */
-	public void entityReady(String entity) throws EntityException {
-		addEntity(entity, "stakeholder");
+	@Override
+	public void entityReady(String entity) {
+		try {
+			addEntity(entity, "stakeholder");
+		} catch (EntityException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/************************* SUPPORT FUNCTIONS ****************************/

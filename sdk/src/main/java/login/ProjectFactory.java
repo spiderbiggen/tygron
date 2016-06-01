@@ -1,8 +1,8 @@
-package tygronenv.connection;
+package login;
 
-import eis.exceptions.ManagementException;
 import nl.tytech.core.client.net.ServicesManager;
 import nl.tytech.core.client.net.SlotConnection;
+import nl.tytech.core.client.net.TSlotConnection;
 import nl.tytech.core.net.Network.AppType;
 import nl.tytech.core.net.Network.SessionType;
 import nl.tytech.core.net.event.IOServiceEventType;
@@ -32,7 +32,7 @@ public class ProjectFactory {
 	 *         exists.
 	 * @throws ManagementException
 	 */
-	public ProjectData getProject(String name) throws ManagementException {
+	public ProjectData getProject(String name) {
 		ProjectData[] projects = ServicesManager.fireServiceEvent(IOServiceEventType.GET_MY_STARTABLE_PROJECTS);
 		if (projects != null) {
 			for (ProjectData existing : projects) {
@@ -50,23 +50,25 @@ public class ProjectFactory {
 	 * {@link #getProject(String)} returned null). Create one and initialize it.
 	 * Bit hacky, it does not do much for the map, it probably stays empty.
 	 * 
+	 * @throws ProjectException
+	 * 
 	 * @throws ManagementException
 	 */
-	public ProjectData createProject(String name) throws ManagementException {
+	public ProjectData createProject(String name) throws ProjectException {
 		ProjectData proj = ServicesManager.fireServiceEvent(IOServiceEventType.CREATE_NEW_PROJECT, name, TLanguage.EN);
 
 		Integer slotID = ServicesManager.fireServiceEvent(IOServiceEventType.START_NEW_SESSION, SessionType.EDITOR,
 				proj.getFileName(), TLanguage.EN);
 		if (slotID == null || slotID < 0) {
-			throw new ManagementException("Failed to create edit slot to create new project");
+			throw new ProjectException("Failed to create edit slot to create new project");
 		}
 
-		SlotConnection editSlot = editProject(slotID);
+		TSlotConnection editSlot = editProject(slotID);
 		addCivilianMap(editSlot);
 
 		String result = ServicesManager.fireServiceEvent(IOServiceEventType.SAVE_PROJECT_INIT, slotID);
 		if (result != null) {
-			throw new ManagementException("Failed to save new project" + result);
+			throw new ProjectException("Failed to save new project" + result);
 		}
 
 		editSlot.disconnect(false);
@@ -83,18 +85,19 @@ public class ProjectFactory {
 	 *         project.
 	 * @throws ManagementException
 	 */
-	private SlotConnection editProject(Integer slotID) throws ManagementException {
+	private TSlotConnection editProject(Integer slotID) throws ProjectException {
 
-		JoinReply reply = ServicesManager.fireServiceEvent(IOServiceEventType.JOIN_SESSION, slotID, AppType.EDITOR);
+		JoinReply reply = ServicesManager.fireServiceEvent(IOServiceEventType.JOIN_SESSION, slotID,
+				AppType.EDITOR);
 		if (reply == null) {
-			throw new ManagementException("failed to edit project:" + reply);
+			throw new ProjectException("failed to edit project:" + reply);
 		}
 
-		SlotConnection slotConnection = new SlotConnection();
+		TSlotConnection slotConnection = TSlotConnection.createSlotConnection();
 		slotConnection.initSettings(AppType.EDITOR, SettingsManager.getServerIP(), slotID, reply.serverToken,
 				reply.client.getClientToken());
 		if (!slotConnection.connect()) {
-			throw new ManagementException("Failed to connect a slot for editing the new project");
+			throw new ProjectException("Failed to connect a slot for editing the new project");
 		}
 
 		return slotConnection;
@@ -107,7 +110,7 @@ public class ProjectFactory {
 	 *            the connection with the editor slot
 	 * @throws ManagementException
 	 */
-	private void addCivilianMap(SlotConnection slotConnection) throws ManagementException {
+	private void addCivilianMap(SlotConnection slotConnection) throws ProjectException {
 		int mapSizeM = 500;
 		slotConnection.fireServerEvent(true, EditorEventType.SET_INITIAL_MAP_SIZE, mapSizeM);
 		slotConnection.fireServerEvent(true, EditorSettingsEventType.WIZARD_FINISHED);
@@ -125,10 +128,10 @@ public class ProjectFactory {
 	 * @param project
 	 * @throws ManagementException
 	 */
-	public void deleteProject(ProjectData project) throws ManagementException {
+	public void deleteProject(ProjectData project) throws ProjectException {
 		Boolean result = ServicesManager.fireServiceEvent(IOServiceEventType.DELETE_PROJECT, project.getFileName());
 		if (!result) {
-			throw new ManagementException("failed to delete project " + project.getFileName() + " on the server");
+			throw new ProjectException("failed to delete project " + project.getFileName() + " on the server");
 		}
 
 	}

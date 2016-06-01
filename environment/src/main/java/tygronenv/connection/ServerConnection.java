@@ -4,6 +4,8 @@ import javax.security.auth.login.LoginException;
 
 import eis.exceptions.ManagementException;
 import login.Login;
+import login.ProjectException;
+import login.ProjectFactory;
 import nl.tytech.core.client.net.ServicesManager;
 import nl.tytech.core.net.serializable.ProjectData;
 import nl.tytech.core.net.serializable.User;
@@ -56,7 +58,11 @@ public class ServerConnection {
 
 		project = factory.getProject(config.getProject());
 		if (project == null) {
-			project = factory.createProject(config.getProject());
+			try {
+				project = factory.createProject(config.getProject());
+			} catch (ProjectException e) {
+				throw new ManagementException("failed to create project", e);
+			}
 			createdProject = true;
 		}
 
@@ -76,9 +82,15 @@ public class ServerConnection {
 			session = null;
 		}
 		if (createdProject) {
-			factory.deleteProject(project);
-			project = null;
-			createdProject = false;
+			try {
+				factory.deleteProject(project);
+			} catch (ProjectException e) {
+				throw new ManagementException("Failed to remove temp project", e);
+			} finally {
+				project = null;
+				createdProject = false;
+
+			}
 		}
 
 		ServicesManager.removeLoginCredentials();

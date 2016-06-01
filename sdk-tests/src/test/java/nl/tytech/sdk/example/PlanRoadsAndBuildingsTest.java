@@ -6,13 +6,13 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+import java.util.Random;
 
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Polygon;
 
 import login.Login;
 import nl.tytech.core.client.event.EventManager;
@@ -39,18 +39,15 @@ import nl.tytech.data.engine.item.ActionMenu;
 import nl.tytech.data.engine.item.Building;
 import nl.tytech.data.engine.item.Function;
 import nl.tytech.data.engine.item.Function.PlacementType;
-import nl.tytech.data.engine.item.Indicator;
 import nl.tytech.data.engine.item.PersonalIndicator.PersonalIndicatorType;
 import nl.tytech.data.engine.item.Stakeholder;
 import nl.tytech.data.engine.serializable.Category;
 import nl.tytech.data.engine.serializable.MapType;
 import nl.tytech.locale.TLanguage;
-import nl.tytech.util.JTSUtils;
 import nl.tytech.util.ThreadUtils;
-import nl.tytech.util.logger.TLogger;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class PlanBuildingsTest {
+public class PlanRoadsAndBuildingsTest {
 
 	private static Integer slotID;
 
@@ -65,9 +62,6 @@ public class PlanBuildingsTest {
 	private static Login login;
 
 	private static Integer stakeholderID = Item.NONE;
-
-	private static Integer buildActionLogID = Item.NONE;
-	private static Integer revertActionLogID = Item.NONE;
 
 	@Test
 	public void test01Setup() throws Exception {
@@ -142,7 +136,8 @@ public class PlanBuildingsTest {
 		}
 		assertTrue(updated);
 
-		ItemMap<Stakeholder> stakeholders = EventManager.getItemMap(slotConnection.getConnectionID(), MapLink.STAKEHOLDERS);
+		ItemMap<Stakeholder> stakeholders = EventManager.getItemMap(slotConnection.getConnectionID(),
+				MapLink.STAKEHOLDERS);
 		for (Stakeholder stakeholder : stakeholders) {
 			stakeholderID = stakeholder.getID();
 			break;
@@ -189,7 +184,7 @@ public class PlanBuildingsTest {
 
 	@Test
 	public void test07startRegularSessionAsParticipant() throws Exception {
-
+		// TODO: (Frank) Change to multi if you want to join
 		slotID = ServicesManager.fireServiceEvent(IOServiceEventType.START_NEW_SESSION, SessionType.SINGLE,
 				data.getFileName(), TLanguage.EN);
 		assertTrue(slotID != null && slotID >= 0);
@@ -225,7 +220,8 @@ public class PlanBuildingsTest {
 		// slotConnection.fireServerEvent(false,
 		// LogicEventType.SETTINGS_ALLOW_INTERACTION, true);
 
-		ItemMap<Stakeholder> stakeholders = EventManager.getItemMap(slotConnection.getConnectionID(), MapLink.STAKEHOLDERS);
+		ItemMap<Stakeholder> stakeholders = EventManager.getItemMap(slotConnection.getConnectionID(),
+				MapLink.STAKEHOLDERS);
 		for (Stakeholder stakeholder : stakeholders) {
 			stakeholderID = stakeholder.getID();
 			break;
@@ -239,115 +235,105 @@ public class PlanBuildingsTest {
 		Integer zoneID = 0;
 
 		Function function = null;
-		actionMenuLoop: for (ActionMenu actionMenu : EventManager.<ActionMenu> getItemMap(slotConnection.getConnectionID(),
-				MapLink.ACTION_MENUS)) {
+		Function roadFunction = null;
+		actionMenuLoop: for (ActionMenu actionMenu : EventManager
+				.<ActionMenu> getItemMap(slotConnection.getConnectionID(), MapLink.ACTION_MENUS)) {
 			if (actionMenu.isBuildable(stakeholderID))
 				for (Function buildableFunction : actionMenu.getFunctionTypeOptions()) {
-					if (buildableFunction.getPlacementType() != PlacementType.WATER) {
+					if (function == null && buildableFunction.getPlacementType() != PlacementType.WATER) {
 						function = buildableFunction;
 					}
-					break actionMenuLoop;
+
+					if (roadFunction == null && buildableFunction.getCategories().contains(Category.ROAD)) {
+						roadFunction = buildableFunction;
+					}
+
+					if (function != null && roadFunction != null) {
+						break actionMenuLoop;
+					}
 				}
 		}
 
 		assertTrue("No applicable land function found!", function != null);
+		assertTrue("No applicable land function found!", roadFunction != null);
+		Random random = new Random();
+		// TODO: (Frank) Change max from 4 to something larger if you want to
+		// see more buildings
+		for (int i = 0; i < 4; ++i) {
 
-		List<Polygon> buildablePolygons = SDKTestUtil.getBuildableLand(slotConnection.getConnectionID(), MapType.MAQUETTE, stakeholderID, zoneID,
-				function.getPlacementType());
-
-		assertTrue("No buildable polygons found!", buildablePolygons.size() > 0);
-
-		eventHandler.resetUpdate(MapLink.ACTION_LOGS);
-
-		MultiPolygon selectedPlot = JTSUtils.createMP(buildablePolygons.get(0));
-		TLogger.info("Size selected plot: " + selectedPlot.getArea());
-		int floors = function.getDefaultFloors();
-		buildActionLogID = slotConnection.fireServerEvent(true, ParticipantEventType.BUILDING_PLAN_CONSTRUCTION,
-				stakeholderID, function.getID(), floors, selectedPlot);
-
-		assertTrue("Action was not succesfull!", !Item.NONE.equals(buildActionLogID));
-
-	}
-
-	@Test
-	public void test10GetActionLogAndIndicatorChange() throws Exception {
-		boolean updated = false;
-		for (int i = 0; i < 60; i++) {
-			if (eventHandler.isUpdated(MapLink.ACTION_LOGS)) {
-				updated = true;
-				break;
+			Function f = function;
+			double width = 20;
+			double depth = 10;
+			double distanceToRoad = 10;
+			if (i % 2 == 0) {
+				f = roadFunction;
+				width = 10;
+				depth = 50;
+				distanceToRoad = -1;
 			}
-			ThreadUtils.sleepInterruptible(1000);
-		}
-		assertTrue(updated);
 
-		ActionLog actionLog = EventManager.getItem(slotConnection.getConnectionID(), MapLink.ACTION_LOGS, buildActionLogID);
-		assertTrue("Actionlog with ID " + buildActionLogID + " does not exist!", actionLog != null);
+			List<MultiPolygon> buildablePolygons = SDKTestUtil.createBlueprintMPs(slotConnection.getConnectionID(),
+					MapType.MAQUETTE, stakeholderID, zoneID, f.getPlacementType(), width, depth, distanceToRoad);
 
-		for (Indicator indicator : EventManager.<Indicator> getItemMap(slotConnection.getConnectionID(), MapLink.INDICATORS)) {
-			if (actionLog.containsAfterScore(indicator)) {
-				Double increase = actionLog.getIncrease(indicator);
-				TLogger.info("Indicator: " + indicator + " change: " + increase);
+			if (buildablePolygons.size() <= 0) {
+				continue;
 			}
-		}
 
-	}
+			while (buildablePolygons.size() > 0) {
+				eventHandler.resetUpdate(MapLink.BUILDINGS, MapLink.ACTION_LOGS);
 
-	@Test
-	public void test11RevertConstruction() throws Exception {
+				int index = random.nextInt(buildablePolygons.size());
+				MultiPolygon selectedPlot = buildablePolygons.remove(index);
+				int floors = f.getDefaultFloors();
+				Integer buildActionLogID = slotConnection.fireServerEvent(true,
+						ParticipantEventType.BUILDING_PLAN_CONSTRUCTION, stakeholderID, f.getID(), floors,
+						selectedPlot);
 
-		ActionLog actionLog = EventManager.getItem(slotConnection.getConnectionID(), MapLink.ACTION_LOGS, buildActionLogID);
-		assertTrue("Maplink of ActionLog " + actionLog + " was not BUILDINGS", !actionLog.getBuildingIDs().isEmpty());
+				if (!Item.NONE.equals(buildActionLogID)) {
+					boolean updated = false;
+					for (int u = 0; u < 60; u++) {
+						if (eventHandler.isMapUpdated()
+								&& eventHandler.isUpdated(MapLink.BUILDINGS, MapLink.ACTION_LOGS)) {
+							updated = true;
+							break;
+						}
+						ThreadUtils.sleepInterruptible(1000);
+					}
+					ActionLog actionLog = EventManager.getItem(slotConnection.getConnectionID(), MapLink.ACTION_LOGS,
+							buildActionLogID);
+					if (actionLog != null) {
+						ItemMap<Building> buildings = EventManager.getItemMap(slotConnection.getConnectionID(),
+								MapLink.BUILDINGS);
+						double areaSize = 0;
+						for (Building building : buildings.getItems(actionLog.getBuildingIDs())) {
+							areaSize += building.getMultiPolygon(MapType.MAQUETTE).getArea();
+						}
+						if (Math.abs(areaSize - selectedPlot.getArea()) > 1) {
+							slotConnection.fireServerEvent(true, ParticipantEventType.BUILDING_REVERT_POLYGON,
+									stakeholderID, selectedPlot);
+						} else {
+							break;
+						}
+					}
 
-		List<Building> buildings = EventManager.<Building> getItemMap(slotConnection.getConnectionID(), MapLink.BUILDINGS)
-				.getItems(actionLog.getBuildingIDs());
-		assertTrue("Building of ActionLog " + actionLog + " does not exist!", !buildings.isEmpty());
-
-		eventHandler.resetUpdate(MapLink.ACTION_LOGS, MapLink.BUILDINGS);
-
-		revertActionLogID = slotConnection.fireServerEvent(true, ParticipantEventType.BUILDING_REVERT_POLYGON,
-				stakeholderID, actionLog.getMultiPolygon());
-	}
-
-	@Test
-	public void test12RevertConstruction() throws Exception {
-		boolean updated = false;
-		for (int i = 0; i < 60; i++) {
-			if (eventHandler.isUpdated(MapLink.ACTION_LOGS, MapLink.BUILDINGS)) {
-				updated = true;
-				break;
+					assertTrue("Excepted Buildings-Update not received", updated);
+				}
 			}
-			ThreadUtils.sleepInterruptible(1000);
-		}
-		assertTrue(updated);
 
-		ActionLog buildActionLog = EventManager.getItem(slotConnection.getConnectionID(), MapLink.ACTION_LOGS, buildActionLogID);
-		List<Building> buildings = EventManager.<Building> getItemMap(slotConnection.getConnectionID(), MapLink.BUILDINGS)
-				.getItems(buildActionLog.getBuildingIDs());
-
-		for (Building building : buildings) {
-			assertTrue("Building " + building + " is not reverted!", !building.isInMap(MapType.MAQUETTE));
-		}
-
-		ActionLog revertActionLog = EventManager.getItem(slotConnection.getConnectionID(), MapLink.ACTION_LOGS, revertActionLogID);
-		assertTrue("Revert ActionLog does not exist", revertActionLog != null);
-
-		for (Indicator indicator : EventManager.<Indicator> getItemMap(slotConnection.getConnectionID(), MapLink.INDICATORS)) {
-			if (revertActionLog.containsAfterScore(indicator)) {
-				Double increase = revertActionLog.getIncrease(indicator);
-				TLogger.info("Indicator: " + indicator + " change: " + increase);
-			}
 		}
 
 	}
 
 	@Test
 	public void test13closeRegularSession() throws Exception {
+		ThreadUtils.sleepInterruptible(1000);
 		slotConnection.disconnect(false);
 	}
 
 	@Test
 	public void test14deleteProject() throws Exception {
-		assertTrue(ServicesManager.fireServiceEvent(IOServiceEventType.DELETE_PROJECT, data.getFileName()));
+		Boolean result = ServicesManager.fireServiceEvent(IOServiceEventType.DELETE_PROJECT, data.getFileName());
+
+		assertTrue(Boolean.TRUE.equals(result));
 	}
 }
