@@ -117,7 +117,7 @@ public class MyStakeholder {
 	 * 
 	 * @param land
 	 *            sellable land, see {@link #getSellableLand()}.
-	 * @param buyer
+	 * @param buyerStakeholderID
 	 *            stakeholder id, see {@link #getStakeholder()}
 	 * @throws Exception
 	 */

@@ -37,6 +37,28 @@ public class BuyerReceivesLandTest {
 	}
 
 	@Test
+	public void sellLand() throws InterruptedException {
+		MyStakeholder municipality = gameField.addStakeholder(Stakeholder.Type.MUNICIPALITY);
+		MyStakeholder inhabitant = gameField.addStakeholder(Stakeholder.Type.CIVILIAN); // inhabitant
+
+		municipality.waitForAppearance();
+		inhabitant.waitForAppearance();
+
+		inhabitant.getEventHandler().resetUpdate(MapLink.LANDS, MapLink.POPUPS);
+		municipality.getEventHandler().resetUpdate(MapLink.LANDS, MapLink.POPUPS);
+
+		// sell land to inhabitant.
+		municipality.sellLand(municipality.getSellableLand(), inhabitant.getStakeholder().getID());
+		municipality.confirmLandTransaction(Type.SELL_LAND);
+
+		// check that the land changed to reflect the sell
+		municipality.getEventHandler().waitFor(MapLink.LANDS);
+
+		municipality.close();
+		inhabitant.close();
+	}
+
+	@Test
 	public void buyerReceivedLand() throws InterruptedException {
 		MyStakeholder municipality = gameField.addStakeholder(Stakeholder.Type.MUNICIPALITY);
 		MyStakeholder inhabitant = gameField.addStakeholder(Stakeholder.Type.CIVILIAN); // inhabitant
@@ -50,11 +72,13 @@ public class BuyerReceivesLandTest {
 		// sell land to inhabitant.
 		municipality.sellLand(municipality.getSellableLand(), inhabitant.getStakeholder().getID());
 
+		// both confirm. Order irrelevant?
+		municipality.confirmLandTransaction(Type.SELL_LAND);
 		inhabitant.confirmLandTransaction(Type.BUY_LAND);
 
-		municipality.confirmLandTransaction(Type.SELL_LAND);
-		// check that the LANDS is sold
+		// check both parties saw the lands change.
 		municipality.getEventHandler().waitFor(MapLink.LANDS);
+		inhabitant.getEventHandler().waitFor(MapLink.LANDS);
 
 		municipality.close();
 		inhabitant.close();
