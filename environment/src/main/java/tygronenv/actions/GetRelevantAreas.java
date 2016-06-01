@@ -23,6 +23,7 @@ import nl.tytech.core.structure.ItemMap;
 import nl.tytech.data.engine.item.Building;
 import nl.tytech.data.engine.item.Land;
 import nl.tytech.data.engine.item.Stakeholder;
+import nl.tytech.data.engine.item.Zone;
 import nl.tytech.util.logger.TLogger;
 import tygronenv.TygronEntity;
 
@@ -38,14 +39,14 @@ public class GetRelevantAreas implements CustomAction, EventListenerInterface {
 	private static final Translator TRANSLATOR = Translator.getInstance();
 
 	private ItemMap<Building> buildings;
-
 	private ItemMap<Land> lands;
+	private ItemMap<Zone> zones;
 
 	/**
-	 * Constructor for this CustomAction. It adds an eventListener for Buildings and Lands.
+	 * Constructor for this CustomAction. It adds itself as an eventlistener for all needed Items.
 	 */
 	public GetRelevantAreas() {
-		EventManager.addListener(this, MapLink.BUILDINGS, MapLink.LANDS);
+		EventManager.addListener(this, MapLink.BUILDINGS, MapLink.LANDS, MapLink.ZONES);
 	}
 
 	@Override
@@ -164,6 +165,8 @@ public class GetRelevantAreas implements CustomAction, EventListenerInterface {
 			buildings = event.<ItemMap<Building>>getContent(MapLink.COMPLETE_COLLECTION);
 		case LANDS:
 			lands = event.<ItemMap<Land>>getContent(MapLink.COMPLETE_COLLECTION);
+		case ZONES:
+			zones = event.<ItemMap<Zone>>getContent(MapLink.COMPLETE_COLLECTION);
 		default:
 			break;
 		}
