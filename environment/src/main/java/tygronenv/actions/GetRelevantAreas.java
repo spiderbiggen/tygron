@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.prep.PreparedGeometry;
@@ -215,7 +214,7 @@ public class GetRelevantAreas implements CustomAction {
 	}
 
 	private void debug(String message) {
-		System.out.println("Debug: " + message);
+		// System.out.println("Debug: " + message);
 	}
 
 	/**
