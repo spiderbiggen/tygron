@@ -79,13 +79,13 @@ public class J2Indicator implements Java2Parameter<Indicator> {
             if (types.length == 2) {
                 // Length 2 if there is no custom target for each zone
                 pList.add(new Function("zone_link", new Numeral(Integer.parseInt(types[0])),
-                        new Numeral(i.getID()), new Numeral(Double.parseDouble(types[1].replaceAll("[^0-9.,]", ""))),
+                        new Numeral(i.getID()), new Numeral(Double.parseDouble(types[1].replaceAll("[^0-9.,-]", ""))),
                         new Numeral(target)));
             } else if (types.length == three) {
                 // Length 3 if there are custom targets for each zone
                 pList.add(new Function("zone_link", new Numeral(Integer.parseInt(types[0])),
-                        new Numeral(i.getID()), new Numeral(Double.parseDouble(types[1].replaceAll("[^0-9.,]", ""))),
-                        new Numeral(Double.parseDouble(types[2].replaceAll("[^0-9.,]", "")))));
+                        new Numeral(i.getID()), new Numeral(Double.parseDouble(types[1].replaceAll("[^0-9.,-]", ""))),
+                        new Numeral(Double.parseDouble(types[2].replaceAll("[^0-9.,-]", "")))));
             }
         }
 
