@@ -17,6 +17,7 @@ import eis.iilang.Percept;
 import tygronenv.actions.ActionContainer;
 import tygronenv.configuration.Configuration;
 import tygronenv.connection.ServerConnection;
+import tygronenv.translators.GroundLayerType2J;
 import tygronenv.translators.HashMap2J;
 import tygronenv.translators.J2ActionLog;
 import tygronenv.translators.J2ActionMenu;
@@ -179,7 +180,7 @@ public class EisEnv extends EIDefaultImpl {
 	    new J2PopupData(), new J2Answer(), new J2Indicator(), new J2UpgradeType()};
 
 	private Parameter2Java<?>[] p2j = new Parameter2Java<?>[]{new ParamEnum2J(),
-	  new HashMap2J(), new Stakeholder2J(), new MultiPolygon2J()};
+	  new HashMap2J(), new Stakeholder2J(), new MultiPolygon2J(), new GroundLayerType2J()};
 
 	/**
 	 * Installs the required EIS2Java translators.
