@@ -12,6 +12,7 @@ import com.vividsolutions.jts.geom.prep.PreparedGeometryFactory;
 
 import eis.eis2java.exception.TranslationException;
 import eis.eis2java.translation.Translator;
+import eis.iilang.Function;
 import eis.iilang.Identifier;
 import eis.iilang.Numeral;
 import eis.iilang.Parameter;
@@ -34,7 +35,7 @@ import tygronenv.TygronEntity;
 /**
  * Creates a list of areas that can be used with the corresponding actionType.
  * Possible actionTypes are "build", "demolish" and "sell".
- * It is also possible to specify a filter, with zone,[id1],[id2] or stakeholder,[id1],[id2] pairs, filtering
+ * It is also possible to specify a filter, with zone([id1],[id2]) or stakeholder([id1],[id2]) functions, filtering
  * only on pieces of land that are owned by the specified stakeholder, or are in the specified zone.
  * @author Max Groenenboom
  */
@@ -51,24 +52,29 @@ public class GetRelevantAreas implements CustomAction {
 
 	@Override
 	public Percept call(final TygronEntity caller, final LinkedList<Parameter> parameters) {
-		// Get and translate parameters.
-		Iterator<Parameter> params = parameters.iterator();
-		Number callID = ((Numeral) params.next()).getValue();
-		String actionType = ((Identifier) params.next()).getValue();
-		ParameterList filters = null;
-		if (params.hasNext()) {
-			Parameter filterParam = params.next();
-			// If the filter parameter is not a ParameterList, it is invalid.
-			if (filterParam instanceof ParameterList) {
-				filters = (ParameterList) filterParam;
+		try {
+			// Get and translate parameters.
+			Iterator<Parameter> params = parameters.iterator();
+			Number callID = ((Numeral) params.next()).getValue();
+			String actionType = ((Identifier) params.next()).getValue();
+			ParameterList filters = null;
+			if (params.hasNext()) {
+				Parameter filterParam = params.next();
+				// If the filter parameter is not a ParameterList, it is invalid.
+				if (filterParam instanceof ParameterList) {
+					filters = (ParameterList) filterParam;
+				} else {
+					filters = new ParameterList();
+				}
 			} else {
 				filters = new ParameterList();
 			}
-		} else {
-			filters = new ParameterList();
-		}
 
-		return createPercept(caller, actionType, callID, filters);
+			return createPercept(caller, actionType, callID, filters);
+		} catch (Exception e) {
+			TLogger.exception(e);
+			throw e;
+		}
 	}
 
 	/**
@@ -85,7 +91,13 @@ public class GetRelevantAreas implements CustomAction {
 
 		// Get multiPolygons and filter them.
 		List<PolygonItem> items = getUsableArea(caller, actionType);
+		for (PolygonItem item : items) {
+			debug(items.size() + " items before: " + item.toString());
+		}
 		filterPolygons(items, filters);
+		for (PolygonItem item : items) {
+			debug(items.size() + " items after: " + item.toString());
+		}
 
 		// Create result parameters.
 		result.addParameter(new Numeral(callID));
@@ -190,7 +202,7 @@ public class GetRelevantAreas implements CustomAction {
 	}
 
 	private void debug(String message) {
-		System.out.println(message);
+		System.out.println("Debug: " + message);
 	}
 
 	/**
@@ -200,7 +212,7 @@ public class GetRelevantAreas implements CustomAction {
 	 */
 	private List<PolygonItem> getDemolishableArea(final Stakeholder stakeholder) {
 		List<PolygonItem> polygons = new LinkedList<PolygonItem>();
-		ItemMap<Building> buildings = EventManager.<Building> getItemMap(MapLink.BUILDINGS);
+		final ItemMap<Building> buildings = EventManager.<Building> getItemMap(MapLink.BUILDINGS);
 
 		for (Building building : buildings) {
 			if (building.getOwner().getID() == stakeholder.getID()) {
@@ -215,7 +227,27 @@ public class GetRelevantAreas implements CustomAction {
 	 * @param polygons The list of polygons to filter on.
 	 * @param filters The filters.
 	 */
-	private void filterPolygons(final List<PolygonItem> polygons, final ParameterList filters) {
-		// TODO Create this method //
+	private void filterPolygons(final List<PolygonItem> items, final ParameterList filters) {
+		for (int i = 0; i < filters.size(); i++) {
+			Function param = (Function) filters.get(i);
+			System.out.println(param);
+			String filterName = param.getName();
+			switch (filterName) {
+			case "function":
+				Iterator<Parameter> functionIDs = param.getParameters().iterator();
+				while (functionIDs.hasNext()) {
+					removeItemsWithFunction(items, functionIDs.next());
+				}
+			}
+		}
+	}
+
+	private void removeItemsWithFunction(final List<PolygonItem> items, final Parameter _functionID) {
+		Number functionID = ((Numeral)_functionID ).getValue();
+		for (PolygonItem item : items) {
+			if (item instanceof Building && ((Building) item).getFunctionID().intValue() != functionID.intValue()) {
+				items.remove(item);
+			}
+		}
 	}
 }
