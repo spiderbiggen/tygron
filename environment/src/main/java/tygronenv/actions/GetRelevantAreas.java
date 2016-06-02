@@ -228,9 +228,10 @@ public class GetRelevantAreas implements CustomAction {
 	 * @param filters The filters.
 	 */
 	private void filterPolygons(final List<PolygonItem> items, final ParameterList filters) {
+		debug("" + filters.size());
 		for (int i = 0; i < filters.size(); i++) {
 			Function param = (Function) filters.get(i);
-			System.out.println(param);
+			debug(param.getName());
 			String filterName = param.getName();
 			switch (filterName) {
 			case "function":
@@ -244,9 +245,11 @@ public class GetRelevantAreas implements CustomAction {
 
 	private void removeItemsWithFunction(final List<PolygonItem> items, final Parameter _functionID) {
 		Number functionID = ((Numeral)_functionID ).getValue();
-		for (PolygonItem item : items) {
+		int size = items.size();
+		for (int i = size - 1; i >= 0; i--) {
+			PolygonItem item = items.get(i);
 			if (item instanceof Building && ((Building) item).getFunctionID().intValue() != functionID.intValue()) {
-				items.remove(item);
+				items.remove(i);
 			}
 		}
 	}
