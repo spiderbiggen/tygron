@@ -58,4 +58,12 @@ public class GroundLayerType2JTest {
 		assertEquals(type, undergroundType);
 	}
 
+	/**
+	 * Tests if the translatesTo function returns the proper class.
+	 */
+	@Test
+	public void testTranslatesTo() {
+		assertEquals(translator.translatesTo(), GroundLayerType.class);
+	}
+
 }
