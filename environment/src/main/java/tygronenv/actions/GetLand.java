@@ -58,7 +58,6 @@ public class GetLand implements CustomAction {
 						if(i  > 7) break;
 						if(!(p.getArea() < 500 && p.getArea() > 200)) continue;
 						System.out.println("Letting through: " + p.getArea());
-						
 						Geometry g = p;
 						MultiPolygon mp = JTSUtils.createMP(g);
 						parameterList.add(new ParameterList(

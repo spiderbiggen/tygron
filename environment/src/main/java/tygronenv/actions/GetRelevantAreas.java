@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.prep.PreparedGeometry;
@@ -188,15 +189,27 @@ public class GetRelevantAreas implements CustomAction {
 		}
 		debug("removed buildings");
 
-		// Prepare a list of multiPolygons to return.
+		final int minArea = 200;
+		final int maxArea = 500;
+		final int maxPolys = 5;
+		int numPolys = 0;
 		List<PolygonItem> polygons = new LinkedList<PolygonItem>();
-		List<Polygon> buildablePolygons = JTSUtils.getPolygons(constructableLand);
-		for (Polygon polygon : buildablePolygons) {
-			MultiPolygon mp = JTSUtils.createMP(polygon);
-			if (mp.getArea() > 0.1) {
+		for (Polygon poly: JTSUtils.getPolygons(constructableLand)) {
+			List<Polygon> listPolygon = JTSUtils.getTriangles(poly, minArea);
+			for (Polygon triangle : listPolygon) {
+				if (numPolys > maxPolys) {
+					break;
+				}
+				if (triangle.getArea() < minArea || triangle.getArea() > maxArea) {
+					continue;
+				}
+				MultiPolygon mp = JTSUtils.createMP(triangle);
 				polygons.add(new PolygonWrapper(mp));
+				numPolys++;
 			}
 		}
+
+
 		debug("created result");
 		return polygons;
 	}
@@ -239,8 +252,17 @@ public class GetRelevantAreas implements CustomAction {
 				while (functionIDs.hasNext()) {
 					removeItemsWithFunction(items, functionIDs.next());
 				}
+			case "size":
+				filterSize(items, param);
+			default:
+				break;
 			}
 		}
+	}
+
+	private void filterSize(final List<PolygonItem> items,  Function param) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private void removeItemsWithFunction(final List<PolygonItem> items, final Parameter _functionID) {
