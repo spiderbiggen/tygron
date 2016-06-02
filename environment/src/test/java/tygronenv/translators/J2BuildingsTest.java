@@ -1,73 +1,75 @@
 package tygronenv.translators;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-
-import org.junit.Test;
-import org.mockito.Mockito;
-
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Polygon;
 import eis.eis2java.exception.TranslationException;
 import eis.eis2java.translation.Translator;
 import eis.iilang.Function;
-import eis.iilang.Identifier;
-import eis.iilang.Numeral;
 import eis.iilang.Parameter;
-import eis.iilang.ParameterList;
 import nl.tytech.data.engine.item.Building;
 import nl.tytech.data.engine.serializable.Category;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+
+import java.util.Arrays;
+import java.util.Collection;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Created by Stefan Breetveld on 23-5-2016.
  * In package tygronenv.translators.
  */
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(Building.class)
 public class J2BuildingsTest {
 
     private Translator translator = Translator.getInstance();
 
+    /**
+     * Test whether Java to Building({@link J2Building}) asks for
+     * the correct properties of the indicator.
+     *
+     * @throws TranslationException thrown if the translate method fails.
+     */
     @Test
-    public void J2ExtBuildingTest() throws TranslationException {
-        int buildingID = 10;
-        String name = "testBuilding";
-        int ownerID = 10;
-        int buildYr = 1950;
-        int functId = 650;
-        Collection<Category> categories = new ArrayList<>();
-        Category cat1 = Category.EDUCATION;
-        Category cat2 = Category.BRIDGE;
-        categories.add(cat1);
-        categories.add(cat2);
-        int floors = 5;
-        Building building = new Building(0, name);
-        building.setId(buildingID);
-        building.setOwnerID(ownerID);
-        building.setConstructionYear(buildYr);
-        building.setFunctionID(functId);
-        Building spyBuilding = Mockito.spy(building);
-        Mockito.doReturn(floors).when(spyBuilding).getFloors();
-        Mockito.doReturn(categories).when(spyBuilding).getCategories();
+    public void J2BuildingTest() throws TranslationException {
+        GeometryFactory gf = new GeometryFactory();
+        MultiPolygon mp = gf.createMultiPolygon(new Polygon[0]);
+        Collection<Category> categories = Arrays.asList(Category.EDUCATION, Category.BRIDGE);
 
+        Building b = PowerMockito.mock(Building.class);
+
+        PowerMockito.when(b.getMultiPolygon(any())).thenReturn(mp);
+        PowerMockito.when(b.getCategories()).thenReturn(categories);
+
+        J2Category j2c = PowerMockito.spy(new J2Category());
+        J2MultiPolygon j2mp = PowerMockito.spy(new J2MultiPolygon());
         translator.registerJava2ParameterTranslator(new J2Building());
-        translator.registerJava2ParameterTranslator(new J2Category());
+        translator.registerJava2ParameterTranslator(j2c);
+        translator.registerJava2ParameterTranslator(j2mp);
 
-        Parameter[] params = translator.translate2Parameter(spyBuilding);
+        Parameter[] params = translator.translate2Parameter(b);
         Function func = (Function) params[0];
-        LinkedList<Parameter> parameters = func.getParameters();
-
-        ParameterList paramCategories = new ParameterList();
-        paramCategories.add(new Identifier(cat1.name()));
-        paramCategories.add(new Identifier(cat2.name()));
 
         assertEquals("building", func.getName());
-        assertEquals(new Numeral(buildingID), parameters.get(0));
-        assertEquals(new Identifier(name), parameters.get(1));
-        assertEquals(new Numeral(ownerID), parameters.get(2));
-        assertEquals(new Numeral(buildYr), parameters.get(3));
-        assertEquals(paramCategories, parameters.get(4));
-        assertEquals(new Numeral(functId), parameters.get(5));
-        assertEquals(new Numeral(floors), parameters.get(6));
+        verify(b, times(1)).getID();
+        verify(b, times(1)).getName();
+        verify(b, times(1)).getOwnerID();
+        verify(b, times(1)).getConstructionYear();
+        verify(b, times(1)).getCategories();
+        verify(b, times(1)).getFloors();
+        verify(b, times(1)).getFunctionID();
+        verify(b, times(1)).getMultiPolygon(any());
+        verify(j2c, times(2)).translate(any());
+        verify(j2mp, times(1)).translate(any());
     }
 
 }
