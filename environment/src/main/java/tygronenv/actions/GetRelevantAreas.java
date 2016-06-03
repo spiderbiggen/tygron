@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.prep.PreparedGeometry;
@@ -189,7 +190,7 @@ public class GetRelevantAreas implements CustomAction {
 		debug("removed buildings");
 
 		final int minArea = 200;
-		final int maxArea = 500;
+		final int maxArea = 2000;
 		final int maxPolys = 5;
 		int numPolys = 0;
 		List<PolygonItem> polygons = new LinkedList<PolygonItem>();
@@ -199,15 +200,19 @@ public class GetRelevantAreas implements CustomAction {
 				if (numPolys > maxPolys) {
 					break;
 				}
-				if (triangle.getArea() < minArea || triangle.getArea() > maxArea) {
+				Geometry triangleBuffered = triangle.buffer(-15);
+				triangleBuffered = triangleBuffered.buffer(10);
+				
+				if (triangleBuffered.getArea() < minArea/2 || triangleBuffered.getArea() > maxArea) {
 					continue;
 				}
-				MultiPolygon mp = JTSUtils.createMP(triangle);
+				MultiPolygon mp = JTSUtils.createMP(triangleBuffered);
 				polygons.add(new PolygonWrapper(mp));
 				numPolys++;
 			}
 		}
-
+		
+		
 
 		debug("created result");
 		return polygons;
