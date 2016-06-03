@@ -136,6 +136,7 @@ public class GetRelevantAreas implements CustomAction {
 		case "demolish":
 			return getDemolishableArea(stakeholder);
 		case "sell":
+			return getBuildableArea(stakeholder);
 		default:
 			return new ArrayList<PolygonItem>();
 		}
