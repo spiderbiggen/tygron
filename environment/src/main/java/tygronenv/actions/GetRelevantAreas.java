@@ -207,12 +207,12 @@ public class GetRelevantAreas implements CustomAction {
 				geom = createNewPolygon(geom);
 				debug("After: " + geom.getArea());
 				geom = geom.intersection(constructableLand);
-				geom = geom.buffer(-15);
-				geom = geom.buffer(10);
+				geom = geom.buffer(-10).buffer(5);
 				if (geom.getArea() < minArea / 2 || geom.getArea() > maxArea) {
 					continue;
 				}
 				MultiPolygon mp = JTSUtils.createMP(geom);
+				constructableLand = JTSUtils.createMP(constructableLand.difference(mp));
 				polygons.add(new PolygonWrapper(mp));
 				numPolys++;
 				debug("Added " + mp.toText());
