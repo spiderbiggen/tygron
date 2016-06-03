@@ -205,8 +205,8 @@ public class GetRelevantAreas implements CustomAction {
 				}
 				debug("Before: " + geom.getArea());
 				geom = createNewPolygon(geom);
-				geom = geom.intersection(constructableLand);
 				debug("After: " + geom.getArea());
+				geom = geom.intersection(constructableLand);
 				geom = geom.buffer(-15);
 				geom = geom.buffer(10);
 				if (geom.getArea() < minArea / 2 || geom.getArea() > maxArea) {
@@ -249,10 +249,10 @@ public class GetRelevantAreas implements CustomAction {
 			// Insert two new points 
 			Coordinate[] newCoords = {
 					coords[0],
-					newPoint1,
+					newPoint2,
 					coords[1],
 					coords[2],
-					newPoint2,
+					newPoint1,
 					coords[0]
 			};
 			
@@ -325,7 +325,7 @@ public class GetRelevantAreas implements CustomAction {
 	 */
 	private void debug(String message) {
 		// Debug temporarliy disabled;
-		// System.out.println("Debug: " + message);
+		System.out.println("Debug: " + message);
 	}
 
 	/**
