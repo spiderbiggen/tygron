@@ -14,6 +14,8 @@ import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import tygronenv.translators.J2Category;
+import tygronenv.translators.J2MultiPolygon;
 
 import java.util.Arrays;
 import java.util.Collection;

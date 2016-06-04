@@ -2,21 +2,21 @@ package contextvh.translators;
 
 import static org.junit.Assert.assertEquals;
 
+import contextvh.configuration.ContextParamEnum;
 import org.junit.Test;
 
 import eis.eis2java.exception.TranslationException;
 import eis.iilang.Identifier;
 import eis.iilang.Numeral;
 import eis.iilang.Parameter;
-import tygronenv.configuration.ParamEnum;
 
 /**
- * Test class for the ParamEnum to Java translator.
+ * Test class for the ContextParamEnum to Java translator.
  * @author Max
  */
-public class ParamEnum2JTest {
+public class ContextParamEnum2JTest {
 
-	private final ParamEnum2J translator = new ParamEnum2J();
+	private final ContextParamEnum2J translator = new ContextParamEnum2J();
 
 	/**
 	 * Tests if an exception is thrown when the parameter
@@ -48,8 +48,8 @@ public class ParamEnum2JTest {
 	@Test
 	public void testTranslateGoodWeather() throws TranslationException {
 		Parameter parameter = new Identifier("stakeholders");
-		ParamEnum paramEnum = translator.translate(parameter);
-		assertEquals(paramEnum, ParamEnum.STAKEHOLDERS);
+		ContextParamEnum paramEnum = translator.translate(parameter);
+		assertEquals(ContextParamEnum.STAKEHOLDERS, paramEnum);
 	}
 
 	/**
@@ -57,6 +57,6 @@ public class ParamEnum2JTest {
 	 */
 	@Test
 	public void testTranslatesTo() {
-		assertEquals(translator.translatesTo(), ParamEnum.class);
+		assertEquals(ContextParamEnum.class, translator.translatesTo());
 	}
 }

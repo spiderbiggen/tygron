@@ -1,26 +1,25 @@
 package contextvh.connection;
 
+import contextvh.configuration.ContextConfiguration;
 import nl.tytech.core.client.net.ServicesManager;
 import nl.tytech.core.net.Network.SessionType;
 import nl.tytech.core.net.event.IOServiceEventType;
 import nl.tytech.core.net.serializable.ProjectData;
 import nl.tytech.core.net.serializable.SlotInfo;
 import nl.tytech.locale.TLanguage;
-import tygronenv.configuration.Configuration;
-import tygronenv.connection.ServerConnection;
 
 import java.util.logging.Logger;
 
 /**
  * Creates a session according to the requested config. A session is a
  * connection of a team (multiple participants) with the server. A session runs
- * on an open project, see {@link ServerConnection#getProject()}.
+ * on an open project, see {@link ServerConnection}.
  */
 public class Session {
     private static final Logger logger = Logger.getLogger(Session.class.getName());
     private Integer slotID;
 
-    public Session(Configuration config, ProjectData project) {
+    public Session(ContextConfiguration config, ProjectData project) {
 
         slotID = config.getSlot();
         if (config.getSlot() == null) {
@@ -56,7 +55,7 @@ public class Session {
      * @param preferedSlot the preferred slot
      * @return a session
      */
-    private SlotInfo findSession(Configuration config) {
+    private SlotInfo findSession(ContextConfiguration config) {
         logger.info("Create or find a session with name: " + config.getProject());
 
         SlotInfo[] availableSessions = ServicesManager.fireServiceEvent(IOServiceEventType.GET_MY_JOINABLE_SESSIONS,

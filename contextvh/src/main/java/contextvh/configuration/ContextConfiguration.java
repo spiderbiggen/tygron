@@ -15,22 +15,21 @@ import java.util.Set;
 /**
  * The environment configuration as specified in the init param
  */
-public class Configuration {
-    private Set<String> stakeholders = new HashSet<String>();
+public class ContextConfiguration {
+    private final Translator translator = Translator.getInstance();
+    private Set<String> stakeholders = new HashSet<>();
     private String project = null;
     private Integer slot = null;
     private String domain = null;
-    private final Translator translator = Translator.getInstance();
 
     /**
      * Construct configuration directly from set of Parameters as in the MAS
      * init.
      *
      * @param parameters the Map<String,Parameter> coming from init
-     * @throws NoTranslatorException
      * @throws TranslationException
      */
-    public Configuration(Map<String, Parameter> parameters) throws NoTranslatorException, TranslationException {
+    public ContextConfiguration(Map<String, Parameter> parameters) throws TranslationException {
         parseParameters(parameters);
         checkSanity();
     }
@@ -42,9 +41,9 @@ public class Configuration {
      * @throws TranslationException
      * @throws NoTranslatorException
      */
-    private void parseParameters(Map<String, Parameter> parameters) throws TranslationException, NoTranslatorException {
+    private void parseParameters(Map<String, Parameter> parameters) throws TranslationException {
         for (Entry<String, Parameter> entry : parameters.entrySet()) {
-            tygronenv.configuration.ParamEnum param = translator.translate2Java(new Identifier(entry.getKey()), tygronenv.configuration.ParamEnum.class);
+            ContextParamEnum param = translator.translate2Java(new Identifier(entry.getKey()), ContextParamEnum.class);
             switch (param) {
                 case STAKEHOLDERS:
                     System.out.println(entry.getValue());
@@ -90,6 +89,14 @@ public class Configuration {
     }
 
     /**
+     * @return Set of strings. Each string the name (not type) of a requested
+     * stakeholders.
+     */
+    public Set<String> getStakeholders() {
+        return stakeholders;
+    }
+
+    /**
      * Set the new stakeholders
      *
      * @param newstakeholders set of strings, each string being the name (not the type) of a
@@ -102,11 +109,10 @@ public class Configuration {
     }
 
     /**
-     * @return Set of strings. Each string the name (not type) of a requested
-     * stakeholders.
+     * @return the project name to use
      */
-    public Set<String> getStakeholders() {
-        return stakeholders;
+    public String getProject() {
+        return project;
     }
 
     /**
@@ -120,11 +126,8 @@ public class Configuration {
         this.project = project;
     }
 
-    /**
-     * @return the project name to use
-     */
-    public String getProject() {
-        return project;
+    public Integer getSlot() {
+        return slot;
     }
 
     public void setSlot(int slot) {
@@ -133,15 +136,11 @@ public class Configuration {
         this.slot = slot;
     }
 
-    public Integer getSlot() {
-        return slot;
+    public String getDomain() {
+        return domain;
     }
 
     public void setDomain(String domain) {
         this.domain = domain;
-    }
-
-    public String getDomain() {
-        return domain;
     }
 }

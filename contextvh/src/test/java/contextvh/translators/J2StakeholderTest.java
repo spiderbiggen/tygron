@@ -13,7 +13,6 @@ import org.junit.Test;
 import eis.eis2java.exception.TranslationException;
 import nl.tytech.data.engine.item.Indicator;
 import nl.tytech.data.engine.item.Stakeholder;
-import tygronenv.translators.J2Stakeholder;
 
 /**
  * Test class for the J2Stakeholder translator

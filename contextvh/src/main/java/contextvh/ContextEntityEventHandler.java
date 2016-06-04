@@ -1,0 +1,176 @@
+package contextvh;
+
+import eis.eis2java.exception.TranslationException;
+import eis.eis2java.translation.Translator;
+import eis.exceptions.EntityException;
+import eis.iilang.Numeral;
+import eis.iilang.Parameter;
+import eis.iilang.Percept;
+import nl.tytech.core.client.event.EventManager;
+import nl.tytech.core.client.event.SlotEvent;
+import nl.tytech.core.event.Event;
+import nl.tytech.core.event.Event.EventTypeEnum;
+import nl.tytech.core.net.Network;
+import nl.tytech.core.net.serializable.MapLink;
+import nl.tytech.core.structure.ItemMap;
+import nl.tytech.data.core.item.Item;
+import nl.tytech.data.engine.item.Stakeholder;
+import nl.tytech.data.engine.item.UpgradeType;
+import tygronenv.EntityEventListener;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Listen to entity events and store them till they are needed. Thread safe
+ * because callbacks and calls from GOAL will be asynchronous. The events that
+ * are reported are set up in the constructor.
+ *
+ * @author W.Pasman
+ */
+public class ContextEntityEventHandler extends tygronenv.EntityEventHandler {
+
+    private static final String ENTITY = "entity";
+    private Translator translator = Translator.getInstance();
+    private Map<EventTypeEnum, List<Percept>> collectedPercepts = new HashMap<>();
+    private EntityEventListener entity;
+    private ContextEntity stakeholder;
+    private Integer connectionID;
+
+    public ContextEntityEventHandler(EntityEventListener listener, Integer connectionID, ContextEntity entity) {
+        super(listener, connectionID);
+        this.entity = listener;
+        this.connectionID = connectionID;
+        this.stakeholder = entity;
+        EventManager.addListener(this, MapLink.STAKEHOLDERS, MapLink.UPGRADE_TYPES);
+    }
+
+    /**
+     * Add new percept to the collection.
+     *
+     * @param type     The type of these percepts
+     * @param percepts The list of the percepts to add
+     */
+    private synchronized void addPercepts(EventTypeEnum type, List<Percept> percepts) {
+        collectedPercepts.put(type, percepts);
+    }
+
+    /**
+     * Get the percepts and clean our {@link #collectedPercepts}.
+     *
+     * @return percepts collected since last call to this
+     */
+    @Override
+    public synchronized Map<EventTypeEnum, List<Percept>> getPercepts() {
+        Map<EventTypeEnum, List<Percept>> copy = super.getPercepts();
+        copy.putAll(collectedPercepts);
+        collectedPercepts = new HashMap<>();
+        return copy;
+    }
+
+    @Override
+    public void notifyListener(Event event) {
+        if (!isForMe(event)) {
+            return;
+        }
+        EventTypeEnum type = event.getType();
+        try {
+            if (type instanceof MapLink) {
+                switch ((MapLink) type) {
+                    case STAKEHOLDERS:
+                        createStakeholderPercepts(event.<ItemMap<Stakeholder>>getContent(MapLink.COMPLETE_COLLECTION),
+                                type);
+                        break;
+                    case UPGRADE_TYPES:
+                        createPercepts(event.<ItemMap<UpgradeType>>getContent(MapLink.COMPLETE_COLLECTION), type);
+                        break;
+                    default:
+                        super.notifyListener(event);
+                }
+            } else if (type == Network.ConnectionEvent.FIRST_UPDATE_FINISHED) {
+                System.out.println("received  FIRST_UPDATE_FINISHED in " + toString());
+                // entity is ready to run! Report to EIS
+                entity.notifyReady(ENTITY);
+
+                // remove stakeholders from the entity, so we don't get new percepts of type stakeholders
+                EventManager.removeListener(this, MapLink.STAKEHOLDERS);
+            }
+        } catch (EntityException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean isForMe(Event event) {
+        if (event instanceof SlotEvent) {
+            SlotEvent slotEvent = (SlotEvent) event;
+            return connectionID.equals(slotEvent.getConnectionID());
+        }
+        return true;
+    }
+
+    /**
+     * Create percepts contained in a ClientItemMap array.
+     * <p>
+     * see {@link #createPercepts(ItemMap, EventTypeEnum, String)}. The
+     * perceptname is {@link EventTypeEnum#name()}.
+     *
+     * @param itemMap list of ClientItemMap elements.
+     * @param type    the type of elements in the map.
+     * @param <T>     T should extend an Item.
+     */
+    private <T extends Item> void createPercepts(final ItemMap<T> itemMap, final EventTypeEnum type) {
+        createPercepts(itemMap, type, type.name().toLowerCase());
+    }
+
+    /**
+     * Create percepts contained in a ClientItemMap array and add them to the
+     * {@link #collectedPercepts}.
+     *
+     * @param itemMap     list of ClientItemMap elements.
+     * @param type        the type of elements in the map.
+     * @param perceptName the name of the percept.
+     * @param <T>         T should extend an Item.
+     */
+    private <T extends Item> void createPercepts(final ItemMap<T> itemMap, final EventTypeEnum type,
+                                                 final String perceptName) {
+        ArrayList<T> items = new ArrayList<>(itemMap.values());
+        List<Percept> percepts = new ArrayList<>();
+        Parameter[] parameters = null;
+        try {
+            parameters = translator.translate2Parameter(items);
+        } catch (TranslationException e) {
+            e.printStackTrace();
+        }
+        if (parameters != null) {
+            percepts.add(new Percept(perceptName, parameters));
+        }
+        addPercepts(type, percepts);
+    }
+
+    /**
+     * Create all percepts that involve stakeholders.
+     *
+     * @param itemMap list of ClientItemMap elements.
+     * @param type    the type of elements in the map.
+     * @throws EntityException Exception when we can't find a the correct stakeholder.
+     */
+    private void createStakeholderPercepts(final ItemMap<Stakeholder> itemMap,
+                                           final EventTypeEnum type) throws EntityException {
+        createPercepts(itemMap, type, type.name().toLowerCase());
+        List<Percept> percepts = collectedPercepts.get(type);
+        Percept myIdPercept = new Percept("my_stakeholder_id", new Numeral(stakeholder.getStakeholder().getID()));
+        percepts.add(myIdPercept);
+//        addPercepts(type, percepts);
+    }
+
+    /**
+     * Removes this entity from the event manager.
+     */
+    @Override
+    public void stop() {
+        super.stop();
+        EventManager.removeAllListeners(this);
+    }
+}

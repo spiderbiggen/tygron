@@ -1,25 +1,26 @@
 package contextvh.translators;
 
+import contextvh.configuration.ContextParamEnum;
 import eis.eis2java.exception.TranslationException;
 import eis.eis2java.translation.Parameter2Java;
 import eis.iilang.Identifier;
 import eis.iilang.Parameter;
 import tygronenv.configuration.ParamEnum;
 
-public class ParamEnum2J implements Parameter2Java<ParamEnum> {
+public class ContextParamEnum2J implements Parameter2Java<ContextParamEnum> {
 
-    public ParamEnum2J() {
+    public ContextParamEnum2J() {
         // Used for testing
     }
 
     @Override
-    public ParamEnum translate(Parameter parameter) throws TranslationException {
+    public ContextParamEnum translate(Parameter parameter) throws TranslationException {
         if (!(parameter instanceof Identifier)) {
             throw new TranslationException();
         }
         String id = ((Identifier) parameter).getValue();
 
-        for (ParamEnum params : ParamEnum.values()) {
+        for (ContextParamEnum params : ContextParamEnum.values()) {
             if (params.getParam().equals(id)) {
                 return params;
             }
@@ -29,8 +30,8 @@ public class ParamEnum2J implements Parameter2Java<ParamEnum> {
     }
 
     @Override
-    public Class<ParamEnum> translatesTo() {
-        return ParamEnum.class;
+    public Class<ContextParamEnum> translatesTo() {
+        return ContextParamEnum.class;
     }
 
 }

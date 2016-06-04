@@ -1,13 +1,13 @@
 package contextvh.configuration;
 
 /**
- * Translates a init parameter type into a ParamEnum
+ * Translates a init parameter type into a ContextParamEnum
  */
-public enum ParamEnum {
+public enum ContextParamEnum {
     STAKEHOLDERS("stakeholders"), PROJECT("project"), SLOT("slot"), DOMAIN("domain");
     private String param;
 
-    private ParamEnum(String name) {
+    private ContextParamEnum(String name) {
         this.param = name;
     }
 

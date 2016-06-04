@@ -36,13 +36,13 @@ public class TestEnvironmentStates {
 	private static final String STAKEHOLDERS = "stakeholders";
 	private static final String MUNICIPALITY = "MUNICIPALITY";
 	private static final String INHABITANTS = "INHABITANTS";
-	private EisEnv env;
+	private ContextEnv env;
 	private static String PROJECT = "project";
 	private static Identifier PROJECTNAME = new Identifier("testmap");
 
 	@Before
 	public void before() {
-		env = new EisEnv();
+		env = new ContextEnv();
 	}
 
 	@After
@@ -221,11 +221,11 @@ public class TestEnvironmentStates {
 
 	/**
 	 * Init env and ask for inhabitant as stakeholder.
-	 * 
-	 * @throws ManagementException {@link MangementExption}
+	 *
+	 * @throws ManagementException {@link ManagementException}
 	 * @throws InterruptedException {@link InterruptedException}
 	 */
-	private void joinAsInhabitants() 
+	private void joinAsInhabitants()
 			throws ManagementException, InterruptedException {
 		MyEnvListener listener = new MyEnvListener();
 		env.attachEnvironmentListener(listener);
@@ -238,7 +238,7 @@ public class TestEnvironmentStates {
 		env.init(parameters);
 
 		assertEquals(INHABITANTS, listener.waitForEntity());
-	}	
+	}
 	/**
 	 * Search for a road function in the percepts. This runs through all
 	 * elements of the function and checks their type

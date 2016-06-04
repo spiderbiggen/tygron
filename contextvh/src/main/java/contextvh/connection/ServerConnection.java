@@ -1,13 +1,14 @@
 package contextvh.connection;
 
+import contextvh.configuration.ContextConfiguration;
 import eis.exceptions.ManagementException;
 import login.Login;
+import login.ContextProjectFactory;
+import login.ProjectException;
 import nl.tytech.core.client.net.ServicesManager;
 import nl.tytech.core.net.serializable.ProjectData;
 import nl.tytech.core.net.serializable.User;
 import nl.tytech.core.net.serializable.User.AccessLevel;
-import tygronenv.configuration.Configuration;
-import tygronenv.connection.Session;
 
 import javax.security.auth.login.LoginException;
 
@@ -29,17 +30,17 @@ public class ServerConnection {
     /**
      * Session can be used by all team members.
      */
-    private tygronenv.connection.Session session = null;
-    private tygronenv.connection.ProjectFactory factory = new tygronenv.connection.ProjectFactory();
+    private Session session = null;
+    private ContextProjectFactory factory = new ContextProjectFactory();
 
     /**
      * Connect with the server, and create Session with the
-     * {@link Configuration}.
+     * {@link ContextConfiguration}.
      *
-     * @param config the {@link Configuration} to use
+     * @param config the {@link ContextConfiguration} to use
      * @throws ManagementException
      */
-    public ServerConnection(Configuration config) throws ManagementException {
+    public ServerConnection(ContextConfiguration config) throws ManagementException {
         User user;
         Login login;
         try {
@@ -59,11 +60,15 @@ public class ServerConnection {
             project = factory.getProject(config.getProject());
         }
         if (project == null) {
+            try {
             project = factory.createProject(config.getProject());
+            } catch (ProjectException e) {
+                throw new ManagementException("failed to create project", e);
+            }
             createdProject = true;
         }
 
-        session = new tygronenv.connection.Session(config, project);
+        session = new Session(config, project);
 
     }
 
@@ -78,8 +83,11 @@ public class ServerConnection {
             session.close();
             session = null;
         }
-        if (createdProject) {
+        try {
             factory.deleteProject(project);
+        } catch (ProjectException e) {
+            throw new ManagementException("Failed to remove temp project", e);
+        } finally {
             project = null;
             createdProject = false;
         }
