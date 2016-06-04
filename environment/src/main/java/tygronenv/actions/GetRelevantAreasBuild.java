@@ -1,18 +1,18 @@
 package tygronenv.actions;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.prep.PreparedGeometry;
 import com.vividsolutions.jts.geom.prep.PreparedGeometryFactory;
 
 import eis.eis2java.exception.TranslationException;
-import eis.iilang.Function;
-import eis.iilang.Identifier;
 import eis.iilang.Parameter;
 import eis.iilang.ParameterList;
 import eis.iilang.Percept;
@@ -26,6 +26,7 @@ import nl.tytech.data.engine.item.Terrain;
 import nl.tytech.util.JTSUtils;
 import nl.tytech.util.logger.TLogger;
 import tygronenv.TygronEntity;
+import tygronenv.util.CoordinateUtils;
 
 public class GetRelevantAreasBuild implements RelevantAreasAction {
 
@@ -137,86 +138,35 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 			Coordinate[] coords = triangle.getCoordinates();
 
 			// Create first new point.
-			Coordinate newPoint1 = plus(coords[0], coords[2]);
-			newPoint1 = divide(newPoint1, 2);
-			newPoint1 = minus(newPoint1, coords[1]);
-			newPoint1 = plus(coords[1], times(newPoint1, 1.25));
+			Coordinate newPoint1 = CoordinateUtils.plus(coords[0], coords[2]);
+			newPoint1 = CoordinateUtils.divide(newPoint1, 2);
+			newPoint1 = CoordinateUtils.minus(newPoint1, coords[1]);
+			newPoint1 = CoordinateUtils.plus(coords[1], CoordinateUtils.times(newPoint1, 1.25));
 
 			// Create second new point.
-			Coordinate newPoint2 = plus(coords[0], coords[1]);
-			newPoint2 = divide(newPoint2, 2);
-			newPoint2 = minus(newPoint2, coords[2]);
-			newPoint2 = plus(coords[2], times(newPoint2, 1.25));
+			Coordinate newPoint2 = CoordinateUtils.plus(coords[0], coords[1]);
+			newPoint2 = CoordinateUtils.divide(newPoint2, 2);
+			newPoint2 = CoordinateUtils.minus(newPoint2, coords[2]);
+			newPoint2 = CoordinateUtils.plus(coords[2], CoordinateUtils.times(newPoint2, 1.25));
 
-			// Insert two new points 
-			Coordinate[] newCoords = {
-					coords[0],
-					newPoint2,
-					coords[1],
-					coords[2],
-					newPoint1,
-					coords[0]
-			};
-			
-			// Using stringbuilder and translator because no other way has been found
-			// to create multipolygons yet.
-			StringBuilder sb = new StringBuilder("MULTIPOLYGON (((");
-			for (Coordinate coord : newCoords) {
-				sb.append(coord.x + " " + coord.y + ", ");
-			}
-			sb.delete(sb.length() - 2, sb.length());
-			sb.append(")))");
+			// Create list with coordinates for the new Polygon.
+			ArrayList<Coordinate> newCoords = new ArrayList<Coordinate>();
+			newCoords.add(coords[0]);
+			newCoords.add(newPoint2);
+			newCoords.add(coords[1]);
+			newCoords.add(coords[2]);
+			newCoords.add(newPoint1);
+			newCoords.add(coords[0]);
 
-			MultiPolygon result = null;
-			try {
-				result = GetRelevantAreas.TRANSLATOR.translate2Java(new Function("multipolygon",
-						new Identifier(sb.toString())), MultiPolygon.class);
-			} catch (TranslationException e) {
-				TLogger.exception(e);
-				return triangle;
-			}
+			// Convert the list of coordinates to a MultiPolygon.
+			MultiPolygon result = new MultiPolygon(
+					new Polygon[] {
+							(Polygon) JTSUtils.createPolygon(newCoords)
+					},
+					new GeometryFactory()
+			);
 
 			return result;
 		}
-	}
-
-	/**
-	 * Add two Coordinates together.
-	 * @param c1 First coordinate.
-	 * @param c2 Second coordinate
-	 * @return A new Coordinate.
-	 */
-	private Coordinate plus(Coordinate c1, Coordinate c2) {
-		return new Coordinate(c1.x + c2.x, c1.y + c2.y, c1.z + c2.z);
-	}
-
-	/**
-	 * Subtract one Coordinate from another.
-	 * @param c1 First coordinate.
-	 * @param c2 Second coordinate
-	 * @return A new Coordinate.
-	 */
-	private Coordinate minus(Coordinate c1, Coordinate c2) {
-		return new Coordinate(c1.x - c2.x, c1.y - c2.y, c1.z - c2.z);
-	}
-
-	/**
-	 * Multiply a Coordinate with a number.
-	 * @param c1 The coordinate.
-	 * @param num the number.
-	 * @return A new Coordinate.
-	 */
-	private Coordinate times(Coordinate c, double num) {
-		return new Coordinate(c.x * num, c.y * num, c.z * num);
-	}
-
-	/**
-	 * Divide a Coordinate with a number.
-	 * @param c1 The coordinate.
-	 * @param num the number.
-	 * @return A new Coordinate.
-	 */
-	private Coordinate divide(Coordinate c, double num) {
-		return new Coordinate(c.x / num, c.y / num, c.z / num);
 	}
 }
