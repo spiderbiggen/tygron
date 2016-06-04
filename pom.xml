@@ -19,6 +19,7 @@
 		<module>sdk-tests</module>
 		<module>environment</module>
 		<module>doc</module>
+		<module>contextvh</module>
 	</modules>
 
 	<build>
