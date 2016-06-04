@@ -7,7 +7,7 @@ install:
 - mvn -pl "!doc" install -DskipTests=true -Dmaven.javadoc.skip=true -Dcobertura.skip -B -V 
 script:
 # add login credentials in registry
-- java -cp contextvh/target/tygronenv-*-jar-with-dependencies.jar login.Login $email $password
+- java -cp contextvh/target/contextenv-*-jar-with-dependencies.jar login.Login $email $password
 # test the code
 - mvn test -Dcobertura.skip
 # checkstyle check is configured with these arguments
