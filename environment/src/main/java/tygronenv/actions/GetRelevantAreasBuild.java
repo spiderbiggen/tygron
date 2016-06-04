@@ -49,16 +49,11 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 	@Override
 	public void internalCall(Percept createdPercept, TygronEntity caller, ParameterList parameters) {
 		GetRelevantAreas.debug("function called");
-		GetRelevantAreas.debug("fetching data");
-		// Fetch all necessary data from the SDK.
 		final Integer stakeholderID = caller.getStakeholder().getID();
-		final ItemMap<Land> lands = EventManager.getItemMap(MapLink.LANDS);
-		final ItemMap<Terrain> terrains = EventManager.getItemMap(MapLink.TERRAINS);
-		final Setting reservedLandSetting = EventManager.getItem(MapLink.SETTINGS, Setting.Type.RESERVED_LAND);
-		final ItemMap<Building> buildings = EventManager.getItemMap(MapLink.BUILDINGS);
 
-		GetRelevantAreas.debug("combining land");
 		// Get a MultiPolygon of all lands combined.
+		GetRelevantAreas.debug("combining land");
+		final ItemMap<Land> lands = EventManager.getItemMap(MapLink.LANDS);
 		MultiPolygon constructableLand = JTSUtils.EMPTY;
 		for (Land land : lands) {
 			if (land.getOwnerID() == stakeholderID) {
@@ -66,24 +61,27 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 			}
 		}
 
-		GetRelevantAreas.debug("removing water");
 		// Remove all pieces of land that cannot be build on (water).
+		GetRelevantAreas.debug("removing water");
+		final ItemMap<Terrain> terrains = EventManager.getItemMap(MapLink.TERRAINS);
 		for (Terrain terrain : terrains) {
 			if (terrain.getType().isWater()) {
 				constructableLand = JTSUtils.difference(constructableLand, terrain.getMultiPolygon(GetRelevantAreas.DEFAULT_MAPTYPE));
 			}
 		}
 
-		GetRelevantAreas.debug("removing reserved");
 		// Remove all pieces of reserved land.
+		GetRelevantAreas.debug("removing reserved");
+		final Setting reservedLandSetting = EventManager.getItem(MapLink.SETTINGS, Setting.Type.RESERVED_LAND);
 		MultiPolygon reservedLand = reservedLandSetting.getMultiPolygon();
 		if (JTSUtils.containsData(reservedLand)) {
 			constructableLand = JTSUtils.difference(constructableLand, reservedLand);
 		}
 
-		GetRelevantAreas.debug("removing buildings");
 		// Remove all pieces of occupied land.
-		PreparedGeometry prepped = PreparedGeometryFactory.prepare(constructableLand);
+		GetRelevantAreas.debug("removing buildings");
+		final ItemMap<Building> buildings = EventManager.getItemMap(MapLink.BUILDINGS);
+		final PreparedGeometry prepped = PreparedGeometryFactory.prepare(constructableLand);
 		for (Building building : buildings) {
 			final MultiPolygon buildingMP = building.getMultiPolygon(GetRelevantAreas.DEFAULT_MAPTYPE);
 			if (prepped.intersects(buildingMP)) {
@@ -91,14 +89,14 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 			}
 		}
 
-		GetRelevantAreas.debug("finalizing selection");
+		GetRelevantAreas.debug("finalizing selection. Total area found was " + constructableLand.getArea());
 		final int minArea = 200;
 		final int maxArea = 2000;
 		final int maxPolys = 15;
 		int numPolys = 0;
-		final ParameterList params = new ParameterList();
+		final ParameterList results = new ParameterList();
 		for (Polygon poly: JTSUtils.getPolygons(constructableLand)) {
-			List<Polygon> listPolygon = JTSUtils.getTriangles(poly, minArea);
+			final List<Polygon> listPolygon = JTSUtils.getTriangles(poly, minArea);
 			for (Geometry geom : listPolygon) {
 				if (numPolys > maxPolys) {
 					break;
@@ -114,7 +112,7 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 				MultiPolygon mp = JTSUtils.createMP(geom);
 				constructableLand = JTSUtils.createMP(constructableLand.difference(mp));
 				try {
-					params.add(GetRelevantAreas.convertMPtoPL(mp));
+					results.add(GetRelevantAreas.convertMPtoPL(mp));
 				} catch (TranslationException e) {
 					TLogger.exception(e);
 					continue;
@@ -123,6 +121,7 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 				GetRelevantAreas.debug("Added " + mp.toText());
 			}
 		}
+		createdPercept.addParameter(results);
 		GetRelevantAreas.debug("created result");
 	}
 
