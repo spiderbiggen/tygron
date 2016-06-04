@@ -17,14 +17,14 @@ public class ContextEntity extends tygronenv.TygronEntityImpl {
      *
      * @param env                 the environment to report back to.
      * @param intendedStakeholder the intended stakeholder name. If null, any name is ok.
-     * @param slotID
+     * @param slotID              the intended slot to use. If null any slot is ok.
      */
-    public ContextEntity(EntityListener env, String intendedStakeholder, Integer slotID) {
+    public ContextEntity(final EntityListener env, final String intendedStakeholder, final Integer slotID) {
         super(env, intendedStakeholder, slotID);
     }
 
     @Override
-    public tygronenv.EntityEventHandler createEntityEventhandler(TSlotConnection slotConnection) {
+    public tygronenv.EntityEventHandler createEntityEventhandler(final TSlotConnection slotConnection) {
         return new ContextEntityEventHandler(this, slotConnection.getConnectionID(), this);
     }
 }

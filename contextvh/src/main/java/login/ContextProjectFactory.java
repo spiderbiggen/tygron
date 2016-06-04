@@ -7,7 +7,7 @@ import static nl.tytech.core.net.event.IOServiceEventType.GET_DOMAIN_STARTABLE_P
 import static nl.tytech.core.net.event.IOServiceEventType.GET_PROJECT_DATA;
 
 /**
- * Factory to fetch existing and create new projects
+ * Factory to fetch existing and create new projects.
  *
  * @author Stefan Breetveld
  */
@@ -21,7 +21,7 @@ public class ContextProjectFactory extends ProjectFactory {
      * @return project with given name on the given domain, or null if no project with given name
      * exists.
      */
-    public ProjectData getProject(String name, String domain) {
+    public ProjectData getProject(final String name, final String domain) {
         ProjectData[] projects = ServicesManager.fireServiceEvent(GET_DOMAIN_STARTABLE_PROJECTS, domain);
         if (projects != null) {
             for (ProjectData existing : projects) {

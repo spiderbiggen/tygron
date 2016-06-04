@@ -16,10 +16,16 @@ import java.util.logging.Logger;
  * on an open project, see {@link ServerConnection}.
  */
 public class Session {
-    private static final Logger logger = Logger.getLogger(Session.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(Session.class.getName());
     private Integer slotID;
 
-    public Session(ContextConfiguration config, ProjectData project) {
+    /**
+     * Creates a new session instance.
+     *
+     * @param config the settings to use for this project.
+     * @param project the project to create a session for.
+     */
+    public Session(final ContextConfiguration config, final ProjectData project) {
 
         slotID = config.getSlot();
         if (config.getSlot() == null) {
@@ -51,12 +57,11 @@ public class Session {
      * Return a joinable loaded session. If it does not exist yet, start a
      * session and return it.
      *
-     * @param mapName      The mapname you are trying to join.
-     * @param preferedSlot the preferred slot
+     * @param config config defining slot and project name.
      * @return a session
      */
-    private SlotInfo findSession(ContextConfiguration config) {
-        logger.info("Create or find a session with name: " + config.getProject());
+    private SlotInfo findSession(final ContextConfiguration config) {
+        LOGGER.info("Create or find a session with name: " + config.getProject());
 
         SlotInfo[] availableSessions = ServicesManager.fireServiceEvent(IOServiceEventType.GET_MY_JOINABLE_SESSIONS,
                 SessionType.SINGLE, config.getProject(), TLanguage.EN);

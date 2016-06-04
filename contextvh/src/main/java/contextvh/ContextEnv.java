@@ -65,13 +65,28 @@ public class ContextEnv extends EIDefaultImpl implements EntityListener {
         installTranslators();
     }
 
+    /**
+     *
+     * @param e
+     * @return
+     * @throws PerceiveException
+     * @throws NoEnvironmentException
+     */
     @Override
-    protected LinkedList<Percept> getAllPerceptsFromEntity(String e) throws PerceiveException, NoEnvironmentException {
+    protected LinkedList<Percept> getAllPerceptsFromEntity(final String e)
+            throws PerceiveException, NoEnvironmentException {
         return getEntity(e).getPercepts();
     }
 
-    private TygronEntity getEntity(String e) {
-        String entity = e.toUpperCase();
+    /**
+     * Retrieve the entity assigned to the given entity.
+     *
+     * @param entityName the name of the entity
+     * @return the entity with name {@code entityName}
+     * @throws IllegalArgumentException thrown when an entity with the given name doesn't exist
+     */
+    private TygronEntity getEntity(final String entityName) throws IllegalArgumentException {
+        String entity = entityName.toUpperCase();
         if (!entities.containsKey(entity)) {
             throw new IllegalArgumentException("Unknown entity " + entity + ". Have:" + entities.keySet());
         }
@@ -79,17 +94,17 @@ public class ContextEnv extends EIDefaultImpl implements EntityListener {
     }
 
     @Override
-    protected boolean isSupportedByEnvironment(Action action) {
+    protected boolean isSupportedByEnvironment(final Action action) {
         return true;
     }
 
     @Override
-    protected boolean isSupportedByType(Action action, String type) {
+    protected boolean isSupportedByType(final Action action, final String type) {
         return isSupportedByEnvironment(action); // ignore type.
     }
 
     @Override
-    protected boolean isSupportedByEntity(Action action, String entity) {
+    protected boolean isSupportedByEntity(final Action action, final String entity) {
         return getEntity(entity).isSupported(action);
     }
 
@@ -102,7 +117,8 @@ public class ContextEnv extends EIDefaultImpl implements EntityListener {
      * @throws ActException thrown if the action failed to execute
      */
     @Override
-    protected Percept performEntityAction(String entity, Action action) throws ActException {
+    protected Percept performEntityAction(final String entity,
+                                          final Action action) throws ActException {
         try {
             getEntity(entity).performAction(action);
         } catch (TranslationException | IllegalArgumentException e1) {
@@ -118,7 +134,7 @@ public class ContextEnv extends EIDefaultImpl implements EntityListener {
      * @throws ManagementException
      */
     @Override
-    public void init(Map<String, Parameter> parameters) throws ManagementException {
+    public void init(final Map<String, Parameter> parameters) throws ManagementException {
         super.init(parameters);
         ContextConfiguration config;
         try {
@@ -142,9 +158,12 @@ public class ContextEnv extends EIDefaultImpl implements EntityListener {
      * Factory method. Creates new entity. The entity should announce itself to
      * GOAL, but only when it is ready to handle getPercepts.
      *
+     * @param listener Listener supplying updates
+     * @param stakeholder name of the stakeholder
+     * @param slot slot connection ID that this entity connects to
      * @return new entity
      */
-    public TygronEntity createNewEntity(EntityListener listener, String stakeholder, Integer slot) {
+    public TygronEntity createNewEntity(final EntityListener listener, final String stakeholder, final Integer slot) {
         return new ContextEntity(listener, stakeholder, slot);
     }
 
@@ -162,7 +181,7 @@ public class ContextEnv extends EIDefaultImpl implements EntityListener {
     }
 
     @Override
-    public boolean isStateTransitionValid(EnvironmentState oldState, EnvironmentState newState) {
+    public boolean isStateTransitionValid(final EnvironmentState oldState, final EnvironmentState newState) {
         return true;
     }
 
@@ -172,7 +191,7 @@ public class ContextEnv extends EIDefaultImpl implements EntityListener {
      * @param entity the identifier of the entity
      */
     @Override
-    public void entityReady(String entity) {
+    public void entityReady(final String entity) {
         try {
             addEntity(entity, "stakeholder");
         } catch (EntityException e) {

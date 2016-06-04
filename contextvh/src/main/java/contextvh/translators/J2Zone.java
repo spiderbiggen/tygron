@@ -24,7 +24,7 @@ public class J2Zone extends tygronenv.translators.J2Zone {
      * and the allowed function IDs within the zone.
      */
     @Override
-    public Parameter[] translate(Zone z) throws TranslationException {
+    public Parameter[] translate(final Zone z) throws TranslationException {
         return new Parameter[]{
                 new Function(
                         "zone",
