@@ -1,12 +1,17 @@
 package tygronenv.util;
 
+import java.util.List;
+
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+
+import nl.tytech.util.JTSUtils;
 
 public class CoordinateUtils {
 	/**
-	 * Add two Coordinates together.
-	 * @param c1 First coordinate.
-	 * @param c2 Second coordinate
+	 * Add two <code>Coordinate</code>s together.
+	 * @param c1 First Coordinate.
+	 * @param c2 Second Coordinate.
 	 * @return A new Coordinate.
 	 */
 	public static Coordinate plus(Coordinate c1, Coordinate c2) {
@@ -14,9 +19,9 @@ public class CoordinateUtils {
 	}
 
 	/**
-	 * Subtract one Coordinate from another.
+	 * Subtract one <code>Coordinate</code> from another.
 	 * @param c1 First coordinate.
-	 * @param c2 Second coordinate
+	 * @param c2 Second coordinate.
 	 * @return A new Coordinate.
 	 */
 	public static Coordinate minus(Coordinate c1, Coordinate c2) {
@@ -24,9 +29,9 @@ public class CoordinateUtils {
 	}
 
 	/**
-	 * Multiply a Coordinate with a number.
+	 * Multiply a <code>Coordinate</code> with a number.
 	 * @param c1 The coordinate.
-	 * @param num the number.
+	 * @param num The number.
 	 * @return A new Coordinate.
 	 */
 	public static Coordinate times(Coordinate c, double num) {
@@ -34,12 +39,21 @@ public class CoordinateUtils {
 	}
 
 	/**
-	 * Divide a Coordinate with a number.
+	 * Divide a <code>Coordinate</code> with a number.
 	 * @param c1 The coordinate.
-	 * @param num the number.
+	 * @param num The number.
 	 * @return A new Coordinate.
 	 */
 	public static Coordinate divide(Coordinate c, double num) {
 		return new Coordinate(c.x / num, c.y / num, c.z / num);
+	}
+
+	/**
+	 * Converts a {@code List<Coordinate>} to a Geometry.
+	 * @param A List of Coordinates.
+	 * @return A Geometry.
+	 */
+	public static Geometry coordinatesToGeometry(List<Coordinate> coords) {
+		return JTSUtils.createPolygon(coords);
 	}
 }

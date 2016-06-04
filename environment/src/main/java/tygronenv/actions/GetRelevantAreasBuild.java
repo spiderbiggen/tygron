@@ -1,12 +1,11 @@
 package tygronenv.actions;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.prep.PreparedGeometry;
@@ -20,15 +19,23 @@ import nl.tytech.core.client.event.EventManager;
 import nl.tytech.core.net.serializable.MapLink;
 import nl.tytech.core.structure.ItemMap;
 import nl.tytech.data.engine.item.Building;
-import nl.tytech.data.engine.item.Land;
-import nl.tytech.data.engine.item.Setting;
-import nl.tytech.data.engine.item.Terrain;
 import nl.tytech.util.JTSUtils;
 import nl.tytech.util.logger.TLogger;
 import tygronenv.TygronEntity;
 import tygronenv.util.CoordinateUtils;
+import tygronenv.util.MapUtils;
 
+/**
+ * 
+ * @author Max Groenenboom
+ */
 public class GetRelevantAreasBuild implements RelevantAreasAction {
+
+	/**
+	 * 
+	 * @author Max Groenenboom
+	 */
+	private static class CU extends CoordinateUtils{};
 
 	@Override
 	public Percept call(TygronEntity caller, LinkedList<Parameter> parameters) {
@@ -48,35 +55,18 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 
 	@Override
 	public void internalCall(Percept createdPercept, TygronEntity caller, ParameterList parameters) {
-		GetRelevantAreas.debug("function called");
-		final Integer stakeholderID = caller.getStakeholder().getID();
-
 		// Get a MultiPolygon of all lands combined.
 		GetRelevantAreas.debug("combining land");
-		final ItemMap<Land> lands = EventManager.getItemMap(MapLink.LANDS);
-		MultiPolygon constructableLand = JTSUtils.EMPTY;
-		for (Land land : lands) {
-			if (land.getOwnerID() == stakeholderID) {
-				constructableLand = JTSUtils.union(constructableLand, land.getMultiPolygon());
-			}
-		}
+		final Integer stakeholderID = caller.getStakeholder().getID();
+		MultiPolygon constructableLand = MapUtils.getMyLands(stakeholderID);
 
 		// Remove all pieces of land that cannot be build on (water).
 		GetRelevantAreas.debug("removing water");
-		final ItemMap<Terrain> terrains = EventManager.getItemMap(MapLink.TERRAINS);
-		for (Terrain terrain : terrains) {
-			if (terrain.getType().isWater()) {
-				constructableLand = JTSUtils.difference(constructableLand, terrain.getMultiPolygon(GetRelevantAreas.DEFAULT_MAPTYPE));
-			}
-		}
+		constructableLand = MapUtils.removeWater(constructableLand);
 
 		// Remove all pieces of reserved land.
 		GetRelevantAreas.debug("removing reserved");
-		final Setting reservedLandSetting = EventManager.getItem(MapLink.SETTINGS, Setting.Type.RESERVED_LAND);
-		MultiPolygon reservedLand = reservedLandSetting.getMultiPolygon();
-		if (JTSUtils.containsData(reservedLand)) {
-			constructableLand = JTSUtils.difference(constructableLand, reservedLand);
-		}
+		constructableLand = MapUtils.removeReservedLand(constructableLand);
 
 		// Remove all pieces of occupied land.
 		GetRelevantAreas.debug("removing buildings");
@@ -131,41 +121,30 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 	 * @return The new polygon.
 	 */
 	private Geometry createNewPolygon(Geometry triangle) {
-		if (triangle.getNumPoints() != 4) {
+		final int triangleAmountOfCoords = 4;
+		final double distanceFromOppositeCorner = 1.25;
+		if (triangle.getNumPoints() != triangleAmountOfCoords) {
 			return triangle;
 		} else {
 			Coordinate[] coords = triangle.getCoordinates();
 
+			// TODO Make sure both points are created the same way
+			// Which of these two do you guys like better?
 			// Create first new point.
-			Coordinate newPoint1 = CoordinateUtils.plus(coords[0], coords[2]);
-			newPoint1 = CoordinateUtils.divide(newPoint1, 2);
-			newPoint1 = CoordinateUtils.minus(newPoint1, coords[1]);
-			newPoint1 = CoordinateUtils.plus(coords[1], CoordinateUtils.times(newPoint1, 1.25));
+			Coordinate newPoint1 = CU.plus(coords[0], coords[1]);
+			newPoint1 = CU.divide(newPoint1, 2);
+			newPoint1 = CU.minus(newPoint1, coords[2]);
+			newPoint1 = CU.plus(coords[2], CU.times(newPoint1, distanceFromOppositeCorner));
 
 			// Create second new point.
-			Coordinate newPoint2 = CoordinateUtils.plus(coords[0], coords[1]);
-			newPoint2 = CoordinateUtils.divide(newPoint2, 2);
-			newPoint2 = CoordinateUtils.minus(newPoint2, coords[2]);
-			newPoint2 = CoordinateUtils.plus(coords[2], CoordinateUtils.times(newPoint2, 1.25));
+			Coordinate newPoint2 = CU.plus(coords[1], CU.times(CU.minus(CU.divide(CU.plus(coords[0], coords[2]), 2), coords[1]), distanceFromOppositeCorner));
 
 			// Create list with coordinates for the new Polygon.
-			ArrayList<Coordinate> newCoords = new ArrayList<Coordinate>();
-			newCoords.add(coords[0]);
-			newCoords.add(newPoint2);
-			newCoords.add(coords[1]);
-			newCoords.add(coords[2]);
-			newCoords.add(newPoint1);
-			newCoords.add(coords[0]);
+			List<Coordinate> newCoords = Arrays.asList(new Coordinate[] {
+					coords[0], newPoint1, coords[1], coords[2], newPoint2, coords[0]
+			});
 
-			// Convert the list of coordinates to a MultiPolygon.
-			MultiPolygon result = new MultiPolygon(
-					new Polygon[] {
-							(Polygon) JTSUtils.createPolygon(newCoords)
-					},
-					new GeometryFactory()
-			);
-
-			return result;
+			return CU.coordinatesToGeometry(newCoords);
 		}
 	}
 }
