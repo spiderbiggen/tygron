@@ -2,6 +2,7 @@ package tygronenv.actions;
 
 import java.util.LinkedList;
 
+import eis.eis2java.exception.TranslationException;
 import eis.iilang.Parameter;
 import eis.iilang.Percept;
 import tygronenv.TygronEntity;
@@ -16,8 +17,9 @@ public interface CustomAction {
 	 * @param caller The TygronEntity that called the action.
 	 * @param parameters The parameters provided by the agent.
 	 * @return List of percepts resulting from the action. This list can be empty or null.
+	 * @throws TranslationException When an action call was invalid.
 	 */
-	Percept call(TygronEntity caller, LinkedList<Parameter> parameters);
+	Percept call(TygronEntity caller, LinkedList<Parameter> parameters) throws TranslationException;
 
 	/**
 	 * This method provides the name of the action, which the agent
