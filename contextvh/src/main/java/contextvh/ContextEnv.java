@@ -51,11 +51,11 @@ public class ContextEnv extends EIDefaultImpl implements EntityListener {
 
     private ServerConnection serverConnection = null;
     private Map<String, TygronEntity> entities = new HashMap<>();
-    private Java2Parameter<?>[] j2p = new Java2Parameter<?>[]{new J2ClientItemMap(), new J2Stakeholder(),
+    private Java2Parameter<?>[] j2p = new Java2Parameter<?>[] {new J2ClientItemMap(), new J2Stakeholder(),
             new J2Setting(), new J2Function(), new J2Category(), new J2Building(), new J2TimeState(),
             new J2ActionLog(), new J2ActionMenu(), new J2Zone(), new J2Land(), new J2MultiPolygon(),
             new J2PopupData(), new J2Answer(), new J2Indicator(), new J2UpgradeType()};
-    private Parameter2Java<?>[] p2j = new Parameter2Java<?>[]{new ContextParamEnum2J(),
+    private Parameter2Java<?>[] p2j = new Parameter2Java<?>[] {new ContextParamEnum2J(),
             new HashMap2J(), new Stakeholder2J(), new MultiPolygon2J()};
 
     /**
@@ -158,9 +158,9 @@ public class ContextEnv extends EIDefaultImpl implements EntityListener {
      * Factory method. Creates new entity. The entity should announce itself to
      * GOAL, but only when it is ready to handle getPercepts.
      *
-     * @param listener Listener supplying updates
+     * @param listener    Listener supplying updates
      * @param stakeholder name of the stakeholder
-     * @param slot slot connection ID that this entity connects to
+     * @param slot        slot connection ID that this entity connects to
      * @return new entity
      */
     public TygronEntity createNewEntity(final EntityListener listener, final String stakeholder, final Integer slot) {

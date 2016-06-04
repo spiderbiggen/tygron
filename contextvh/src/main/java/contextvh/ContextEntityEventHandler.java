@@ -41,8 +41,9 @@ public class ContextEntityEventHandler extends tygronenv.EntityEventHandler {
 
     /**
      * Creates a new {@link ContextEntityEventHandler} instance.
-     * @param listener The listener that is used to serve updates
-     * @param connectID The ID of the current connection
+     *
+     * @param listener      The listener that is used to serve updates
+     * @param connectID     The ID of the current connection
      * @param contextEntity The Entity this {@link ContextEntityEventHandler} applies to
      */
     public ContextEntityEventHandler(final EntityEventListener listener,

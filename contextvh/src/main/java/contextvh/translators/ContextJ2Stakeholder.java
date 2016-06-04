@@ -19,7 +19,7 @@ import java.util.List;
  *
  * @author Haoming - Danshal & Rico - WhySoSerious
  */
-public class J2Stakeholder extends tygronenv.translators.J2Stakeholder {
+public class ContextJ2Stakeholder extends tygronenv.translators.J2Stakeholder {
 
     /**
      * Translate the stakeholder object in the form of:
@@ -32,7 +32,7 @@ public class J2Stakeholder extends tygronenv.translators.J2Stakeholder {
         if (budget == null) {
             budget = 0d;
         }
-        return new Parameter[]{
+        return new Parameter[] {
                 new Function(
                         "stakeholder",
                         new Numeral(stakeholder.getID()),

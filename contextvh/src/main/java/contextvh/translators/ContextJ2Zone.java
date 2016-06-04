@@ -13,7 +13,7 @@ import nl.tytech.data.engine.item.Zone;
  *
  * @author T.Brunner, J.N de Vries
  */
-public class J2Zone extends tygronenv.translators.J2Zone {
+public class ContextJ2Zone extends tygronenv.translators.J2Zone {
 
     private final Translator translator = Translator.getInstance();
 
@@ -25,7 +25,7 @@ public class J2Zone extends tygronenv.translators.J2Zone {
      */
     @Override
     public Parameter[] translate(final Zone z) throws TranslationException {
-        return new Parameter[]{
+        return new Parameter[] {
                 new Function(
                         "zone",
                         new Numeral(z.getID()),
