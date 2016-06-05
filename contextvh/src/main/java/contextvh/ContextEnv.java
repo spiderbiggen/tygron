@@ -51,9 +51,9 @@ public class ContextEnv extends EIDefaultImpl implements EntityListener {
 
     private ServerConnection serverConnection = null;
     private Map<String, TygronEntity> entities = new HashMap<>();
-    private Java2Parameter<?>[] j2p = new Java2Parameter<?>[] {new J2ClientItemMap(), new J2Stakeholder(),
-            new J2Setting(), new J2Function(), new J2Category(), new J2Building(), new J2TimeState(),
-            new J2ActionLog(), new J2ActionMenu(), new J2Zone(), new J2Land(), new J2MultiPolygon(),
+    private Java2Parameter<?>[] j2p = new Java2Parameter<?>[] {new J2ClientItemMap(), new ContextJ2Stakeholder(),
+            new J2Setting(), new J2Function(), new J2Category(), new ContextJ2Building(), new J2TimeState(),
+            new J2ActionLog(), new J2ActionMenu(), new ContextJ2Zone(), new J2Land(), new J2MultiPolygon(),
             new J2PopupData(), new J2Answer(), new J2Indicator(), new J2UpgradeType()};
     private Parameter2Java<?>[] p2j = new Parameter2Java<?>[] {new ContextParamEnum2J(),
             new HashMap2J(), new Stakeholder2J(), new MultiPolygon2J()};
