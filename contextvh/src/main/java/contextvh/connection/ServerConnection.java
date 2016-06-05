@@ -80,10 +80,9 @@ public class ServerConnection {
         if (createdProject) {
             try {
                 factory.deleteProject(project);
-            }
-            catch(ProjectException e){
+            } catch (final ProjectException e) {
                 throw new ManagementException("Failed to remove temp project", e);
-            }finally{
+            } finally {
                 project = null;
                 createdProject = false;
             }
