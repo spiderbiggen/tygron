@@ -19,12 +19,12 @@ import java.util.List;
  *
  * @author Haoming - Danshal & Rico - WhySoSerious
  */
-public class J2Stakeholder extends tygronenv.translators.J2Stakeholder {
+public class ContextJ2Stakeholder extends tygronenv.translators.J2Stakeholder {
 
     /**
      * Translate the stakeholder object in the form of:
      * stakeholder/4 - stakeholders([<ID>, <Name>, <Budget>, <Income>]) and
-     * indicatorlink/2 indicatorLink([<ID>,[indicatorWeights(<IndID>,<IndName>,<IndWeight>]])
+     * indicatorlink/2 indicatorLink([<ID>,[indicatorWeights(<IndID>,<IndName>,<IndWeight>]]).
      */
     @Override
     public Parameter[] translate(final Stakeholder stakeholder) throws TranslationException {
@@ -32,18 +32,26 @@ public class J2Stakeholder extends tygronenv.translators.J2Stakeholder {
         if (budget == null) {
             budget = 0d;
         }
-        return new Parameter[]{new Function("stakeholder", new Numeral(stakeholder.getID()),
-                new Identifier(stakeholder.getName()),
-                new Numeral(budget),
-                new Numeral(stakeholder.getYearlyIncome())), new Function("indicatorLink", new Numeral(stakeholder.getID()),
-                indicator(stakeholder.getMyIndicators(), stakeholder))};
+        return new Parameter[] {
+                new Function(
+                        "stakeholder",
+                        new Numeral(stakeholder.getID()),
+                        new Identifier(stakeholder.getName()),
+                        new Numeral(budget),
+                        new Numeral(stakeholder.getYearlyIncome())
+                ), new Function(
+                        "indicatorLink",
+                        new Numeral(stakeholder.getID()),
+                        indicator(stakeholder.getMyIndicators(), stakeholder)
+                )
+        };
     }
 
     /**
      * Method for creating the tupled list of indicators and weights.
      *
      * @param indicatorList List of indicators of the stakeholder.
-     * @param s             Stakeholder that has these indicators.
+     * @param stakeholder   Stakeholder that has these indicators.
      * @return ParameterList with indicatorWeights.
      */
     public ParameterList indicator(final List<Indicator> indicatorList, final Stakeholder stakeholder) {

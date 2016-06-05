@@ -1,4 +1,6 @@
 language: java
+jdk:
+- oraclejdk8
 before_install:
 # add eishub/tygron to remote as upstream
 - git remote add upstream https://github.com/eishub/tygron.git
@@ -7,13 +9,13 @@ install:
 - mvn -pl "!doc" install -DskipTests=true -Dmaven.javadoc.skip=true -Dcobertura.skip -B -V 
 script:
 # add login credentials in registry
-- java -cp contextvh/target/tygronenv-*-jar-with-dependencies.jar login.Login $email $password
+- java -cp contextvh/target/contextvh-*-jar-with-dependencies.jar login.Login $email $password
 # test the code
 - mvn test -Dcobertura.skip
-# checkstyle check is configured with these arguments
-- mvn checkstyle:check -Dcheckstyle.config.location="$TRAVIS_BUILD_DIR/sun_checks_custom.xml"
 #check pmd and checkstyle only for context environment
 - cd contextvh
+# checkstyle check is configured with these arguments -Dcheckstyle.config.location="$TRAVIS_BUILD_DIR/sun_checks_custom.xml"
+- mvn checkstyle:check 
 - mvn pmd:pmd
 - mvn findbugs:findbugs
 - cd target
@@ -22,8 +24,5 @@ script:
 - cd ..
 # run cobertura only in environment build fails when coverage is too low
 - mvn cobertura:check
-jdk:
-- oraclejdk8
-
 notifications:
   slack: $slack_token

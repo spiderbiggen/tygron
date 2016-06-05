@@ -14,13 +14,13 @@ import nl.tytech.data.engine.serializable.MapType;
  *
  * @author W.Pasman
  */
-public class J2Building extends tygronenv.translators.J2Building {
+public class ContextJ2Building extends tygronenv.translators.J2Building {
 
     private final Translator translator = Translator.getInstance();
 
     @Override
     public Parameter[] translate(final Building b) throws TranslationException {
-        return new Parameter[]{
+        return new Parameter[] {
                 new Function("building",
                         new Numeral(b.getID()),
                         new Identifier(b.getName()),

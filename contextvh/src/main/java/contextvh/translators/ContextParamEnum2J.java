@@ -5,16 +5,18 @@ import eis.eis2java.exception.TranslationException;
 import eis.eis2java.translation.Parameter2Java;
 import eis.iilang.Identifier;
 import eis.iilang.Parameter;
-import tygronenv.configuration.ParamEnum;
 
+/**
+ * Converts configuration parameters in the Mas2g file to Java parameters.
+ *
+ * @author Stefan Breetveld
+ */
 public class ContextParamEnum2J implements Parameter2Java<ContextParamEnum> {
 
-    public ContextParamEnum2J() {
-        // Used for testing
-    }
+    //No Constructor as an empty constructor is default in java.
 
     @Override
-    public ContextParamEnum translate(Parameter parameter) throws TranslationException {
+    public ContextParamEnum translate(final Parameter parameter) throws TranslationException {
         if (!(parameter instanceof Identifier)) {
             throw new TranslationException();
         }

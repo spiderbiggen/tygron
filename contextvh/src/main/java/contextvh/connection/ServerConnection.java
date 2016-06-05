@@ -39,9 +39,9 @@ public class ServerConnection {
      * {@link Configuration}.
      *
      * @param config the {@link Configuration} to use
-     * @throws ManagementException
+     * @throws ManagementException thrown if connection failed for various reasons.
      */
-    public ServerConnection(Configuration config) throws ManagementException {
+    public ServerConnection(final Configuration config) throws ManagementException {
         User user;
         Login login;
         try {
@@ -70,7 +70,7 @@ public class ServerConnection {
      * Disconnect from server. After calling this, this object can not be used
      * anymore.
      *
-     * @throws ManagementException
+     * @throws ManagementException thrown if project couldn't be deleted.
      */
     public void disconnect() throws ManagementException {
         if (session != null) {
