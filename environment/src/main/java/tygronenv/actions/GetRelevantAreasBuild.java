@@ -12,6 +12,7 @@ import com.vividsolutions.jts.geom.prep.PreparedGeometry;
 import com.vividsolutions.jts.geom.prep.PreparedGeometryFactory;
 
 import eis.eis2java.exception.TranslationException;
+import eis.iilang.Identifier;
 import eis.iilang.Parameter;
 import eis.iilang.ParameterList;
 import eis.iilang.Percept;
@@ -26,21 +27,32 @@ import tygronenv.util.CoordinateUtils;
 import tygronenv.util.MapUtils;
 
 /**
- * 
+ * TODO Make javadoc for class.
  * @author Max Groenenboom
  */
 public class GetRelevantAreasBuild implements RelevantAreasAction {
 
 	/**
-	 * 
+	 * Alias to shorten calls without having to use static imports.
 	 * @author Max Groenenboom
 	 */
 	private static class CU extends CoordinateUtils{};
 
+	private static GetRelevantAreas parent;
+
+	/**
+	 * Create a new <code>GetRelevantAreasBuild</code> action.
+	 * @param par
+	 */
+	public GetRelevantAreasBuild(final GetRelevantAreas par) {
+		parent = par;
+	}
+
 	@Override
-	public Percept call(TygronEntity caller, LinkedList<Parameter> parameters) {
-		// TODO Not yet implemented.
-		return null;
+	public Percept call(final TygronEntity caller, final LinkedList<Parameter> parameters) throws TranslationException {
+		// Redirect call to GetRelevantAreas to avoid code duplication.
+		parameters.add(1, new Identifier(getInternalName()));
+		return parent.call(caller, parameters);
 	}
 
 	@Override
