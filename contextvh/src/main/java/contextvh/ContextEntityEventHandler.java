@@ -39,11 +39,20 @@ public class ContextEntityEventHandler extends tygronenv.EntityEventHandler {
     private ContextEntity stakeholder;
     private Integer connectionID;
 
-    public ContextEntityEventHandler(EntityEventListener listener, Integer connectionID, ContextEntity entity) {
-        super(listener, connectionID);
+    /**
+     * Creates a new {@link ContextEntityEventHandler} instance.
+     *
+     * @param listener      The listener that is used to serve updates
+     * @param connectID     The ID of the current connection
+     * @param contextEntity The Entity this {@link ContextEntityEventHandler} applies to
+     */
+    public ContextEntityEventHandler(final EntityEventListener listener,
+                                     final Integer connectID,
+                                     final ContextEntity contextEntity) {
+        super(listener, connectID);
         this.entity = listener;
-        this.connectionID = connectionID;
-        this.stakeholder = entity;
+        this.connectionID = connectID;
+        this.stakeholder = contextEntity;
         EventManager.addListener(this, MapLink.STAKEHOLDERS, MapLink.UPGRADE_TYPES);
     }
 
@@ -53,7 +62,7 @@ public class ContextEntityEventHandler extends tygronenv.EntityEventHandler {
      * @param type     The type of these percepts
      * @param percepts The list of the percepts to add
      */
-    private synchronized void addPercepts(EventTypeEnum type, List<Percept> percepts) {
+    private synchronized void addPercepts(final EventTypeEnum type, final List<Percept> percepts) {
         collectedPercepts.put(type, percepts);
     }
 
@@ -70,8 +79,14 @@ public class ContextEntityEventHandler extends tygronenv.EntityEventHandler {
         return copy;
     }
 
+    /**
+     * Used to notify this event handler of an update to {@code event}.
+     * Converts registered Events to percepts that can be used in GOAL.
+     *
+     * @param event The event that has received an update
+     */
     @Override
-    public void notifyListener(Event event) {
+    public void notifyListener(final Event event) {
         if (!isForMe(event)) {
             return;
         }
@@ -102,7 +117,13 @@ public class ContextEntityEventHandler extends tygronenv.EntityEventHandler {
         }
     }
 
-    private boolean isForMe(Event event) {
+    /**
+     * Check if the received event update is for the current entity.
+     *
+     * @param event the updated {@link Event}
+     * @return true if null or the slot numbers are the same
+     */
+    private boolean isForMe(final Event event) {
         if (event instanceof SlotEvent) {
             SlotEvent slotEvent = (SlotEvent) event;
             return connectionID.equals(slotEvent.getConnectionID());
@@ -160,13 +181,10 @@ public class ContextEntityEventHandler extends tygronenv.EntityEventHandler {
                                            final EventTypeEnum type) throws EntityException {
         createPercepts(itemMap, type, type.name().toLowerCase());
         List<Percept> percepts = collectedPercepts.get(type);
-        Percept myIdPercept;
         if (stakeholder.getStakeholder() != null) {
-            myIdPercept = new Percept("my_stakeholder_id", new Numeral(stakeholder.getStakeholder().getID()));
+            Percept myIdPercept = new Percept("my_stakeholder_id", new Numeral(stakeholder.getStakeholder().getID()));
             percepts.add(myIdPercept);
         }
-
-//        addPercepts(type, percepts);
     }
 
     /**
