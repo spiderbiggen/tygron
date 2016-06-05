@@ -73,7 +73,7 @@ public class ServerConnection {
 	/**
 	 * Disconnect from server. After calling this, this object can not be used
 	 * anymore.
-	 * 
+	 *
 	 * @throws ManagementException
 	 */
 	public void disconnect() throws ManagementException {
@@ -89,7 +89,6 @@ public class ServerConnection {
 			} finally {
 				project = null;
 				createdProject = false;
-
 			}
 		}
 

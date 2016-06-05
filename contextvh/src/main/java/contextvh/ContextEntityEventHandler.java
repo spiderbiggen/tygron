@@ -160,8 +160,12 @@ public class ContextEntityEventHandler extends tygronenv.EntityEventHandler {
                                            final EventTypeEnum type) throws EntityException {
         createPercepts(itemMap, type, type.name().toLowerCase());
         List<Percept> percepts = collectedPercepts.get(type);
-        Percept myIdPercept = new Percept("my_stakeholder_id", new Numeral(stakeholder.getStakeholder().getID()));
-        percepts.add(myIdPercept);
+        Percept myIdPercept;
+        if (stakeholder.getStakeholder() != null) {
+            myIdPercept = new Percept("my_stakeholder_id", new Numeral(stakeholder.getStakeholder().getID()));
+            percepts.add(myIdPercept);
+        }
+
 //        addPercepts(type, percepts);
     }
 

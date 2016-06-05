@@ -225,8 +225,7 @@ public class TestEnvironmentStates {
 	 * @throws ManagementException {@link ManagementException}
 	 * @throws InterruptedException {@link InterruptedException}
 	 */
-	private void joinAsInhabitants()
-			throws ManagementException, InterruptedException {
+	private void joinAsInhabitants() throws ManagementException, InterruptedException {
 		MyEnvListener listener = new MyEnvListener();
 		env.attachEnvironmentListener(listener);
 

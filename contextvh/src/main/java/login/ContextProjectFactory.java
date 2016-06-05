@@ -1,9 +1,14 @@
 package login;
 
 import nl.tytech.core.client.net.ServicesManager;
+import nl.tytech.core.client.net.TSlotConnection;
+import nl.tytech.core.net.Network;
+import nl.tytech.core.net.event.IOServiceEventType;
 import nl.tytech.core.net.serializable.ProjectData;
+import nl.tytech.locale.TLanguage;
 
 import static nl.tytech.core.net.event.IOServiceEventType.GET_DOMAIN_STARTABLE_PROJECTS;
+import static nl.tytech.core.net.event.IOServiceEventType.GET_MY_STARTABLE_PROJECTS;
 import static nl.tytech.core.net.event.IOServiceEventType.GET_PROJECT_DATA;
 
 /**
@@ -25,12 +30,46 @@ public class ContextProjectFactory extends ProjectFactory {
         ProjectData[] projects = ServicesManager.fireServiceEvent(GET_DOMAIN_STARTABLE_PROJECTS, domain);
         if (projects != null) {
             for (ProjectData existing : projects) {
+                System.out.println(existing.getFullName() + " | " + existing.getOwner());
                 if (existing.getFileName().equals(name)) {
                     return ServicesManager.fireServiceEvent(GET_PROJECT_DATA, name);
                 }
             }
         }
 
-        return getProject(name);
+        return null;
+    }
+
+    /**
+     * Creates a new project with the given name.
+     *
+     * @param name Name for the new project.
+     * @param domain The domain.
+     * @return {@link ProjectData} for a newly created project.
+     * @throws ProjectException thrown when a project with this name already exists.
+     */
+    public ProjectData createProject(String name, String domain) throws ProjectException {
+        ProjectData[] projects = ServicesManager.fireServiceEvent(GET_DOMAIN_STARTABLE_PROJECTS, domain);
+        if (projects != null) {
+            for (ProjectData project : projects) {
+                if(project.getFileName().equals(name)){
+                    throw new ProjectException("Project with name '" + name + "' already exists.");
+                }
+            }
+        }
+        return super.createProject(name);
+    }
+
+    @Override
+    public ProjectData createProject(String name) throws ProjectException {
+        ProjectData[] projects = ServicesManager.fireServiceEvent(GET_MY_STARTABLE_PROJECTS);
+        if (projects != null) {
+            for (ProjectData project : projects) {
+                if(project.getFileName().equals(name)){
+                    throw new ProjectException("Project with name '" + name + "' already exists.");
+                }
+            }
+        }
+        return super.createProject(name);
     }
 }
