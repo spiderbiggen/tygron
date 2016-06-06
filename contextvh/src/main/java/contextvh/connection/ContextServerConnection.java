@@ -2,7 +2,7 @@ package contextvh.connection;
 
 import eis.exceptions.ManagementException;
 import login.Login;
-import login.ContextProjectFactory;
+import contextvh.login.ContextProjectFactory;
 import login.ProjectException;
 import nl.tytech.core.client.net.ServicesManager;
 import nl.tytech.core.net.serializable.ProjectData;
@@ -19,7 +19,7 @@ import javax.security.auth.login.LoginException;
  *
  * @author W.Pasman
  */
-public class ServerConnection {
+public class ContextServerConnection {
 
     /**
      * True if project is created by us. False if someone else created the
@@ -41,7 +41,7 @@ public class ServerConnection {
      * @param config the {@link Configuration} to use
      * @throws ManagementException thrown if connection failed for various reasons.
      */
-    public ServerConnection(final Configuration config) throws ManagementException {
+    public ContextServerConnection(final Configuration config) throws ManagementException {
         User user;
         Login login;
         try {
