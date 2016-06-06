@@ -57,18 +57,15 @@ public class GetRelevantAreas implements CustomAction {
 			Iterator<Parameter> params = parameters.iterator();
 			Number callID = ((Numeral) params.next()).getValue();
 			String actionType = ((Identifier) params.next()).getValue();
-			ParameterList filters = null;
+			ParameterList filters = new ParameterList();
 			if (params.hasNext()) {
 				Parameter filterParam = params.next();
 				// If the filter parameter is not a ParameterList, it is invalid.
 				if (filterParam instanceof ParameterList) {
 					filters = (ParameterList) filterParam;
-				} else {
-					filters = new ParameterList();
 				}
-			} else {
-				filters = new ParameterList();
 			}
+			
 
 			return createPercept(caller, actionType, callID, filters);
 		} catch (Exception e) {
