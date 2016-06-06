@@ -57,8 +57,11 @@ public class ContextJ2Stakeholder extends tygronenv.translators.J2Stakeholder {
     public ParameterList indicator(final List<Indicator> indicatorList, final Stakeholder stakeholder) {
         ParameterList pList = new ParameterList();
         for (Indicator ind : indicatorList) {
-            pList.add(new Function("indicatorWeights", new Numeral(ind.getID()),
-                    new Identifier(ind.getName()), new Numeral(stakeholder.getCurrentIndicatorWeight(ind))));
+            pList.add(new Function(
+                    "indicatorWeights",
+                    new Numeral(ind.getID()),
+                    new Identifier(ind.getName()),
+                    new Numeral(stakeholder.getCurrentIndicatorWeight(ind))));
         }
         return pList;
     }

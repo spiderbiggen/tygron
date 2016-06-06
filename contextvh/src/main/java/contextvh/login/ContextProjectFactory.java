@@ -54,19 +54,6 @@ public class ContextProjectFactory extends ProjectFactory {
                 }
             }
         }
-        return super.createProject(name);
-    }
-
-    @Override
-    public ProjectData createProject(final String name) throws ProjectException {
-        ProjectData[] projects = ServicesManager.fireServiceEvent(GET_MY_STARTABLE_PROJECTS);
-        if (projects != null) {
-            for (ProjectData project : projects) {
-                if (project.getFileName().equals(name)) {
-                    throw new ProjectException("Project with name '" + name + "' already exists.");
-                }
-            }
-        }
-        return super.createProject(name);
+        return createProject(name);
     }
 }
