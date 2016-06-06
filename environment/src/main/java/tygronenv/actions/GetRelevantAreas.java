@@ -36,7 +36,11 @@ public class GetRelevantAreas implements CustomAction {
 		addInternalAction(new GetRelevantAreasBuild(this));
 	}
 
-	public void addInternalAction(RelevantAreasAction action) {
+	/**
+	 * Adds an internal action to the hashMap of internal actions.
+	 * @param action The RelevantAreasAction to add.
+	 */
+	public void addInternalAction(final RelevantAreasAction action) {
 		internalActions.put(action.getInternalName(), action);
 	}
 
@@ -46,7 +50,8 @@ public class GetRelevantAreas implements CustomAction {
 	}
 
 	@Override
-	public Percept call(final TygronEntity caller, final LinkedList<Parameter> parameters) throws TranslationException {
+	public Percept call(final TygronEntity caller, final LinkedList<Parameter> parameters)
+			throws TranslationException {
 		try {
 			// Get and translate parameters.
 			Iterator<Parameter> params = parameters.iterator();
@@ -77,11 +82,12 @@ public class GetRelevantAreas implements CustomAction {
 	 * @param caller		The TygronEntity that called the action.
 	 * @param actionType	The type of the action.
 	 * @param callID		The ID of the call.
-	 * @param filters		The ParameterList of filters.
+	 * @param parameters	A ParameterList of parameters provided by the agent.
 	 * @return The constructed Percept.
 	 * @throws TranslationException  When an invalid internal action parameter is provided.
 	 */
-	private Percept createPercept(final TygronEntity caller, final String actionType, final Number callID, final ParameterList parameters) throws TranslationException {
+	private Percept createPercept(final TygronEntity caller, final String actionType,
+			final Number callID, final ParameterList parameters) throws TranslationException {
 		Percept result = new Percept("relevant_areas");
 		result.addParameter(new Numeral(callID));
 		debug("action called");
@@ -96,7 +102,13 @@ public class GetRelevantAreas implements CustomAction {
 		return result;
 	}
 
-	protected static ParameterList convertMPtoPL(MultiPolygon mp) throws TranslationException {
+	/**
+	 * Converts a MultiPolygon to a ParameterList.
+	 * @param mp The given MultiPolygon.
+	 * @return The resulting ParameterList.
+	 * @throws TranslationException If an error occurred while translating.
+	 */
+	protected static ParameterList convertMPtoPL(final MultiPolygon mp) throws TranslationException {
 		return new ParameterList(
 				TRANSLATOR.translate2Parameter(mp)[0],
 				new Numeral(mp.getArea())
@@ -108,7 +120,7 @@ public class GetRelevantAreas implements CustomAction {
 	 * Is a separate function to make it easier to remove debug messages.
 	 * @param message The message.
 	 */
-	public static void debug(String message) {
+	public static void debug(final String message) {
 		// Debug temporarliy disabled;
 		System.out.println("Debug: " + message);
 	}

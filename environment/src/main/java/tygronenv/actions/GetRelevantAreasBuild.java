@@ -36,20 +36,21 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 	 * Alias to shorten calls without having to use static imports.
 	 * @author Max Groenenboom
 	 */
-	private static class CU extends CoordinateUtils{};
+	private static class CU extends CoordinateUtils { };
 
 	private static GetRelevantAreas parent;
 
 	/**
 	 * Create a new <code>GetRelevantAreasBuild</code> action.
-	 * @param par
+	 * @param par The parent GetRelevantAreas of this action.
 	 */
 	public GetRelevantAreasBuild(final GetRelevantAreas par) {
 		parent = par;
 	}
 
 	@Override
-	public Percept call(final TygronEntity caller, final LinkedList<Parameter> parameters) throws TranslationException {
+	public Percept call(final TygronEntity caller, final LinkedList<Parameter> parameters)
+			throws TranslationException {
 		// Redirect call to GetRelevantAreas to avoid code duplication.
 		parameters.add(1, new Identifier(getInternalName()));
 		return parent.call(caller, parameters);
@@ -66,7 +67,8 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 	}
 
 	@Override
-	public void internalCall(Percept createdPercept, TygronEntity caller, ParameterList parameters) {
+	public void internalCall(final Percept createdPercept,
+			final TygronEntity caller, final ParameterList parameters) {
 		// Get a MultiPolygon of all lands combined.
 		GetRelevantAreas.debug("combining land");
 		final Integer stakeholderID = caller.getStakeholder().getID();
@@ -92,9 +94,10 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 		}
 
 		GetRelevantAreas.debug("finalizing selection. Total area found was " + constructableLand.getArea());
-		final int minArea = 200;
-		final int maxArea = 2000;
+		final int minArea = 200, maxArea = 2000;
 		final int maxPolys = 15;
+		final int bufferUp = 5, bufferDown = -10;
+
 		int numPolys = 0;
 		final ParameterList results = new ParameterList();
 		for (Polygon poly: JTSUtils.getPolygons(constructableLand)) {
@@ -107,7 +110,7 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 				geom = createNewPolygon(geom);
 				GetRelevantAreas.debug("After: " + geom.getArea());
 				geom = geom.intersection(constructableLand);
-				geom = geom.buffer(-10).buffer(5);
+				geom = geom.buffer(bufferDown).buffer(bufferUp);
 				if (geom.getArea() < minArea / 2 || geom.getArea() > maxArea) {
 					continue;
 				}
@@ -132,7 +135,7 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 	 * @param triangle The triangle to derive the square from.
 	 * @return The new polygon.
 	 */
-	private Geometry createNewPolygon(Geometry triangle) {
+	private Geometry createNewPolygon(final Geometry triangle) {
 		final int triangleAmountOfCoords = 4;
 		final double distanceFromOppositeCorner = 1.25;
 		if (triangle.getNumPoints() != triangleAmountOfCoords) {
@@ -149,7 +152,10 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 			newPoint1 = CU.plus(coords[2], CU.times(newPoint1, distanceFromOppositeCorner));
 
 			// Create second new point.
-			Coordinate newPoint2 = CU.plus(coords[1], CU.times(CU.minus(CU.divide(CU.plus(coords[0], coords[2]), 2), coords[1]), distanceFromOppositeCorner));
+			Coordinate newPoint2 = CU.plus(coords[0], coords[2]);
+			newPoint2 = CU.divide(newPoint2, 2);
+			newPoint2 = CU.minus(newPoint2, coords[1]);
+			newPoint2 = CU.plus(coords[1], CU.times(newPoint2, distanceFromOppositeCorner));
 
 			// Create list with coordinates for the new Polygon.
 			List<Coordinate> newCoords = Arrays.asList(new Coordinate[] {
