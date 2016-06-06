@@ -54,10 +54,11 @@ public class TestEnvironment {
 	}
 
 	@Test
-	public void testNotOwnerConnect() throws ManagementException {
+	public void testAnotherOwnerConnect() throws ManagementException {
 		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
 		parameters.put(PROJECT, new Identifier("vhproject"));
-		// any stakeholder so not specified.
+        // No stakeholders with a default name
+        parameters.put("stakeholders", new ParameterList(new Identifier("TU")));
 		// any slot so not specified.
 		env.init(parameters);
 	}
