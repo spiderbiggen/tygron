@@ -19,7 +19,6 @@ import nl.tytech.data.engine.item.UpgradeType;
 import tygronenv.EntityEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -75,7 +74,7 @@ public class ContextEntityEventHandler extends tygronenv.EntityEventHandler {
      */
     @Override
     public Map<EventTypeEnum, List<Percept>> getPercepts() {
-        Map<EventTypeEnum, List<Percept>> copy = super.getPercepts();
+        final Map<EventTypeEnum, List<Percept>> copy = super.getPercepts();
         copy.putAll(collectedPercepts);
         collectedPercepts = new ConcurrentHashMap<>();
         return copy;
@@ -92,7 +91,7 @@ public class ContextEntityEventHandler extends tygronenv.EntityEventHandler {
         if (!isForMe(event)) {
             return;
         }
-        EventTypeEnum type = event.getType();
+        final EventTypeEnum type = event.getType();
         try {
             if (type instanceof MapLink) {
                 switch ((MapLink) type) {
@@ -127,7 +126,7 @@ public class ContextEntityEventHandler extends tygronenv.EntityEventHandler {
      */
     private boolean isForMe(final Event event) {
         if (event instanceof SlotEvent) {
-            SlotEvent slotEvent = (SlotEvent) event;
+            final SlotEvent slotEvent = (SlotEvent) event;
             return connectionID.equals(slotEvent.getConnectionID());
         }
         return true;
@@ -158,8 +157,8 @@ public class ContextEntityEventHandler extends tygronenv.EntityEventHandler {
      */
     private <T extends Item> void createPercepts(final ItemMap<T> itemMap, final EventTypeEnum type,
                                                  final String perceptName) {
-        ArrayList<T> items = new ArrayList<>(itemMap.values());
-        List<Percept> percepts = new ArrayList<>();
+        final ArrayList<T> items = new ArrayList<>(itemMap.values());
+        final List<Percept> percepts = new ArrayList<>();
         Parameter[] parameters = null;
         try {
             parameters = translator.translate2Parameter(items);
@@ -182,9 +181,10 @@ public class ContextEntityEventHandler extends tygronenv.EntityEventHandler {
     private void createStakeholderPercepts(final ItemMap<Stakeholder> itemMap,
                                            final EventTypeEnum type) throws EntityException {
         createPercepts(itemMap, type, type.name().toLowerCase());
-        List<Percept> percepts = collectedPercepts.get(type);
+        final List<Percept> percepts = collectedPercepts.get(type);
         if (stakeholder.getStakeholder() != null) {
-            Percept myIdPercept = new Percept("my_stakeholder_id", new Numeral(stakeholder.getStakeholder().getID()));
+            final Percept myIdPercept =
+                    new Percept("my_stakeholder_id", new Numeral(stakeholder.getStakeholder().getID()));
             percepts.add(myIdPercept);
         }
     }
