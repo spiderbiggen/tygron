@@ -31,7 +31,7 @@ public class TestEnvironment {
 	private static final String STAKEHOLDERS = "stakeholders";
 	private ContextEnv env;
 	private static String PROJECT = "project";
-	private static Identifier PROJECTNAME = new Identifier("testmap");
+	private static Identifier PROJECTNAME = new Identifier("contexttestmap");
 
 	@Before
 	public void before() {

@@ -6,7 +6,6 @@ import nl.tytech.core.client.net.ServicesManager;
 import nl.tytech.core.net.serializable.ProjectData;
 
 import static nl.tytech.core.net.event.IOServiceEventType.GET_DOMAIN_STARTABLE_PROJECTS;
-import static nl.tytech.core.net.event.IOServiceEventType.GET_MY_STARTABLE_PROJECTS;
 import static nl.tytech.core.net.event.IOServiceEventType.GET_PROJECT_DATA;
 
 /**
