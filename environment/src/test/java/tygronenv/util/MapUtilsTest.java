@@ -215,19 +215,21 @@ public class MapUtilsTest {
 		assertEquals(AREA_MUNICIPALITY / NUM_ZONES, mp.getArea(), 0);
 	}
 
+
 	/**
-	 * Test if a building of 4 square meter is removed from the multipolygon.
+	 * Check if removeReservedLand can handle a empty multipolygon.
 	 * @throws ManagementException Management exception
 	 * @throws InterruptedException Interrupted exception.
 	 */
 	@Test
-	public void testRemoveReservedLand() throws ManagementException, InterruptedException {
+	public void testRemoveAllReservedLand() throws ManagementException, InterruptedException {
 		joinAsMunicipality();
-		Geometry geo = MapUtils.getZonesCombined(ZONE_WITH_BUILDING);
+		Geometry geo = MapUtils.getZonesCombined(ZONE_ONLY_GRASS);
 		MultiPolygon mp = JTSUtils.createMP(geo);
+		mp = MapUtils.removeLand(mp); //this gives us zero land
+		assertEquals(0, mp.getArea(), 0);
 		mp = MapUtils.removeReservedLand(mp);
-		final int buildingArea = 4;
-		assertEquals(AREA_MUNICIPALITY / NUM_ZONES - buildingArea, mp.getArea(), 0);
+		assertEquals(0, mp.getArea(), 0);
 	}
 
 
