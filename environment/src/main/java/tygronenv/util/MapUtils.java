@@ -20,7 +20,13 @@ import nl.tytech.util.JTSUtils;
  * Utility class for performing often used operations on map elements.
  * @author Max Groenenboom
  */
-public class MapUtils {
+public final class MapUtils {
+
+	/**
+	 * Private constructor.
+	 */
+	private MapUtils() {
+	}
 
 	protected static final MapType DEFAULT_MAPTYPE = MapType.MAQUETTE;
 
@@ -30,7 +36,7 @@ public class MapUtils {
 	 * @param ids The list of zone ID's. If the list is empty, all zones will be used.
 	 * @return The resulting Geometry.
 	 */
-	public static Geometry getZonesCombined(Integer... ids) {
+	public static Geometry getZonesCombined(final Integer... ids) {
 		final boolean getAll = ids.length == 0;
 		final ItemMap<Zone> zones = EventManager.getItemMap(MapLink.ZONES);
 		Geometry result = JTSUtils.EMPTY;
@@ -48,7 +54,7 @@ public class MapUtils {
 	 * @param stakeholderID The ID of the stakeholder.
 	 * @return The resulting Geometry.
 	 */
-	public static MultiPolygon getMyLands(Integer stakeholderID) {
+	public static MultiPolygon getMyLands(final Integer stakeholderID) {
 		MultiPolygon result = JTSUtils.EMPTY;
 		final ItemMap<Land> lands = EventManager.getItemMap(MapLink.LANDS);
 		for (Land land : lands) {
@@ -64,7 +70,7 @@ public class MapUtils {
 	 * @param mp The MultiPolygon to perform the operation on.
 	 * @return The MultiPolygon without all water.
 	 */
-	public static MultiPolygon removeWater(MultiPolygon mp) {
+	public static MultiPolygon removeWater(final MultiPolygon mp) {
 		return removeWaterOrLand(mp, true);
 	}
 
@@ -73,7 +79,7 @@ public class MapUtils {
 	 * @param mp The MultiPolygon to perform the operation on.
 	 * @return The MultiPolygon without all land.
 	 */
-	public static MultiPolygon removeLand(MultiPolygon mp) {
+	public static MultiPolygon removeLand(final MultiPolygon mp) {
 		return removeWaterOrLand(mp, false);
 	}
 
@@ -83,14 +89,15 @@ public class MapUtils {
 	 * @param removeWater Toggles whether water or land will be removed.
 	 * @return The MultiPolygon without all water or land.
 	 */
-	private static MultiPolygon removeWaterOrLand(MultiPolygon mp, boolean removeWater) {
+	private static MultiPolygon removeWaterOrLand(final MultiPolygon mp, final boolean removeWater) {
 		final ItemMap<Terrain> terrains = EventManager.getItemMap(MapLink.TERRAINS);
+		MultiPolygon mpResult = mp;
 		for (Terrain terrain : terrains) {
 			if (terrain.getType().isWater() == removeWater) {
-				mp = JTSUtils.difference(mp, terrain.getMultiPolygon(DEFAULT_MAPTYPE));
+				mpResult = JTSUtils.difference(mpResult, terrain.getMultiPolygon(DEFAULT_MAPTYPE));
 			}
 		}
-		return mp;
+		return mpResult;
 	}
 
 	/**
@@ -98,13 +105,13 @@ public class MapUtils {
 	 * @param mp The MultiPolygon to perform the operation on.
 	 * @return The MultiPolygon without all reserved land.
 	 */
-	public static MultiPolygon removeReservedLand(MultiPolygon mp) {
+	public static MultiPolygon removeReservedLand(final MultiPolygon mp) {
 		final Setting reservedLandSetting = EventManager.getItem(MapLink.SETTINGS, Setting.Type.RESERVED_LAND);
 		MultiPolygon reservedLand = reservedLandSetting.getMultiPolygon();
-		System.out.println(reservedLandSetting.getValue());
+		MultiPolygon mpResult = mp;
 		if (JTSUtils.containsData(reservedLand)) {
-			mp = JTSUtils.difference(mp, reservedLand);
+			mpResult = JTSUtils.difference(mpResult, reservedLand);
 		}
-		return mp;
+		return mpResult;
 	}
 }
