@@ -29,8 +29,8 @@ import tygronenv.MyEnvListener;
 public class MapUtilsTest {
 
 	private static final String STAKEHOLDERS = "stakeholders";
-	private static final String MUNICIPALITY = "GEMEENTE";
-	private static final String INHABITANTS = "BUURTBEWONERS";
+	private static final String MUNICIPALITY = "MUNICIPALITY";
+	private static final String INHABITANTS = "INHABITANTS";
 	private EisEnv env;
 	private static final String PROJECT = "project";
 	private static final Identifier PROJECTNAME = new Identifier("testmaputils");
@@ -44,7 +44,6 @@ public class MapUtilsTest {
 
 	private static final int ZONE_WITH_WATER = 0;
 	private static final int ZONE_ONLY_GRASS = 1;
-	private static final int ZONE_WITH_BUILDING = 3;
 
 
 
