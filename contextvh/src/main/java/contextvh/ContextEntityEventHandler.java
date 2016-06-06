@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Listen to entity events and store them till they are needed. Thread safe
@@ -34,7 +36,7 @@ public class ContextEntityEventHandler extends tygronenv.EntityEventHandler {
 
     private static final String ENTITY = "entity";
     private Translator translator = Translator.getInstance();
-    private Map<EventTypeEnum, List<Percept>> collectedPercepts = new HashMap<>();
+    private ConcurrentMap<EventTypeEnum, List<Percept>> collectedPercepts = new ConcurrentHashMap<>();
     private EntityEventListener entity;
     private ContextEntity stakeholder;
     private Integer connectionID;
@@ -72,10 +74,10 @@ public class ContextEntityEventHandler extends tygronenv.EntityEventHandler {
      * @return percepts collected since last call to this
      */
     @Override
-    public synchronized Map<EventTypeEnum, List<Percept>> getPercepts() {
+    public Map<EventTypeEnum, List<Percept>> getPercepts() {
         Map<EventTypeEnum, List<Percept>> copy = super.getPercepts();
         copy.putAll(collectedPercepts);
-        collectedPercepts = new HashMap<>();
+        collectedPercepts = new ConcurrentHashMap<>();
         return copy;
     }
 
