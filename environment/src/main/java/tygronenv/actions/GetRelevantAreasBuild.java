@@ -156,7 +156,7 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 					coords[0], newPoint1, coords[1], coords[2], newPoint2, coords[0]
 			});
 
-			return CU.coordinatesToGeometry(newCoords);
+			return JTSUtils.createPolygon(newCoords);
 		}
 	}
 }

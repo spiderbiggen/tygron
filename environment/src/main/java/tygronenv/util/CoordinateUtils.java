@@ -1,11 +1,7 @@
 package tygronenv.util;
 
-import java.util.List;
-
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
 
-import nl.tytech.util.JTSUtils;
 
 /**
  * Utilty class for coordinates.
@@ -13,12 +9,6 @@ import nl.tytech.util.JTSUtils;
  *
  */
 public class CoordinateUtils {
-
-	//TODO: Change to private
-	/**
-	 * Private constructor.
-	 */
-	public CoordinateUtils() { }
 
 	/**
 	 * Add two <code>Coordinate</code>s together.
@@ -60,12 +50,4 @@ public class CoordinateUtils {
 		return new Coordinate(c.x / num, c.y / num, c.z / num);
 	}
 
-	/**
-	 * Converts a {@code List<Coordinate>} to a Geometry.
-	 * @param coords A List of Coordinates.
-	 * @return A Geometry.
-	 */
-	public static Geometry coordinatesToGeometry(final List<Coordinate> coords) {
-		return JTSUtils.createPolygon(coords);
-	}
 }
