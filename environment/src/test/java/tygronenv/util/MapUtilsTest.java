@@ -33,7 +33,7 @@ public class MapUtilsTest {
 	private static final String INHABITANTS = "INHABITANTS";
 	private EisEnv env;
 	private static final String PROJECT = "project";
-	private static final Identifier PROJECTNAME = new Identifier("testmaputils");
+	private static final Identifier PROJECTNAME = new Identifier("testutilsmap");
 
 	private static final int INHABITANTS_ID = 1;
 	private static final int MUNICIPALITY_ID = 0;

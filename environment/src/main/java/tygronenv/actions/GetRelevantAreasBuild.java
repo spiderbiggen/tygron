@@ -135,7 +135,7 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 	 * @param triangle The triangle to derive the square from.
 	 * @return The new polygon.
 	 */
-	private Geometry createNewPolygon(final Geometry triangle) {
+	protected Geometry createNewPolygon(final Geometry triangle) {
 		final int triangleAmountOfCoords = 4;
 		final double distanceFromOppositeCorner = 1.25;
 		if (triangle.getNumPoints() != triangleAmountOfCoords) {
@@ -143,8 +143,6 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 		} else {
 			Coordinate[] coords = triangle.getCoordinates();
 
-			// TODO Make sure both points are created the same way
-			// Which of these two do you guys like better?
 			// Create first new point.
 			Coordinate newPoint1 = CU.plus(coords[0], coords[1]);
 			newPoint1 = CU.divide(newPoint1, 2);
