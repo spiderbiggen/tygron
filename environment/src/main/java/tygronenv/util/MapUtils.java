@@ -5,16 +5,20 @@ import java.util.List;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.prep.PreparedGeometry;
+import com.vividsolutions.jts.geom.prep.PreparedGeometryFactory;
 
 import nl.tytech.core.client.event.EventManager;
 import nl.tytech.core.net.serializable.MapLink;
 import nl.tytech.core.structure.ItemMap;
+import nl.tytech.data.engine.item.Building;
 import nl.tytech.data.engine.item.Land;
 import nl.tytech.data.engine.item.Setting;
 import nl.tytech.data.engine.item.Terrain;
 import nl.tytech.data.engine.item.Zone;
 import nl.tytech.data.engine.serializable.MapType;
 import nl.tytech.util.JTSUtils;
+import tygronenv.actions.GetRelevantAreas;
 
 /**
  * Utility class for performing often used operations on map elements.
@@ -113,5 +117,23 @@ public final class MapUtils {
 			mpResult = JTSUtils.difference(mpResult, reservedLand);
 		}
 		return mpResult;
+	}
+
+	/**
+	 * Remove all buildings from a given multipolygon.
+	 * @param mp The multipolygon where buildings need to be removed.
+	 * @return A multipolygon with all buildings removed.
+	 */
+	public static MultiPolygon removeBuildings(final MultiPolygon mp) {
+		final ItemMap<Building> buildings = EventManager.getItemMap(MapLink.BUILDINGS);
+		MultiPolygon constructableLand = mp;
+		final PreparedGeometry prepped = PreparedGeometryFactory.prepare(constructableLand);
+		for (Building building : buildings) {
+			final MultiPolygon buildingMP = building.getMultiPolygon(DEFAULT_MAPTYPE);
+			if (prepped.intersects(buildingMP)) {
+				constructableLand = JTSUtils.difference(constructableLand, buildingMP);
+			}
+		}
+		return constructableLand;
 	}
 }

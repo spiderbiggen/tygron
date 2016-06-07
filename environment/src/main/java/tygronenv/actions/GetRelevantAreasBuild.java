@@ -78,14 +78,7 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 
 		// Remove all pieces of occupied land.
 		GetRelevantAreas.debug("removing buildings");
-		final ItemMap<Building> buildings = EventManager.getItemMap(MapLink.BUILDINGS);
-		final PreparedGeometry prepped = PreparedGeometryFactory.prepare(constructableLand);
-		for (Building building : buildings) {
-			final MultiPolygon buildingMP = building.getMultiPolygon(GetRelevantAreas.DEFAULT_MAPTYPE);
-			if (prepped.intersects(buildingMP)) {
-				constructableLand = JTSUtils.difference(constructableLand, buildingMP);
-			}
-		}
+		constructableLand = MapUtils.removeBuildings(constructableLand);
 
 		GetRelevantAreas.debug("finalizing selection. Total area found was " + constructableLand.getArea());
 		final int minArea = 200, maxArea = 2000;
