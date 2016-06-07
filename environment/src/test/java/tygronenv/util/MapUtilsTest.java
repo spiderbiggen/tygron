@@ -34,7 +34,11 @@ public class MapUtilsTest {
 	private EisEnv env;
 	private static final String PROJECT = "project";
 	private static final Identifier PROJECTNAME = new Identifier("testutilsmap");
+	
+	private static final String DOMAIN = "domain";
+	private static final Identifier DOMAIN_NAME = new Identifier("tudelft");
 
+	
 	private static final int INHABITANTS_ID = 1;
 	private static final int MUNICIPALITY_ID = 0;
 
@@ -247,6 +251,7 @@ public class MapUtilsTest {
 		env.attachEnvironmentListener(listener);
 
 		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
+		parameters.put(DOMAIN, DOMAIN_NAME);
 		parameters.put(PROJECT, PROJECTNAME);
 		parameters.put(STAKEHOLDERS, new ParameterList(new Identifier(MUNICIPALITY)));
 		// any slot so not specified.
@@ -266,6 +271,7 @@ public class MapUtilsTest {
 		env.attachEnvironmentListener(listener);
 
 		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
+		parameters.put(DOMAIN, DOMAIN_NAME);
 		parameters.put(PROJECT, PROJECTNAME);
 		parameters.put(STAKEHOLDERS, new ParameterList(new Identifier(INHABITANTS)));
 
