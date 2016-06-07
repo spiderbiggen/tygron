@@ -91,7 +91,8 @@ public class ContextEnv extends EisEnv {
     }
 
     @Override
-    protected LinkedList<Percept> getAllPerceptsFromEntity(final String e) throws PerceiveException, NoEnvironmentException {
+    protected LinkedList<Percept> getAllPerceptsFromEntity(final String e)
+            throws PerceiveException, NoEnvironmentException {
         return super.getAllPerceptsFromEntity(e);
     }
 
