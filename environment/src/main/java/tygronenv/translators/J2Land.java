@@ -21,7 +21,7 @@ public class J2Land implements Java2Parameter<Land> {
 	@Override
 	public Parameter[] translate(Land b) throws TranslationException {
 		return new Parameter[] {
-				new Function("land", new Numeral(b.getID()), translator.translate2Parameter(b.getOwner())[0],
+				new Function("land", new Numeral(b.getID()), translator.translate2Parameter(b.getOwner().getID())[0],
 						translator.translate2Parameter(b.getMultiPolygon())[0]) };
 	}
 
