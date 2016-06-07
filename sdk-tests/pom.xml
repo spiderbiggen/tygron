@@ -106,9 +106,9 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>nl.tygron</groupId>
-			<artifactId>sdk</artifactId>
-			<version>2016.5.0.6-SNAPSHOT</version>
+			<groupId>tygron</groupId>
+			<artifactId>sdkext</artifactId>
+			<version>1.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
