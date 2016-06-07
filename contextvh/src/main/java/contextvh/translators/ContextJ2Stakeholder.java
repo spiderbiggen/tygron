@@ -40,10 +40,10 @@ public class ContextJ2Stakeholder extends tygronenv.translators.J2Stakeholder {
                         new Numeral(budget),
                         new Numeral(stakeholder.getYearlyIncome())
                 ), new Function(
-                        "indicatorLink",
-                        new Numeral(stakeholder.getID()),
-                        indicator(stakeholder.getMyIndicators(), stakeholder)
-                )
+                "indicatorLink",
+                new Numeral(stakeholder.getID()),
+                indicator(stakeholder.getMyIndicators(), stakeholder)
+        )
         };
     }
 
