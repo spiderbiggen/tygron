@@ -75,6 +75,10 @@ public class GameField {
 
 	}
 
+	public TSlotConnection getSlotConnection() {
+		return connection;
+	}
+
 	/**
 	 * Call this once for each expected stakeholder. You may then use the
 	 * returned stakeholder immediately
