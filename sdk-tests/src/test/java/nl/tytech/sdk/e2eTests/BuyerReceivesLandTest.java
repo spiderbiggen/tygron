@@ -13,7 +13,7 @@ import nl.tytech.data.engine.item.Stakeholder;
 
 /**
  * Test to check that buyer receives the land sold by the seller. E2E test.
- * 
+ *
  * @author W.Pasman
  *
  */
