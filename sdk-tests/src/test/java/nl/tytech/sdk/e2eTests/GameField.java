@@ -34,7 +34,7 @@ public class GameField {
 	private Map<Stakeholder.Type, MyStakeholder> stakeholders = new HashMap<Stakeholder.Type, MyStakeholder>();
 	private Integer slotID = Item.NONE;
 
-	private TSlotConnection connection;
+	private TSlotConnection facilitatorConnection;
 
 	public GameField() throws LoginException, ProjectException {
 		try {
@@ -56,15 +56,15 @@ public class GameField {
 			JoinReply reply = ServicesManager.fireServiceEvent(IOServiceEventType.JOIN_SESSION, slotID,
 					AppType.FACILITATOR);
 
-			connection = TSlotConnection.createSlotConnection();
-			connection.initSettings(AppType.FACILITATOR, SettingsManager.getServerIP(), slotID, reply.serverToken,
-					reply.client.getClientToken());
-			boolean connected = connection.connect();
+			facilitatorConnection = TSlotConnection.createSlotConnection();
+			facilitatorConnection.initSettings(AppType.FACILITATOR, SettingsManager.getServerIP(), slotID,
+					reply.serverToken, reply.client.getClientToken());
+			boolean connected = facilitatorConnection.connect();
 			if (!connected) {
 				throw new IllegalStateException(
 						"Failed to connect to session: " + project.getFileName() + " with token: " + reply.serverToken);
 			}
-			connection.fireServerEvent(true, LogicEventType.SETTINGS_ALLOW_INTERACTION, true);
+			facilitatorConnection.fireServerEvent(true, LogicEventType.SETTINGS_ALLOW_INTERACTION, true);
 		} catch (IllegalStateException e) {
 			close();
 			throw e;
@@ -76,7 +76,7 @@ public class GameField {
 	}
 
 	public TSlotConnection getSlotConnection() {
-		return connection;
+		return facilitatorConnection;
 	}
 
 	/**
@@ -91,9 +91,9 @@ public class GameField {
 	}
 
 	public void close() throws ProjectException {
-		if (connection != null) {
-			connection.disconnect(false);
-			connection = null;
+		if (facilitatorConnection != null) {
+			facilitatorConnection.disconnect(false);
+			facilitatorConnection = null;
 			slotID = Item.NONE;
 		}
 
