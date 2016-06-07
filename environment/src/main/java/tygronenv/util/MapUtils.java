@@ -18,7 +18,6 @@ import nl.tytech.data.engine.item.Terrain;
 import nl.tytech.data.engine.item.Zone;
 import nl.tytech.data.engine.serializable.MapType;
 import nl.tytech.util.JTSUtils;
-import tygronenv.actions.GetRelevantAreas;
 
 /**
  * Utility class for performing often used operations on map elements.

@@ -8,18 +8,12 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.geom.prep.PreparedGeometry;
-import com.vividsolutions.jts.geom.prep.PreparedGeometryFactory;
 
 import eis.eis2java.exception.TranslationException;
 import eis.iilang.Identifier;
 import eis.iilang.Parameter;
 import eis.iilang.ParameterList;
 import eis.iilang.Percept;
-import nl.tytech.core.client.event.EventManager;
-import nl.tytech.core.net.serializable.MapLink;
-import nl.tytech.core.structure.ItemMap;
-import nl.tytech.data.engine.item.Building;
 import nl.tytech.util.JTSUtils;
 import nl.tytech.util.logger.TLogger;
 import tygronenv.TygronEntity;
