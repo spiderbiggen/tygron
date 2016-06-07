@@ -8,12 +8,11 @@
 		<!-- name of the main project on eishub. -->
 		<environmentname>tygron</environmentname>
 		<mainclass>tygronenv.EisEnv</mainclass>
-		<powermock.version>1.6.5</powermock.version>
 	</properties>
 
 	<groupId>eishub</groupId>
 	<artifactId>tygronenv</artifactId>
-	<version>1.0.9</version>
+	<version>1.0.10</version>
 	<name>${environmentname}env</name>
 	<description>EIS-Tygron connector</description>
 	<url>http://www.github.com/eishub/${environmentname}</url>
@@ -56,12 +55,12 @@
 			<url>https://raw.github.com/eishub/mvn-repo/master</url>
 		</repository>
 	</repositories>
-    
+
 	<dependencies>
 		<dependency>
 			<groupId>nl.tygron</groupId>
 			<artifactId>sdk</artifactId>
-			<version>2016.5.0.4</version>
+			<version>2016.5.0.5</version>
 		</dependency>
 		<dependency>
 			<groupId>eishub</groupId>
@@ -75,45 +74,11 @@
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
-		<!-- http://mvnrepository.com/artifact/org.powermock/powermock-module-junit4 -->
-		<dependency>
-		    <groupId>org.powermock</groupId>
-		    <artifactId>powermock-module-junit4</artifactId>
-		    <version>1.6.5</version>
-		    <scope>test</scope>
-		</dependency>
-		<dependency>
-		  <groupId>org.powermock</groupId>
-		  <artifactId>powermock-api-mockito</artifactId>
-		  <version>1.6.5</version>
-		  <scope>test</scope>
-		</dependency>
-		
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
 			<version>1.10.19</version>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-		    <groupId>org.powermock</groupId>
-		    <artifactId>powermock-core</artifactId>
-		    <version>1.6.5</version>
-		</dependency>
-		<dependency>
-		    <groupId>org.powermock</groupId>
-		    <artifactId>powermock-module-junit4</artifactId>
-		    <version>1.6.5</version>
-		</dependency>
-		<dependency>
-		    <groupId>org.powermock</groupId>
-		    <artifactId>powermock-api-mockito</artifactId>
-		    <version>1.6.5</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-pmd-plugin</artifactId>
-			<version>3.6</version>
 		</dependency>
 	</dependencies>
 
@@ -189,32 +154,6 @@
 					<altDeploymentRepository>internal.repo::default::file://${project.build.directory}/mvn-repo</altDeploymentRepository>
 				</configuration>
 			</plugin>
-			
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>2.7</version>
-				<configuration>
-				         <formats>
-            <format>xml</format>
-            <format>html</format>
-          </formats>
-					<forceMojoExecution>false</forceMojoExecution>
-					<check>
-                        <totalLineRate>75</totalLineRate>
-                        <haltOnFailure>true</haltOnFailure>
-					</check>
-				</configuration>
-				<executions>
-				<execution>
-					<phase>verify</phase>
-					<goals>
-					<goal>clean</goal>
-					<goal>check</goal>
-					</goals>
-				</execution>
-				</executions>
-			</plugin>
 
 			<plugin>
 				<groupId>com.github.github</groupId>
@@ -249,50 +188,10 @@
 					</execution>
 				</executions>
 			</plugin>
-			
-			<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>3.4</version>
-                <configuration>
-                    <reportPlugins>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-project-info-reports-plugin</artifactId>
-                            <version>2.8.1</version>
-                            <configuration>
-                                <dependencyDetailsEnabled>true</dependencyDetailsEnabled>
-                                <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-                            </configuration>
-                        </plugin>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-pmd-plugin</artifactId>
-                            <version>3.5</version>
-                        </plugin>
-                    </reportPlugins>
-                </configuration>
-            </plugin>
+
+
 
 		</plugins>
 	</build>
-	
-	<reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-pmd-plugin</artifactId>
-        <version>3.6</version>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>findbugs-maven-plugin</artifactId>
-        <version>3.0.4-SNAPSHOT</version>
-        <configuration>
-          <xmlOutput>true</xmlOutput>
-        </configuration>
-      </plugin>
-    </plugins>
-  </reporting>
 
 </project>

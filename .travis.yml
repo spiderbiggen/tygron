@@ -1,7 +1,7 @@
 language: java
+jdk:
+- oraclejdk8
 before_install:
-# download jython to use the python scripts for checkstyle
-- wget http://search.maven.org/remotecontent?filepath=org/python/jython-standalone/2.7.0/jython-standalone-2.7.0.jar -O jython-standalone-2.7.0.jar
 # add eishub/tygron to remote as upstream
 - git remote add upstream https://github.com/eishub/tygron.git
 - git fetch upstream
@@ -9,20 +9,13 @@ install:
 - mvn -pl "!doc" install -DskipTests=true -Dmaven.javadoc.skip=true -Dcobertura.skip -B -V 
 script:
 # add login credentials in registry
-- java -cp environment/target/tygronenv-*-jar-with-dependencies.jar login.Login $email $password
+- java -cp contextvh/target/contextvh-*-jar-with-dependencies.jar login.Login $email $password
 # test the code
 - mvn test -Dcobertura.skip
-# put the last commit of the context branch in a file to be read later
-- git rev-parse upstream/context > fallbackcommit.txt
-# test checkstyle only on changed lines using this python script
-# get the latest commit of legacy contributers on branch
-# take the latest commit of the legacy contributors
-# that have done work on commits of the current branch
-- git diff $(git log upstream/context..HEAD --format="%cn %H" | java -jar jython-standalone-2.7.0.jar get_last_legacy_commit.py)...HEAD -U0 -- *.java --minimal | java -jar jython-standalone-2.7.0.jar checkstylediff.py
-# checkstyle check is configured with these arguments
-- mvn checkstyle:check -Dcheckstyle.config.location="$TRAVIS_BUILD_DIR/sun_checks_custom.xml" -Dcheckstyle.suppressions.location="$TRAVIS_BUILD_DIR/suppressions.xml" -Dcheckstyle.suppressions.file.expression=checkstyle.suppression.file
-#check pmd and checkstyle only for environment
-- cd environment
+#check pmd and checkstyle only for context environment
+- cd contextvh
+# checkstyle check is configured with these arguments -Dcheckstyle.config.location="$TRAVIS_BUILD_DIR/sun_checks_custom.xml"
+- mvn checkstyle:check 
 - mvn pmd:pmd
 - mvn findbugs:findbugs
 - cd target
@@ -31,8 +24,5 @@ script:
 - cd ..
 # run cobertura only in environment build fails when coverage is too low
 - mvn cobertura:check
-jdk:
-- oraclejdk8
-
 notifications:
   slack: $slack_token
