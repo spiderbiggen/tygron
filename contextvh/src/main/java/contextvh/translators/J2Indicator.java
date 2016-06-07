@@ -1,7 +1,4 @@
-package tygronenv.translators;
-
-import nl.tytech.data.engine.item.Indicator;
-import nl.tytech.data.engine.serializable.MapType;
+package contextvh.translators;
 
 import eis.eis2java.exception.TranslationException;
 import eis.eis2java.translation.Java2Parameter;
@@ -9,6 +6,8 @@ import eis.iilang.Function;
 import eis.iilang.Numeral;
 import eis.iilang.Parameter;
 import eis.iilang.ParameterList;
+import nl.tytech.data.engine.item.Indicator;
+import nl.tytech.data.engine.serializable.MapType;
 
 
 /**
@@ -46,8 +45,8 @@ public class J2Indicator implements Java2Parameter<Indicator> {
                 pl = zoneLink(indicator, target, explanation.split("multiT")[1]);
             } else if (explanation.contains("single")) {
                 String[] targetValues = explanation.split("single")[0].split("\\\\t");
-            	currentValue = Double.parseDouble(targetValues[0]);
-            	target = Double.parseDouble(targetValues[1]);
+                currentValue = Double.parseDouble(targetValues[0]);
+                target = Double.parseDouble(targetValues[1]);
             }
         }
 

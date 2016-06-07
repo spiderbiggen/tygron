@@ -1,26 +1,39 @@
 package nl.tytech.sdk.example;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import nl.tytech.core.client.event.EventIDListenerInterface;
 import nl.tytech.core.client.event.EventManager;
+import nl.tytech.core.client.event.SlotEvent;
+import nl.tytech.core.client.net.TSlotConnection;
 import nl.tytech.core.event.Event;
 import nl.tytech.core.event.EventListenerInterface;
+import nl.tytech.core.net.Network;
 import nl.tytech.core.net.serializable.MapLink;
-import nl.tytech.data.core.item.Item;
 import nl.tytech.data.engine.item.Setting;
-import nl.tytech.util.logger.TLogger;
 
 public class ExampleEventHandler implements EventListenerInterface, EventIDListenerInterface {
 
 	private boolean mapUpdate = false;
 	private Map<MapLink, Boolean> mapLinkUpdated = new HashMap<>();
+	/**
+	 * increments after every FIRST_UPDATE_FINISHED comes in
+	 **/
+	private int firstUpdate = 0;
 
-	public ExampleEventHandler() {
+	private Integer connectionID;
+
+	public ExampleEventHandler(TSlotConnection slotConnection) {
+		this(slotConnection.getConnectionID());
+	}
+
+	public ExampleEventHandler(Integer connectionID) {
+		this.connectionID = connectionID;
+
 		EventManager.addListener(this, MapLink.class);
 		EventManager.addEnumListener(this, MapLink.SETTINGS, Setting.Type.MAP_WIDTH_METERS);
+		EventManager.addListener(this, Network.ConnectionEvent.FIRST_UPDATE_FINISHED);
 	}
 
 	public boolean isMapUpdated() {
@@ -56,29 +69,79 @@ public class ExampleEventHandler implements EventListenerInterface, EventIDListe
 	@Override
 	public void notifyEnumListener(Event event, Enum<?> enhum) {
 
+		if (event instanceof SlotEvent) {
+			SlotEvent slotEvent = (SlotEvent) event;
+			if (!connectionID.equals(slotEvent.getConnectionID())) {
+				return;
+			}
+		}
+
 		if (enhum == Setting.Type.MAP_WIDTH_METERS) {
-			Setting setting = EventManager.getItem(MapLink.SETTINGS, Setting.Type.MAP_WIDTH_METERS);
-			TLogger.info("Map Width is set to: " + setting.getIntValue());
+			Setting setting = EventManager.getItem(connectionID, MapLink.SETTINGS, Setting.Type.MAP_WIDTH_METERS);
 			mapUpdate = true;
 		}
 	}
 
 	@Override
-	public void notifyIDListener(Event arg0, Integer arg1) {
-
+	public void notifyIDListener(Event event, Integer arg1) {
+		if (event instanceof SlotEvent) {
+			SlotEvent slotEvent = (SlotEvent) event;
+			if (!connectionID.equals(slotEvent.getConnectionID())) {
+				return;
+			}
+		}
 	}
 
 	@Override
 	public void notifyListener(Event event) {
+		if (event instanceof SlotEvent) {
+			SlotEvent slotEvent = (SlotEvent) event;
+			if (!connectionID.equals(slotEvent.getConnectionID())) {
+				return;
+			}
+		}
 
 		if (event.getType() instanceof MapLink) {
 			mapLinkUpdated.put((MapLink) event.getType(), true);
 
-			// (Frank) Print for debug
-			Collection<Item> updates = event.getContent(MapLink.UPDATED_COLLECTION);
-			if (event.getType() == MapLink.STAKEHOLDERS) {
-				TLogger.info("Updated " + event.getType().name() + ": " + updates);
-			}
+		} else if (event.getType() == Network.ConnectionEvent.FIRST_UPDATE_FINISHED) {
+			firstUpdate();
+		}
+	}
+
+	/**
+	 * Called when first update comes in
+	 */
+	private void firstUpdate() {
+		firstUpdate++;
+	}
+
+	/**
+	 *
+	 * @return number of calls to Network.ConnectionEvent.FIRST_UPDATE_FINISHED
+	 */
+	public int getNumberOfFirstUpdates() {
+		return firstUpdate;
+	}
+
+	/**
+	 * Wait for FIRST_UPDATE_FINISHED
+	 *
+	 * @param timeoutMs
+	 *            the max time to wait (ms)
+	 * @throws InterruptedException
+	 *             if time-out occurs.
+	 */
+	public void waitForFirstUpdate(int timeoutMs) throws InterruptedException {
+		// time to sleep if firstUpdate not yet
+		final int SLEEPTIME = 100;
+
+		while (firstUpdate == 0 && timeoutMs > 0) {
+			Thread.sleep(SLEEPTIME);
+			timeoutMs -= SLEEPTIME;
+		}
+		if (firstUpdate == 0) {
+			throw new InterruptedException("Timed out on waiting for FIRST_UPDATE_FINISHED.");
 		}
 	}
 
