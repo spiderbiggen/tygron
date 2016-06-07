@@ -34,11 +34,11 @@ public class MapUtilsTest {
 	private EisEnv env;
 	private static final String PROJECT = "project";
 	private static final Identifier PROJECTNAME = new Identifier("testutilsmap");
-	
+
 	private static final String DOMAIN = "domain";
 	private static final Identifier DOMAIN_NAME = new Identifier("tudelft");
 
-	
+
 	private static final int INHABITANTS_ID = 1;
 	private static final int MUNICIPALITY_ID = 0;
 
@@ -48,6 +48,7 @@ public class MapUtilsTest {
 
 	private static final int ZONE_WITH_WATER = 0;
 	private static final int ZONE_ONLY_GRASS = 1;
+	private static final int ZONE_WITH_BUILDING = 3;
 
 
 
@@ -235,6 +236,20 @@ public class MapUtilsTest {
 		assertEquals(0, mp.getArea(), 0);
 	}
 
+	/**
+	 * Test to see if it removes a building with 4 square meter of a building.
+	 * @throws ManagementException Management exception
+	 * @throws InterruptedException Interrupted exception.
+	 */
+	@Test
+	public void testRemoveBuildings() throws ManagementException, InterruptedException {
+		joinAsMunicipality();
+		Geometry geo = MapUtils.getZonesCombined(ZONE_WITH_BUILDING);
+		MultiPolygon mp = JTSUtils.createMP(geo);
+		mp = MapUtils.removeBuildings(mp);
+		final int areaBuilding = 4;
+		assertEquals(AREA_MUNICIPALITY / NUM_ZONES - areaBuilding, mp.getArea(), 0);
+	}
 
 
 
@@ -280,6 +295,5 @@ public class MapUtilsTest {
 
 		assertEquals(INHABITANTS, listener.waitForEntity());
 	}
-
 
 }
