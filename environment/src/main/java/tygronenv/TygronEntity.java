@@ -20,7 +20,6 @@ import nl.tytech.data.engine.item.Stakeholder;
 public interface TygronEntity {
 
 	/**
-	 * Perform an action.
 	 * 
 	 * @param action
 	 * @throws TranslationException
@@ -50,5 +49,4 @@ public interface TygronEntity {
 	 *         stakeholder.
 	 */
 	Stakeholder getStakeholder();
-
 }

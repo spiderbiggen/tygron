@@ -1,5 +1,10 @@
 package contextvh;
 
+import contextvh.actions.ActionContainer;
+import contextvh.actions.CustomAction;
+import eis.eis2java.exception.TranslationException;
+import eis.iilang.Action;
+import eis.iilang.Percept;
 import nl.tytech.core.client.net.TSlotConnection;
 import tygronenv.EntityListener;
 
@@ -9,6 +14,8 @@ import tygronenv.EntityListener;
  * @author Stefan Breetveld.
  */
 public class ContextEntity extends tygronenv.TygronEntityImpl {
+
+	ActionContainer customActions = new ActionContainer();
 
     /**
      * Create new Tygron entity. It will report to env when the entity is ready
@@ -22,6 +29,16 @@ public class ContextEntity extends tygronenv.TygronEntityImpl {
     public ContextEntity(final EntityListener env, final String intendedStakeholder, final Integer slotID) {
         super(env, intendedStakeholder, slotID);
     }
+
+    @Override
+	public Percept performAction(Action action) throws TranslationException {
+		CustomAction customAction = customActions.get(action);
+		if (customAction != null) {
+			return customAction.call(this, action.getParameters());
+		} else {
+			return super.performAction(action);
+		}
+	}
 
     @Override
     public tygronenv.EntityEventHandler createEntityEventhandler(final TSlotConnection slotConnection) {
