@@ -65,7 +65,6 @@ public class GetRelevantAreas implements CustomAction {
 					filters = (ParameterList) filterParam;
 				}
 			}
-			
 
 			return createPercept(caller, actionType, callID, filters);
 		} catch (Exception e) {
