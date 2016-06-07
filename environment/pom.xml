@@ -144,6 +144,14 @@
 						</manifest>
 					</archive>
 				</configuration>
+				<!--  include also the tests.jar so that it can also be used in modules that extend this module -->
+				<executions>
+					<execution>
+						<goals>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 
 			<plugin>
