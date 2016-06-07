@@ -32,12 +32,6 @@ import tygronenv.util.MapUtils;
  */
 public class GetRelevantAreasBuild implements RelevantAreasAction {
 
-	/**
-	 * Alias to shorten calls without having to use static imports.
-	 * @author Max Groenenboom
-	 */
-	private static class CU extends CoordinateUtils { };
-
 	private static GetRelevantAreas parent;
 
 	/**
@@ -144,16 +138,16 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 			Coordinate[] coords = triangle.getCoordinates();
 
 			// Create first new point.
-			Coordinate newPoint1 = CU.plus(coords[0], coords[1]);
-			newPoint1 = CU.divide(newPoint1, 2);
-			newPoint1 = CU.minus(newPoint1, coords[2]);
-			newPoint1 = CU.plus(coords[2], CU.times(newPoint1, distanceFromOppositeCorner));
+			Coordinate newPoint1 = CoordinateUtils.plus(coords[0], coords[1]);
+			newPoint1 = CoordinateUtils.divide(newPoint1, 2);
+			newPoint1 = CoordinateUtils.minus(newPoint1, coords[2]);
+			newPoint1 = CoordinateUtils.plus(coords[2], CoordinateUtils.times(newPoint1, distanceFromOppositeCorner));
 
 			// Create second new point.
-			Coordinate newPoint2 = CU.plus(coords[0], coords[2]);
-			newPoint2 = CU.divide(newPoint2, 2);
-			newPoint2 = CU.minus(newPoint2, coords[1]);
-			newPoint2 = CU.plus(coords[1], CU.times(newPoint2, distanceFromOppositeCorner));
+			Coordinate newPoint2 = CoordinateUtils.plus(coords[0], coords[2]);
+			newPoint2 = CoordinateUtils.divide(newPoint2, 2);
+			newPoint2 = CoordinateUtils.minus(newPoint2, coords[1]);
+			newPoint2 = CoordinateUtils.plus(coords[1], CoordinateUtils.times(newPoint2, distanceFromOppositeCorner));
 
 			// Create list with coordinates for the new Polygon.
 			List<Coordinate> newCoords = Arrays.asList(new Coordinate[] {

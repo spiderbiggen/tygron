@@ -8,7 +8,12 @@ import com.vividsolutions.jts.geom.Coordinate;
  * @author Max Groenenboom
  *
  */
-public class CoordinateUtils {
+public final class CoordinateUtils {
+
+	/**
+	 * Private constructor for checkstyle.
+	 */
+	private CoordinateUtils() { }
 
 	/**
 	 * Add two <code>Coordinate</code>s together.
