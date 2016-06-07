@@ -23,6 +23,8 @@ import nl.tytech.locale.TLanguage;
  */
 public class ProjectFactory {
 
+	private final static String DOMAIN = "tudelft";
+
 	/**
 	 * Join existing project.
 	 * 
@@ -33,7 +35,9 @@ public class ProjectFactory {
 	 * @throws ManagementException
 	 */
 	public ProjectData getProject(String name) {
-		ProjectData[] projects = ServicesManager.fireServiceEvent(IOServiceEventType.GET_MY_STARTABLE_PROJECTS);
+
+		ProjectData[] projects = ServicesManager.fireServiceEvent(IOServiceEventType.GET_DOMAIN_STARTABLE_PROJECTS,
+				DOMAIN);
 		if (projects != null) {
 			for (ProjectData existing : projects) {
 				if (existing.getFileName().equals(name)) {
@@ -87,8 +91,7 @@ public class ProjectFactory {
 	 */
 	private TSlotConnection editProject(Integer slotID) throws ProjectException {
 
-		JoinReply reply = ServicesManager.fireServiceEvent(IOServiceEventType.JOIN_SESSION, slotID,
-				AppType.EDITOR);
+		JoinReply reply = ServicesManager.fireServiceEvent(IOServiceEventType.JOIN_SESSION, slotID, AppType.EDITOR);
 		if (reply == null) {
 			throw new ProjectException("failed to edit project:" + reply);
 		}
