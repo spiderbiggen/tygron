@@ -49,10 +49,8 @@ public class BuyerReceivesLandTest {
 
 		// sell land to inhabitant.
 		municipality.sellLand(municipality.getSellableLand(), inhabitant.getStakeholder().getID());
-		municipality.confirmLandTransaction(Type.SELL_LAND);
-
-		// check that the land changed to reflect the sell
-		municipality.getEventHandler().waitFor(MapLink.LANDS);
+		// BUY_LAND seems illogical.
+		municipality.confirmLandTransaction(Type.BUY_LAND);
 
 		municipality.close();
 		inhabitant.close();
@@ -72,9 +70,9 @@ public class BuyerReceivesLandTest {
 		// sell land to inhabitant.
 		municipality.sellLand(municipality.getSellableLand(), inhabitant.getStakeholder().getID());
 
-		// both confirm. Order irrelevant?
-		municipality.confirmLandTransaction(Type.SELL_LAND);
-		inhabitant.confirmLandTransaction(Type.BUY_LAND);
+		// both confirm. Order is critical? First the buyer confirms
+		inhabitant.confirmLandTransaction(Type.SELL_LAND);
+		municipality.confirmLandTransaction(Type.BUY_LAND);
 
 		// check both parties saw the lands change.
 		municipality.getEventHandler().waitFor(MapLink.LANDS);

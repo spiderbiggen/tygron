@@ -95,13 +95,21 @@ public class ExampleEventHandler implements EventListenerInterface, EventIDListe
 
 	@Override
 	public void notifyListener(Event event) {
+		boolean isPopup = false;
+		if (event.getType() == MapLink.POPUPS) {
+			isPopup = true;
+		}
+
 		if (event instanceof SlotEvent) {
 			SlotEvent slotEvent = (SlotEvent) event;
-			if (!connectionID.equals(slotEvent.getConnectionID())) {
+			if (isPopup && !connectionID.equals(slotEvent.getConnectionID())) {
+				System.out.println("ignoring " + event + ": not for " + connectionID);
 				return;
 			}
 		}
-
+		if (isPopup) {
+			System.out.println("accepted " + event + " for " + connectionID);
+		}
 		if (event.getType() instanceof MapLink) {
 			mapLinkUpdated.put((MapLink) event.getType(), true);
 

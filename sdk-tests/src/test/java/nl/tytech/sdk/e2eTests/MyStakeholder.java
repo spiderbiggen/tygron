@@ -75,10 +75,17 @@ public class MyStakeholder {
 	 * @throws InterruptedException
 	 */
 	public void waitForAppearance() throws InterruptedException {
+
+		// events.waitFor(MapLink.STAKEHOLDERS);
+
+		// dit is niet genoeg???
 		events.waitForFirstUpdate(TIMEOUT);
+		Thread.sleep(3000);
+
 		ItemMap<Stakeholder> allstakeholders = EventManager.getItemMap(connection.getConnectionID(),
 				MapLink.STAKEHOLDERS);
 		for (Stakeholder s : allstakeholders) {
+			System.out.println("Stakeholder " + s + " entered");
 			if (s.getType() == type) {
 				actualStakeholder = s;
 				return;
@@ -176,6 +183,8 @@ public class MyStakeholder {
 				connection.fireServerEvent(true, ParticipantEventType.POPUP_ANSWER, me, popupData.getID(),
 						defaultAnswer.getID());
 				return;
+			} else {
+				System.out.println("popup " + popupData.getText() + ":" + forMe + correctMapLink + isSellLand);
 			}
 
 		}
