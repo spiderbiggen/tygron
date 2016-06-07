@@ -40,6 +40,7 @@ public class FirstUpdateTest {
 		ItemMap<Item> map = EventManager.getItemMap(gameField.getSlotConnection().getConnectionID(),
 				MapLink.STAKEHOLDERS);
 		assertEquals(2, map.size());
+		municipality.close();
 	}
 
 	@Test
@@ -54,6 +55,10 @@ public class FirstUpdateTest {
 
 		assertEquals(1, municipality.getEventHandler().getNumberOfFirstUpdates());
 		assertEquals(1, civilian.getEventHandler().getNumberOfFirstUpdates());
+
+		municipality.close();
+		civilian.close();
+
 	}
 
 }

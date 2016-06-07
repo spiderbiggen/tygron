@@ -73,11 +73,7 @@ public class MyStakeholder {
 	 */
 	public void waitForAppearance() throws InterruptedException {
 
-		// events.waitFor(MapLink.STAKEHOLDERS);
-
-		// dit is niet genoeg???
-		events.waitForFirstUpdate(TIMEOUT);
-		Thread.sleep(3000);
+		events.waitFor(MapLink.STAKEHOLDERS);
 
 		ItemMap<Stakeholder> allstakeholders = EventManager.getItemMap(connection.getConnectionID(),
 				MapLink.STAKEHOLDERS);
@@ -187,8 +183,11 @@ public class MyStakeholder {
 	 * Close down connections and finish stakeholder
 	 */
 	public void close() {
+		if (events != null) {
+			events.close();
+			events = null;
+		}
 		connection.disconnect(true);
-		events = null;
 		actualStakeholder = null;
 	}
 

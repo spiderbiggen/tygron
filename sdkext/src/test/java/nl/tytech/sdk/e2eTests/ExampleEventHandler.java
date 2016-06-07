@@ -57,6 +57,10 @@ public class ExampleEventHandler implements EventListenerInterface, EventIDListe
 		return result;
 	}
 
+	public void close() {
+		EventManager.removeAllListeners(this);
+	}
+
 	public void resetUpdate(MapLink... mapLinks) {
 		for (MapLink mapLink : mapLinks) {
 			resetUpdate(mapLink);
