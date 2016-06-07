@@ -1,4 +1,3 @@
-
 package tygronenv;
 
 import static org.junit.Assert.assertEquals;
@@ -35,7 +34,6 @@ public class TestEnvironmentStates {
 
 	private static final String STAKEHOLDERS = "stakeholders";
 	private static final String MUNICIPALITY = "MUNICIPALITY";
-	private static final String INHABITANTS = "INHABITANTS";
 	private EisEnv env;
 	private static String PROJECT = "project";
 	private static Identifier PROJECTNAME = new Identifier("testmap");
@@ -76,60 +74,13 @@ public class TestEnvironmentStates {
 		joinAsMunicipality();
 
 		LinkedList<Percept> percepts = env.getAllPerceptsFromEntity(MUNICIPALITY);
-		Percept expectedPercept = new Percept("stakeholders", new ParameterList( new ParameterList(
-				new Function("stakeholder", new Numeral(0), new Identifier("Municipality"),
-						new Numeral(0.0), new Numeral(0)), new Function("indicatorLink", new Numeral(0), 
-						        new ParameterList())),
-				new ParameterList(new Function("stakeholder", new Numeral(1), new Identifier("Inhabitants"),
-						new Numeral(0.0), new Numeral(0)), new Function("indicatorLink", new Numeral(1), 
-		                        new ParameterList()))));
+		Percept expectedPercept = new Percept("stakeholders",
+				new ParameterList(new ParameterList(new Identifier("Municipality"), new Numeral(0), new Numeral(0d)),
+						new ParameterList(new Identifier("Inhabitants"), new Numeral(1), new Numeral(0d))));
 		assertTrue(percepts.contains(expectedPercept));
 
 	}
-	
-	/**
-	 * Test my_stakeholder_id percept.
-	 * @throws ManagementException {@link ManagementException} 
-	 * @throws RelationException {@link RelationException}
-	 * @throws AgentException {@link AgentException}
-	 * @throws InterruptedException {@link InterruptedException}
-	 * @throws PerceiveException {@link PerceiveException}
-	 * @throws NoEnvironmentException {@link NoEnvironmentException}
-	 */
-	@Test 
-	public void testMyStakeholderIdInhabitant() throws ManagementException, 
-	RelationException, AgentException, InterruptedException,
-	PerceiveException, NoEnvironmentException {
-		
-		joinAsInhabitants();
-		LinkedList<Percept> percepts = env.getAllPerceptsFromEntity(INHABITANTS);
-		Percept expectedPercept = new Percept("my_stakeholder_id", 
-				new Numeral(1));
-		assertTrue(percepts.contains(expectedPercept));
 
-	}
-	/**
-	 * Test my_stakeholder_id percept.
-	 * @throws ManagementException {@link ManagementException} 
-	 * @throws RelationException {@link RelationException}
-	 * @throws AgentException {@link AgentException}
-	 * @throws InterruptedException {@link InterruptedException}
-	 * @throws PerceiveException {@link PerceiveException}
-	 * @throws NoEnvironmentException {@link NoEnvironmentException}
-	 */
-	@Test 
-	public void testMyStakeholderIdMunicipality() throws ManagementException, 
-	RelationException, AgentException, InterruptedException,
-	PerceiveException, NoEnvironmentException {
-		
-		joinAsMunicipality();
-		LinkedList<Percept> percepts = env.getAllPerceptsFromEntity(MUNICIPALITY);
-		Percept expectedPercept = new Percept("my_stakeholder_id", 
-				new Numeral(0));
-		assertTrue(percepts.contains(expectedPercept));
-
-	}
-	
 	@Test
 	public void testFunctionPercept() throws ManagementException, RelationException, AgentException,
 			InterruptedException, PerceiveException, NoEnvironmentException {
@@ -219,26 +170,6 @@ public class TestEnvironmentStates {
 		assertEquals("MUNICIPALITY", listener.waitForEntity());
 	}
 
-	/**
-	 * Init env and ask for inhabitant as stakeholder.
-	 * 
-	 * @throws ManagementException {@link MangementExption}
-	 * @throws InterruptedException {@link InterruptedException}
-	 */
-	private void joinAsInhabitants() 
-			throws ManagementException, InterruptedException {
-		MyEnvListener listener = new MyEnvListener();
-		env.attachEnvironmentListener(listener);
-
-		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
-		parameters.put(PROJECT, PROJECTNAME);
-		parameters.put(STAKEHOLDERS, new ParameterList(new Identifier(INHABITANTS)));
-
-		// any slot so not specified.
-		env.init(parameters);
-
-		assertEquals(INHABITANTS, listener.waitForEntity());
-	}	
 	/**
 	 * Search for a road function in the percepts. This runs through all
 	 * elements of the function and checks their type

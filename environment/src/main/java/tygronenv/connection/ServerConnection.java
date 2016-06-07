@@ -4,6 +4,8 @@ import javax.security.auth.login.LoginException;
 
 import eis.exceptions.ManagementException;
 import login.Login;
+import login.ProjectException;
+import login.ProjectFactory;
 import nl.tytech.core.client.net.ServicesManager;
 import nl.tytech.core.net.serializable.ProjectData;
 import nl.tytech.core.net.serializable.User;
@@ -54,13 +56,13 @@ public class ServerConnection {
 			throw new ManagementException("You need to have at least EDITOR access level");
 		}
 
-		if(config.getDomain() != null) {
-			project = factory.getProject(config.getProject(), config.getDomain());
-		} else {
-			project = factory.getProject(config.getProject());
-		}
+		project = factory.getProject(config.getProject());
 		if (project == null) {
-			project = factory.createProject(config.getProject());
+			try {
+				project = factory.createProject(config.getProject());
+			} catch (ProjectException e) {
+				throw new ManagementException("failed to create project", e);
+			}
 			createdProject = true;
 		}
 
@@ -71,7 +73,7 @@ public class ServerConnection {
 	/**
 	 * Disconnect from server. After calling this, this object can not be used
 	 * anymore.
-	 * 
+	 *
 	 * @throws ManagementException
 	 */
 	public void disconnect() throws ManagementException {
@@ -80,9 +82,14 @@ public class ServerConnection {
 			session = null;
 		}
 		if (createdProject) {
-			factory.deleteProject(project);
-			project = null;
-			createdProject = false;
+			try {
+				factory.deleteProject(project);
+			} catch (ProjectException e) {
+				throw new ManagementException("Failed to remove temp project", e);
+			} finally {
+				project = null;
+				createdProject = false;
+			}
 		}
 
 		ServicesManager.removeLoginCredentials();
