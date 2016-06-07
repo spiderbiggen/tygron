@@ -29,7 +29,7 @@ public class GetRelevantAreasBuildTest {
 		GetRelevantAreasBuild action = new GetRelevantAreasBuild(null);
 		Geometry triangle = createTriangle();
 		Geometry result = action.createNewPolygon(triangle);
-		final double area = 1.5;
+		final double area = 0.75;
 		assertEquals(area, result.getArea(), 0);
 	}
 
@@ -46,13 +46,13 @@ public class GetRelevantAreasBuildTest {
 	}
 
 	/**
-	 * Create a new triangle.
+	 * Create a new triangle with an area of 0.5 square meters.
 	 * @return A triangle.
 	 */
-	private Geometry createTriangle() {
-		Coordinate c1 = new Coordinate(1, 1);
-		Coordinate c2 = new Coordinate(1, 2);
-		final Coordinate c3 = new Coordinate(3, 3);
+	public static Geometry createTriangle() {
+		Coordinate c1 = new Coordinate(0, 0);
+		Coordinate c2 = new Coordinate(0, 1);
+		final Coordinate c3 = new Coordinate(1, 1);
 		List<Coordinate> coordinates = new LinkedList<Coordinate>();
 		coordinates.add(c1);
 		coordinates.add(c2);
