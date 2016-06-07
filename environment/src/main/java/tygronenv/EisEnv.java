@@ -95,11 +95,10 @@ public class EisEnv extends EIDefaultImpl implements EntityListener {
 	@Override
 	protected Percept performEntityAction(String e, Action action) throws ActException {
 		try {
-			getEntity(e).performAction(action);
+			return getEntity(e).performAction(action);
 		} catch (TranslationException | IllegalArgumentException e1) {
 			throw new ActException("Failed to execute action " + action, e1);
 		}
-		return null;
 	}
 
 	@Override
