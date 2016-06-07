@@ -9,26 +9,23 @@ import nl.tytech.core.client.event.EventManager;
 import nl.tytech.core.client.net.ServicesManager;
 import nl.tytech.core.client.net.TSlotConnection;
 import nl.tytech.core.net.Network.AppType;
-import nl.tytech.core.net.Network.SessionType;
 import nl.tytech.core.net.event.IOServiceEventType;
 import nl.tytech.core.net.serializable.JoinReply;
 import nl.tytech.core.net.serializable.MapLink;
-import nl.tytech.core.net.serializable.ProjectData;
 import nl.tytech.core.structure.ItemMap;
 import nl.tytech.core.util.SettingsManager;
 import nl.tytech.data.core.item.Answer;
-import nl.tytech.data.engine.event.LogicEventType;
+import nl.tytech.data.core.item.Item;
 import nl.tytech.data.engine.event.ParticipantEventType;
 import nl.tytech.data.engine.item.Land;
 import nl.tytech.data.engine.item.PopupData;
 import nl.tytech.data.engine.item.SpecialOption;
 import nl.tytech.data.engine.item.Stakeholder;
 import nl.tytech.data.engine.item.Stakeholder.Type;
-import nl.tytech.locale.TLanguage;
 
 /**
  * Test stakeholder.
- * 
+ *
  * @author W.Pasman
  *
  */
@@ -44,12 +41,12 @@ public class MyStakeholder {
 
 	final static int TIMEOUT = 5000;
 
-	MyStakeholder(Stakeholder.Type type, ProjectData project) {
-		if (project == null) {
+	public MyStakeholder(Stakeholder.Type type, Integer slotID) {
+		if (Item.NONE.equals(slotID)) {
 			throw new NullPointerException("project=null");
 		}
 		this.type = type;
-		participate(project);
+		participate(slotID);
 		events = new ExampleEventHandler(connection);
 	}
 
@@ -70,7 +67,7 @@ public class MyStakeholder {
 
 	/**
 	 * Wait till this stakeholder appeared.
-	 * 
+	 *
 	 * @param timeoutMs
 	 * @throws InterruptedException
 	 */
@@ -96,15 +93,10 @@ public class MyStakeholder {
 
 	/**
 	 * Make listener for the session.
-	 * 
+	 *
 	 * @return slotconnection on which to
 	 */
-	private TSlotConnection participate(ProjectData project) {
-		if (project == null) {
-			throw new NullPointerException("project=null");
-		}
-		Integer slotID = ServicesManager.fireServiceEvent(IOServiceEventType.START_NEW_SESSION, SessionType.MULTI,
-				project.getFileName(), TLanguage.EN);
+	private TSlotConnection participate(Integer slotID) {
 		assertTrue(slotID != null && slotID >= 0);
 
 		JoinReply reply = ServicesManager.fireServiceEvent(IOServiceEventType.JOIN_SESSION, slotID,
@@ -114,14 +106,13 @@ public class MyStakeholder {
 		connection = TSlotConnection.createSlotConnection();
 		connection.initSettings(AppType.PARTICIPANT, SettingsManager.getServerIP(), slotID, reply.serverToken,
 				reply.client.getClientToken());
-		connection.fireServerEvent(true, LogicEventType.SETTINGS_ALLOW_INTERACTION, true);
 		assertTrue(connection.connect());
 		return connection;
 	}
 
 	/**
 	 * Sell some piece of land.
-	 * 
+	 *
 	 * @param land
 	 *            sellable land, see {@link #getSellableLand()}.
 	 * @param buyerStakeholderID
@@ -140,7 +131,7 @@ public class MyStakeholder {
 
 	/**
 	 * @return a piece of sellable land, or null if no such land.
-	 * 
+	 *
 	 */
 	public Land getSellableLand() {
 		ItemMap<Land> lands = EventManager.getItemMap(connection.getConnectionID(), MapLink.LANDS);
@@ -157,7 +148,7 @@ public class MyStakeholder {
 
 	/**
 	 * Confirm that land has been bought
-	 * 
+	 *
 	 * @param buyerID
 	 *            the buyer ID
 	 * @param direction
