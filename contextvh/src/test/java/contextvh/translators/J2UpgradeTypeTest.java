@@ -32,7 +32,7 @@ public class J2UpgradeTypeTest {
 	 */
 	private UpgradeType upgradeType;
 	private UpgradePair upgradePair;
-	private List<UpgradePair> a;
+	private List<UpgradePair> pairs;
 	
 	/**
 	 * Initialise before every test.
@@ -43,7 +43,7 @@ public class J2UpgradeTypeTest {
 		translator.registerJava2ParameterTranslator(new J2UpgradePair());
 		upgradeType = mock(UpgradeType.class);
 		upgradePair = mock(UpgradePair.class);
-		a = new ArrayList<>();
+		pairs = new ArrayList<>();
 	}
 	
 	/**
@@ -52,11 +52,24 @@ public class J2UpgradeTypeTest {
 	 */
 	@Test
 	public void tranlatorTest1() throws TranslationException {
-		a.add(upgradePair);
-		when(upgradeType.getPairs()).thenReturn(a);
+		pairs.add(upgradePair);
+		when(upgradeType.getPairs()).thenReturn(pairs);
 		translator.translate2Parameter(upgradeType);
 		verify(upgradePair, times(1)).getSourceFunctionID();
 		verify(upgradePair, times(1)).getTargetFunctionID();
+	}
+
+	/**
+	 * Tests if the translator will not try to look for a source and target of an upgradePair
+	 * if the translator has an empty list of pairs
+	 * @throws TranslationException if translation fails.
+	 */
+	@Test
+	public void translatorTest2() throws TranslationException {
+		translator.translate2Parameter(upgradeType);
+		verify(upgradeType, times(1)).getPairs();
+		verify(upgradePair, times(0)).getSourceFunctionID();
+		verify(upgradePair, times(0)).getTargetFunctionID();
 	}
 
 	/**
@@ -65,26 +78,12 @@ public class J2UpgradeTypeTest {
 	 */
 	@Test
 	public void tranlatorTest3() throws TranslationException {
-		a.add(upgradePair);
-		a.add(upgradePair);
-		when(upgradeType.getPairs()).thenReturn(a);
+		pairs.add(upgradePair);
+		pairs.add(upgradePair);
+		when(upgradeType.getPairs()).thenReturn(pairs);
 		translator.translate2Parameter(upgradeType);
 		verify(upgradePair, times(2)).getSourceFunctionID();
 		verify(upgradePair, times(2)).getTargetFunctionID();
-	}
-	
-	/**
-	 * Tests if the translator will not try to look for a source and target of an upgradePair
-	 * if the translator has an empty list of pairs
-	 * @throws TranslationException if translation fails.
-	 */
-	
-	@Test
-	public void translatorTest2() throws TranslationException {
-		translator.translate2Parameter(upgradeType);
-		verify(upgradeType, times(1)).getPairs();
-		verify(upgradePair, times(0)).getSourceFunctionID();
-		verify(upgradePair, times(0)).getTargetFunctionID();
 	}
 	
 }
