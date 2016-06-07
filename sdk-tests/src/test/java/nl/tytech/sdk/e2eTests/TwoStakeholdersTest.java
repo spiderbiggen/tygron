@@ -145,7 +145,6 @@ public class TwoStakeholdersTest {
 
 	@Test
 	public void test06closeEditSession() throws Exception {
-
 		/**
 		 * Save project in our slotID
 		 */
@@ -156,6 +155,22 @@ public class TwoStakeholdersTest {
 		 * Disconnect from slot
 		 */
 		slotConnection.disconnect(false);
+		// TODO: (Frank) Check this out
+		// assertTrue(projectStartable(data.getFileName()));
+	}
+
+	private boolean projectStartable(String projectFileName) {
+		for (int i = 0; i < 60; i++) {
+			ProjectData[] projects = ServicesManager.fireServiceEvent(IOServiceEventType.GET_MY_STARTABLE_PROJECTS);
+			for (ProjectData projectData : projects) {
+				if (projectFileName.equals(projectData.getFileName())) {
+					return true;
+				}
+
+			}
+			ThreadUtils.sleepInterruptible(1000);
+		}
+		return false;
 	}
 
 	@Test
