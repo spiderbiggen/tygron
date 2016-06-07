@@ -15,6 +15,7 @@ import nl.tytech.data.editor.event.EditorStakeholderEventType;
 import nl.tytech.data.engine.item.Stakeholder;
 import nl.tytech.locale.TLanguage;
 import nl.tytech.util.ThreadUtils;
+import nl.tytech.util.logger.TLogger;
 
 /**
  * Factory to fetch existing and create new projects
@@ -78,8 +79,8 @@ public class ProjectFactory {
 
 		editSlot.disconnect(false);
 
-		if (!projectStartable(name)) {
-			throw new ProjectException("Failed to correctly close project: " + proj.getFileName());
+		if (!projectStartable(proj.getFileName())) {
+			TLogger.warning("Failed to correctly close project: " + proj.getFileName());
 		}
 
 		return proj;
@@ -152,12 +153,12 @@ public class ProjectFactory {
 	 */
 	public void deleteProject(ProjectData project) throws ProjectException {
 		if (!projectStartable(project.getFileName())) {
-			throw new ProjectException("Unable to delete project " + project.getFileName() + " on the server");
+			TLogger.warning("Unable to delete project " + project.getFileName() + " on the server");
 		}
 
 		Boolean result = ServicesManager.fireServiceEvent(IOServiceEventType.DELETE_PROJECT, project.getFileName());
 		if (!result) {
-			throw new ProjectException("failed to delete project " + project.getFileName() + " on the server");
+			TLogger.warning("failed to delete project " + project.getFileName() + " on the server");
 		}
 
 	}
