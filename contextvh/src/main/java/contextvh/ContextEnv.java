@@ -40,6 +40,7 @@ import java.util.LinkedList;
  * @author Stefan Breetveld
  */
 public class ContextEnv extends EisEnv {
+	private static final long serialVersionUID = 2795668071082192962L;
 
 	private int connectionID;
 	private ContextEntity entity;

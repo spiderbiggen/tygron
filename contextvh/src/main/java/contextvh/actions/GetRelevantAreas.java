@@ -88,9 +88,7 @@ public class GetRelevantAreas implements CustomAction {
 			final Number callID, final ParameterList parameters) throws TranslationException {
 		Percept result = new Percept("relevant_areas");
 		result.addParameter(new Numeral(callID));
-		debug("action called");
 
-		System.out.println(internalActions);
 		RelevantAreasAction action = internalActions.get(actionType);
 		if (action == null) {
 			throw new TranslationException("unknown action GetRelevantAreas(_, " + actionType + ", _)");
@@ -112,15 +110,5 @@ public class GetRelevantAreas implements CustomAction {
 				TRANSLATOR.translate2Parameter(mp)[0],
 				new Numeral(mp.getArea())
 		);
-	}
-
-	/**
-	 * Print a debug message.
-	 * Is a separate function to make it easier to remove debug messages.
-	 * @param message The message.
-	 */
-	public static void debug(final String message) {
-		// Debug temporarliy disabled;
-		System.out.println("Debug: " + message);
 	}
 }

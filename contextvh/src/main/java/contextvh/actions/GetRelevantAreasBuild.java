@@ -59,11 +59,9 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 			final ContextEntity caller, final ParameterList parameters) {
 		MultiPolygon constructableLand = getUsableArea(caller, parameters);
 
-		GetRelevantAreas.debug("finalizing selection. Total area found was " + constructableLand.getArea());
 		final int minArea = 200, maxArea = 2000;
 		final int maxPolys = 15;
 		final int bufferUp = 5, bufferDown = -10;
-
 		int numPolys = 0;
 		final ParameterList results = new ParameterList();
 		for (Polygon poly: JTSUtils.getPolygons(constructableLand)) {
@@ -72,9 +70,7 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 				if (numPolys > maxPolys) {
 					break;
 				}
-				GetRelevantAreas.debug("Before: " + geom.getArea());
 				geom = createNewPolygon(geom);
-				GetRelevantAreas.debug("After: " + geom.getArea());
 				geom = geom.intersection(constructableLand);
 				geom = geom.buffer(bufferDown).buffer(bufferUp);
 				if (geom.getArea() < minArea / 2 || geom.getArea() > maxArea) {
@@ -89,11 +85,9 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 					continue;
 				}
 				numPolys++;
-				GetRelevantAreas.debug("Added " + mp.toText());
 			}
 		}
 		createdPercept.addParameter(results);
-		GetRelevantAreas.debug("created result");
 	}
 
 	/**
@@ -104,22 +98,18 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 	 */
 	private MultiPolygon getUsableArea(final ContextEntity caller, final ParameterList parameters) {
 		// Get a MultiPolygon of all lands combined.
-		GetRelevantAreas.debug("combining land");
 		Integer connectionID = caller.getSlotConnection().getConnectionID();
 
 		final Integer stakeholderID = caller.getStakeholder().getID();
 		MultiPolygon constructableLand = MapUtils.getMyLands(connectionID, stakeholderID);
 
 		// Remove all pieces of land that cannot be build on (water).
-		GetRelevantAreas.debug("removing water");
 		constructableLand = MapUtils.removeWater(connectionID, constructableLand);
 
 		// Remove all pieces of reserved land.
-		GetRelevantAreas.debug("removing reserved");
 		constructableLand = MapUtils.removeReservedLand(connectionID, constructableLand);
 
 		// Remove all pieces of occupied land.
-		GetRelevantAreas.debug("removing buildings");
 		constructableLand = MapUtils.removeBuildings(connectionID, constructableLand);
 
 		return constructableLand;
