@@ -13,13 +13,13 @@ import org.junit.Test;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
 
+import contextvh.ContextEnv;
 import eis.exceptions.ManagementException;
 import eis.iilang.Identifier;
 import eis.iilang.Parameter;
 import eis.iilang.ParameterList;
 import nl.tytech.util.JTSUtils;
-import contextvh.ContextEnv;
-import contextvh.MyEnvListener;
+import tygronenv.MyEnvListener;
 
 /**
  * Test for the MapUtils class.
@@ -266,7 +266,6 @@ public class MapUtilsTest {
 		env.attachEnvironmentListener(listener);
 
 		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
-		parameters.put(DOMAIN, DOMAIN_NAME);
 		parameters.put(PROJECT, PROJECTNAME);
 		parameters.put(STAKEHOLDERS, new ParameterList(new Identifier(MUNICIPALITY)));
 		// any slot so not specified.
@@ -286,7 +285,6 @@ public class MapUtilsTest {
 		env.attachEnvironmentListener(listener);
 
 		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
-		parameters.put(DOMAIN, DOMAIN_NAME);
 		parameters.put(PROJECT, PROJECTNAME);
 		parameters.put(STAKEHOLDERS, new ParameterList(new Identifier(INHABITANTS)));
 

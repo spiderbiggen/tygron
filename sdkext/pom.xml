@@ -2,16 +2,19 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<!-- name of the main project on eishub. -->
+		<environmentname>tygron</environmentname>
 	</properties>
 
-	<groupId>nl.tygron</groupId>
-	<artifactId>sdk</artifactId>
-	<version>2016.5.0.6</version>
-	<name>tygron-sdk-install</name>
-	<description>Tytech sdk</description>
-	<url>http://www.github.com/eishub/tygron</url>
+	<groupId>tygron</groupId>
+	<artifactId>sdkext</artifactId>
+	<version>1.0.1</version>
+	<name>${environmentname} sdk extension</name>
+	<description>Extensions of the Tytech SDK</description>
+	<url>http://www.github.com/eishub/${environmentname}</url>
 
 	<licenses>
 		<license>
@@ -35,15 +38,16 @@
 	</organization>
 
 	<issueManagement>
-		<url>https://github.com/eishub/tygron/issues</url>
-		<system>Github Tygron Issues</system>
+		<url>https://github.com/eishub/${environmentname}/issues</url>
+		<system>Github ${environmentname} Issues</system>
 	</issueManagement>
 
 	<scm>
-		<connection>scm:git:git@github.com:eishub/tygron.git</connection>
-		<developerConnection>scm:git:git@github.com:eishub/tygron.git</developerConnection>
-		<url>https://github.com:eishub/tygron</url>
+		<connection>scm:git:git@github.com:eishub/${environmentname}.git</connection>
+		<developerConnection>scm:git:git@github.com:eishub/${environmentname}.git</developerConnection>
+		<url>https://github.com:eishub/${environmentname}</url>
 	</scm>
+
 
 
 	<repositories>
@@ -53,18 +57,43 @@
 		</repository>
 	</repositories>
 
-	<dependencies>
-		<dependency>
-			<groupId>nl.tytech</groupId>
-			<artifactId>sdk</artifactId>
-			<version>2016.5.0.6</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/src/jars/tygron-sdk.jar</systemPath>
-		</dependency>
-	</dependencies>
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.9</version>
+				<executions>
+					<execution>
+						<id>analyze</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>analyze-only</goal>
+						</goals>
+						<configuration>
+							<failOnWarning>true</failOnWarning>
+							<ignoreNonCompile>true</ignoreNonCompile>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.4</version>
+				<!--  include also the tests.jar so that it can also be used in modules that extend this module -->
+				<executions>
+					<execution>
+						<goals>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+
 			<!-- running tygron sdk code (for the tests) requires java 1.8 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -75,6 +104,8 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
+
+
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -90,24 +121,6 @@
 				</executions>
 			</plugin>
 
-			<plugin>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>${project.artifactId}-fetch-deps</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>unpack-dependencies</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.outputDirectory}</outputDirectory>
-							<stripVersion>true</stripVersion>
-							<excludeTransitive>true</excludeTransitive>
-							<excludeArtifactIds>junit</excludeArtifactIds>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -124,24 +137,18 @@
 				<version>0.12</version>
 				<configuration>
 					<server>github</server>
-					<!-- git commit message -->
 					<message>Maven artifacts for ${project.name} version
 						${project.version}</message>
-					<!-- matches distribution management repository url above -->
 					<outputDirectory>${project.build.directory}/mvn-repo</outputDirectory>
-					<!-- remote branch name -->
 					<branch>refs/heads/master</branch>
 					<merge>true</merge>
 					<includes>
 						<include>**/*</include>
 					</includes>
-					<!-- github repo name -->
 					<repositoryName>mvn-repo</repositoryName>
-					<!-- github organization -->
 					<repositoryOwner>eishub</repositoryOwner>
 				</configuration>
 				<executions>
-					<!-- run site-maven-plugin as part of the build's 'deploy' phase -->
 					<execution>
 						<id>git-deploy</id>
 						<goals>
@@ -151,7 +158,25 @@
 					</execution>
 				</executions>
 			</plugin>
+
+ 
 		</plugins>
+
+
 	</build>
 
+	<dependencies>
+		<dependency>
+			<groupId>nl.tygron</groupId>
+			<artifactId>sdk</artifactId>
+			<version>2016.5.0.6</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
 </project>
