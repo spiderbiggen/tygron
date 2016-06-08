@@ -36,7 +36,7 @@ public class GetRelevantAreasTest {
 	private GetRelevantAreas action = new GetRelevantAreas();
 	private RelevantAreasAction mockSubAction = mock(RelevantAreasAction.class);
 	private ContextEntity mockEntity = mock(ContextEntity.class);
-	
+
 	/**
 	 * Register the multipolygon translator.
 	 */
@@ -61,6 +61,10 @@ public class GetRelevantAreasTest {
 		assertEquals(expected, area.getValue().doubleValue(), 0);
 	}
 
+	/**
+	 * Tests if GetRelevantAreas.call calls the internal action registered with it.
+	 * @throws TranslationException Unexpected exception.
+	 */
 	@Test
 	public void callTest() throws TranslationException {
 		LinkedList<Parameter> parameters = new LinkedList<Parameter>();

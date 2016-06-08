@@ -37,7 +37,7 @@ public class ActionContainer extends HashMap<String, CustomAction> {
 	 * @param action The called action.
 	 * @return The CustomAction the action refers to.
 	 */
-	public CustomAction get(Action action) {
+	public CustomAction get(final Action action) {
 		return get(action.getName().toLowerCase());
 	}
 }
