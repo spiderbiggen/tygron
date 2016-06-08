@@ -17,12 +17,12 @@ import org.junit.runner.RunWith;
 
 import eis.eis2java.exception.TranslationException;
 import eis.iilang.Function;
-import eis.iilang.ParameterList;
 import nl.tytech.core.client.event.EventManager;
 import nl.tytech.core.net.serializable.MapLink;
 import nl.tytech.core.structure.ItemMap;
 import nl.tytech.data.core.item.Item;
 import nl.tytech.data.engine.item.ActionLog;
+import nl.tytech.data.engine.item.Building;
 import nl.tytech.data.engine.item.PopupData;
 import nl.tytech.data.engine.item.PopupData.Type;
 
@@ -98,12 +98,13 @@ public class J2PopupDataTest {
 	@Test
     public void testCorrectTypeofPopupBuildings() throws Exception {
     	PowerMockito.when(popupdata.getContentMapLink()).thenReturn(MapLink.BUILDINGS);
-    	PowerMockito.doReturn(new ParameterList()).when(j2popupdataspy).getActionLogIds(popupdata);
+    	PowerMockito.when(popupdata.getContentLinkID()).thenReturn(0);
     	LinkedList<Item> list = new LinkedList<Item>();
     	list.add(new ActionLog());
     	ItemMap<Item> map = mock(ItemMap.class);
     	PowerMockito.when(map.values()).thenReturn(list);
     	PowerMockito.when(EventManager.getItemMap(MapLink.ACTION_LOGS)).thenReturn(map);
+    	PowerMockito.when(EventManager.getItem(MapLink.BUILDINGS, 0)).thenReturn(new Building());
         Function function = (Function) j2popupdataspy.translate(popupdata)[0];
         assertEquals(function.getName(), "request");
         assertTrue(function.getParameters().get(1).toString().contains("PERMIT"));

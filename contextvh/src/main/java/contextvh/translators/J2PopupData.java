@@ -126,7 +126,7 @@ public class J2PopupData implements Java2Parameter<PopupData> {
         Building building = EventManager.getItem(contentMapLink, popup.getContentLinkID());
 
         ItemMap<ActionLog> actionLogs = EventManager.getItemMap(MapLink.ACTION_LOGS);
-        for (ActionLog actionlog : actionLogs) {
+        for (ActionLog actionlog : actionLogs.values()) {
              if (actionlog.getBuildingIDs().contains(building.getID())) {
                  correctActionLogIDs.add(new Numeral(actionlog.getID()));
              }
