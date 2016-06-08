@@ -14,7 +14,7 @@ import nl.tytech.data.engine.item.Land;
 import nl.tytech.data.engine.item.Zone;
 
 /**
- * Translate {@link Land} into land(id, owner, multiPolygon, zoneList, area).
+ * Translate {@link Land} into land(id, ownerID, multiPolygon, zoneList, area).
  * @author W.Pasman
  *
  */
@@ -38,7 +38,7 @@ public class J2Land implements Java2Parameter<Land> {
 		return new Parameter[] {
 			new Function("land",
 				new Numeral(b.getID()),
-				translator.translate2Parameter(b.getOwner())[0],
+				translator.translate2Parameter(b.getOwnerID())[0],
 				translator.translate2Parameter(b.getMultiPolygon())[0],
 				pl,
 				new Numeral(b.getMultiPolygon().getArea())
