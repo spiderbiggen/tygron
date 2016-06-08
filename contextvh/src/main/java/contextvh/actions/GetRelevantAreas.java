@@ -43,7 +43,6 @@ public class GetRelevantAreas implements CustomAction {
 	 */
 	public void addInternalAction(final RelevantAreasAction action) {
 		internalActions.put(action.getInternalName(), action);
-		System.out.println(internalActions);
 	}
 
 	@Override
