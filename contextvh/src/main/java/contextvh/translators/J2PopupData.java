@@ -69,8 +69,10 @@ public class J2PopupData implements Java2Parameter<PopupData> {
 
         MultiPolygon mpolygon = popup.getMultiPolygon();
         Parameter parPolygon = new Identifier("NO_MULTIPOLYGON");
+        Parameter parAreaSize = new Identifier("NO_SIZE");
         if (mpolygon != null) {
             parPolygon = translator.translate2Parameter(mpolygon)[0];
+            parAreaSize = new Numeral(mpolygon.getArea());
         }
         Double price = getPriceFromPopup(popup);
         Parameter parPrice = new Identifier("NO_PRICE");
@@ -84,10 +86,11 @@ public class J2PopupData implements Java2Parameter<PopupData> {
                 new Numeral(popup.getID()),
                 new Numeral(popup.getContentLinkID()),
                 getVisibleForStakeholderIDs(popup.getVisibleForStakeholderIDs()),
-                translator.translate2Parameter(popup.getAnswers())[0]),
                 actionLogIds,
                 parPrice,
-                parPolygon};
+                parPolygon,
+                parAreaSize,
+                translator.translate2Parameter(popup.getAnswers())[0])};
     }
 
     /**
