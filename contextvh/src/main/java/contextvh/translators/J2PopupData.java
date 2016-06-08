@@ -117,7 +117,7 @@ public class J2PopupData implements Java2Parameter<PopupData> {
      * @param popup the request to which actionlogs will be linked
      * @return a list containing the revelant action log IDs
      */
-    private ParameterList getActionLogIds(final PopupData popup) {
+    public ParameterList getActionLogIds(final PopupData popup) {
         ParameterList correctActionLogIDs = new ParameterList();
         MapLink contentMapLink = popup.getContentMapLink();
         Building building = EventManager.getItem(contentMapLink, popup.getContentLinkID());
