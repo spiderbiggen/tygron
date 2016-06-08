@@ -32,18 +32,18 @@ import nl.tytech.data.engine.item.PopupData.Type;
  *
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({EventManager.class,PopupData.class})
+@PrepareForTest({EventManager.class, PopupData.class})
 public class J2PopupDataTest {
-	
+
 	/**
      * Translator to be tested.
      */
     private J2PopupData translator;
-    
+
     private PopupData popupdata;
-    
+
     private J2PopupData j2popupdataspy;
-    
+
     /**
      * Initialization method for the Test class.
      * In this method mocks are created with PowerMockito for the dependencies.
@@ -59,9 +59,9 @@ public class J2PopupDataTest {
         PowerMockito.doReturn(0.0).when(j2popupdataspy).getPriceFromPopup(popupdata);
         PowerMockito.when(popupdata.getType()).thenReturn(Type.INTERACTION);
     }
-    
+
     /**
-     * Test method for translating PopupData and only checking that the right 
+     * Test method for translating PopupData and only checking that the right
      * methods are called. Also check that the name of the function is correct.
      * @throws TranslationException if translating goes wrong
      */
@@ -74,9 +74,9 @@ public class J2PopupDataTest {
         verify(popupdata).getType();
         verify(popupdata).getID();
     }
-    
+
     /**
-     * Test method for translating PopupData which checks if the right typeOfPopup string is returned
+     * Test method for translating PopupData which checks if the right typeOfPopup string is returned.
      * Here it should just return "POPUP" as the MapLink is irrelevant
      * @throws TranslationException if translating goes wrong
      */
@@ -88,21 +88,22 @@ public class J2PopupDataTest {
         assertEquals(function.getName(), "request");
         assertTrue(function.getParameters().get(1).toString().contains("POPUP"));
     }
-    
+
     /**
      * Test method for translating PopupData which checks if the right typeOfPopup string is returned
      * Here it should return "PERMIT" as a MapLink for the buildinds is given.
-     * @throws Exception 
+     * @throws Exception exception if something goes wrong.
      */
     @SuppressWarnings({ "deprecation"})
 	@Test
     public void testCorrectTypeofPopupBuildings() throws Exception {
     	PowerMockito.when(popupdata.getContentMapLink()).thenReturn(MapLink.BUILDINGS);
     	PowerMockito.doReturn(new ParameterList()).when(j2popupdataspy).getActionLogIds(popupdata);
-//    	LinkedList<Item> list = new LinkedList<Item>();
-//    	list.add(new ActionLog());
-//    	ItemMap<Item> map = (ItemMap<Item>) list;
-//    	PowerMockito.when(EventManager.getItemMap(MapLink.ACTION_LOGS)).thenReturn(map);
+    	LinkedList<Item> list = new LinkedList<Item>();
+    	list.add(new ActionLog());
+    	ItemMap<Item> map = mock(ItemMap.class);
+    	PowerMockito.when(map.values()).thenReturn(list);
+    	PowerMockito.when(EventManager.getItemMap(MapLink.ACTION_LOGS)).thenReturn(map);
         Function function = (Function) j2popupdataspy.translate(popupdata)[0];
         assertEquals(function.getName(), "request");
         assertTrue(function.getParameters().get(1).toString().contains("PERMIT"));
