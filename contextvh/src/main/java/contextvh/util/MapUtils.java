@@ -36,12 +36,13 @@ public final class MapUtils {
 	/**
 	 * Returns a Geometry of all zones with its ID in ids combined, if an empty list or no ids are given,
 	 * a Geometry containing all zones will be returned.
+	 * @param connectionID The id of the connection.
 	 * @param ids The list of zone ID's. If the list is empty, all zones will be used.
 	 * @return The resulting Geometry.
 	 */
-	public static Geometry getZonesCombined(final Integer... ids) {
+	public static Geometry getZonesCombined(final Integer connectionID, final Integer... ids) {
 		final boolean getAll = ids.length == 0;
-		final ItemMap<Zone> zones = EventManager.getItemMap(MapLink.ZONES);
+		final ItemMap<Zone> zones = EventManager.getItemMap(connectionID, MapLink.ZONES);
 		Geometry result = JTSUtils.EMPTY;
 		List<Integer> idList = Arrays.asList(ids);
 		for (Zone zone : zones) {
@@ -54,12 +55,13 @@ public final class MapUtils {
 
 	/**
 	 * Returns a Geometry of all land of the stakeholder with ID stakeholderID.
+	 * @param connectionID The id of the connection.
 	 * @param stakeholderID The ID of the stakeholder.
 	 * @return The resulting Geometry.
 	 */
-	public static MultiPolygon getMyLands(final Integer stakeholderID) {
+	public static MultiPolygon getMyLands(final Integer connectionID, final Integer stakeholderID) {
 		MultiPolygon result = JTSUtils.EMPTY;
-		final ItemMap<Land> lands = EventManager.getItemMap(MapLink.LANDS);
+		final ItemMap<Land> lands = EventManager.getItemMap(connectionID, MapLink.LANDS);
 		for (Land land : lands) {
 			if (land.getOwnerID() == stakeholderID) {
 				result = JTSUtils.union(result, land.getMultiPolygon());
@@ -70,30 +72,34 @@ public final class MapUtils {
 
 	/**
 	 * Removes all water from the multiPolygon mp.
+	 * @param connectionID The id of the connection.
 	 * @param mp The MultiPolygon to perform the operation on.
 	 * @return The MultiPolygon without all water.
 	 */
-	public static MultiPolygon removeWater(final MultiPolygon mp) {
-		return removeWaterOrLand(mp, true);
+	public static MultiPolygon removeWater(final Integer connectionID, final MultiPolygon mp) {
+		return removeWaterOrLand(connectionID, mp, true);
 	}
 
 	/**
 	 * Removes all land from the multiPolygon mp.
 	 * @param mp The MultiPolygon to perform the operation on.
+	 * @param connectionID The id of the connection.
 	 * @return The MultiPolygon without all land.
 	 */
-	public static MultiPolygon removeLand(final MultiPolygon mp) {
-		return removeWaterOrLand(mp, false);
+	public static MultiPolygon removeLand(final Integer connectionID, final MultiPolygon mp) {
+		return removeWaterOrLand(connectionID, mp, false);
 	}
 
 	/**
 	 * Removes all water or land from the multiPolygon mp.
+	 * @param connectionID The id of the connection.
 	 * @param mp The MultiPolygon to perform the operation on.
 	 * @param removeWater Toggles whether water or land will be removed.
 	 * @return The MultiPolygon without all water or land.
 	 */
-	private static MultiPolygon removeWaterOrLand(final MultiPolygon mp, final boolean removeWater) {
-		final ItemMap<Terrain> terrains = EventManager.getItemMap(MapLink.TERRAINS);
+	private static MultiPolygon removeWaterOrLand(final Integer connectionID,
+			final MultiPolygon mp, final boolean removeWater) {
+		final ItemMap<Terrain> terrains = EventManager.getItemMap(connectionID, MapLink.TERRAINS);
 		MultiPolygon mpResult = mp;
 		for (Terrain terrain : terrains) {
 			if (terrain.getType().isWater() == removeWater) {
@@ -105,11 +111,14 @@ public final class MapUtils {
 
 	/**
 	 * Removes all reserved land from the MultiPolygon mp.
+	 * @param connectionID The id of the connection.
 	 * @param mp The MultiPolygon to perform the operation on.
 	 * @return The MultiPolygon without all reserved land.
 	 */
-	public static MultiPolygon removeReservedLand(final MultiPolygon mp) {
-		final Setting reservedLandSetting = EventManager.getItem(MapLink.SETTINGS, Setting.Type.RESERVED_LAND);
+	public static MultiPolygon removeReservedLand(final Integer connectionID,
+			final MultiPolygon mp) {
+		final Setting reservedLandSetting = EventManager.getItem(connectionID,
+				MapLink.SETTINGS, Setting.Type.RESERVED_LAND);
 		MultiPolygon reservedLand = reservedLandSetting.getMultiPolygon();
 		MultiPolygon mpResult = mp;
 		if (JTSUtils.containsData(reservedLand)) {
@@ -120,11 +129,12 @@ public final class MapUtils {
 
 	/**
 	 * Remove all buildings from a given multipolygon.
+	 * @param connectionID The id of the connection.
 	 * @param mp The multipolygon where buildings need to be removed.
 	 * @return A multipolygon with all buildings removed.
 	 */
-	public static MultiPolygon removeBuildings(final MultiPolygon mp) {
-		final ItemMap<Building> buildings = EventManager.getItemMap(MapLink.BUILDINGS);
+	public static MultiPolygon removeBuildings(final Integer connectionID, final MultiPolygon mp) {
+		final ItemMap<Building> buildings = EventManager.getItemMap(connectionID, MapLink.BUILDINGS);
 		MultiPolygon constructableLand = mp;
 		final PreparedGeometry prepped = PreparedGeometryFactory.prepare(constructableLand);
 		for (Building building : buildings) {

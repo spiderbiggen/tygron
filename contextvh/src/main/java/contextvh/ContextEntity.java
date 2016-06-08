@@ -14,6 +14,8 @@ import tygronenv.EntityListener;
  * @author Stefan Breetveld.
  */
 public class ContextEntity extends tygronenv.TygronEntityImpl {
+	
+	public TSlotConnection slotConnection;
 
 	ActionContainer customActions = new ActionContainer();
 
@@ -42,6 +44,8 @@ public class ContextEntity extends tygronenv.TygronEntityImpl {
 
     @Override
     public tygronenv.EntityEventHandler createEntityEventhandler(final TSlotConnection slotConnection) {
+    	this.slotConnection = slotConnection;
         return new ContextEntityEventHandler(this, slotConnection.getConnectionID(), this);
+        
     }
 }

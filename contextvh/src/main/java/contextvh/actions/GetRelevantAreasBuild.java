@@ -9,6 +9,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 
+import contextvh.ContextEntity;
 import contextvh.util.CoordinateUtils;
 import contextvh.util.MapUtils;
 import eis.eis2java.exception.TranslationException;
@@ -18,7 +19,6 @@ import eis.iilang.ParameterList;
 import eis.iilang.Percept;
 import nl.tytech.util.JTSUtils;
 import nl.tytech.util.logger.TLogger;
-import tygronenv.TygronEntity;
 
 /**
  * TODO Make javadoc for class.
@@ -37,7 +37,7 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 	}
 
 	@Override
-	public Percept call(final TygronEntity caller, final LinkedList<Parameter> parameters)
+	public Percept call(final ContextEntity caller, final LinkedList<Parameter> parameters)
 			throws TranslationException {
 		// Redirect call to GetRelevantAreas to avoid code duplication.
 		parameters.add(1, new Identifier(getInternalName()));
@@ -56,23 +56,25 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 
 	@Override
 	public void internalCall(final Percept createdPercept,
-			final TygronEntity caller, final ParameterList parameters) {
+			final ContextEntity caller, final ParameterList parameters) {
 		// Get a MultiPolygon of all lands combined.
 		GetRelevantAreas.debug("combining land");
+		Integer connectionID = caller.slotConnection.getConnectionID();
+		
 		final Integer stakeholderID = caller.getStakeholder().getID();
-		MultiPolygon constructableLand = MapUtils.getMyLands(stakeholderID);
+		MultiPolygon constructableLand = MapUtils.getMyLands(connectionID, stakeholderID);
 
 		// Remove all pieces of land that cannot be build on (water).
 		GetRelevantAreas.debug("removing water");
-		constructableLand = MapUtils.removeWater(constructableLand);
+		constructableLand = MapUtils.removeWater(connectionID, constructableLand);
 
 		// Remove all pieces of reserved land.
 		GetRelevantAreas.debug("removing reserved");
-		constructableLand = MapUtils.removeReservedLand(constructableLand);
+		constructableLand = MapUtils.removeReservedLand(connectionID, constructableLand);
 
 		// Remove all pieces of occupied land.
 		GetRelevantAreas.debug("removing buildings");
-		constructableLand = MapUtils.removeBuildings(constructableLand);
+		constructableLand = MapUtils.removeBuildings(connectionID, constructableLand);
 
 		GetRelevantAreas.debug("finalizing selection. Total area found was " + constructableLand.getArea());
 		final int minArea = 200, maxArea = 2000;

@@ -50,7 +50,7 @@ public class MapUtilsTest {
 	private static final int ZONE_ONLY_GRASS = 1;
 	private static final int ZONE_WITH_BUILDING = 3;
 
-
+	private static Integer connectionID;
 
 	/**
 	 * Set up the environment.
@@ -79,7 +79,7 @@ public class MapUtilsTest {
 	@Test
 	public void testGetMyLandsInhabitant() throws ManagementException, InterruptedException {
 		joinAsInhabitants();
-		MultiPolygon mp = MapUtils.getMyLands(INHABITANTS_ID);
+		MultiPolygon mp = MapUtils.getMyLands(connectionID, INHABITANTS_ID);
 		assertTrue(mp.isEmpty());
 		assertEquals(0, mp.getArea(), 0);
 	}
@@ -92,7 +92,7 @@ public class MapUtilsTest {
 	@Test
 	public void testGetMyLandsMunicipality() throws ManagementException, InterruptedException {
 		 joinAsMunicipality();
-		 MultiPolygon mp = MapUtils.getMyLands(MUNICIPALITY_ID);
+		 MultiPolygon mp = MapUtils.getMyLands(connectionID, MUNICIPALITY_ID);
 		 assertEquals(AREA_MUNICIPALITY, mp.getArea(), 0);
 	}
 
@@ -105,7 +105,7 @@ public class MapUtilsTest {
 	@Test
 	public void testGetAllZonesCombined() throws ManagementException, InterruptedException {
 		joinAsMunicipality();
-		Geometry geo = MapUtils.getZonesCombined();
+		Geometry geo = MapUtils.getZonesCombined(connectionID);
 		assertEquals(AREA_MUNICIPALITY, geo.getArea(), 0);
 	}
 
@@ -117,7 +117,7 @@ public class MapUtilsTest {
 	@Test
 	public void testGetTwoZonesCombined() throws ManagementException, InterruptedException {
 		joinAsMunicipality();
-		Geometry geo = MapUtils.getZonesCombined(0, 1);
+		Geometry geo = MapUtils.getZonesCombined(connectionID, 0, 1);
 		assertEquals(AREA_MUNICIPALITY / NUM_ZONES  * 2, geo.getArea(), 0);
 	}
 
@@ -129,7 +129,7 @@ public class MapUtilsTest {
 	@Test
 	public void testGetOneZonesCombined() throws ManagementException, InterruptedException {
 		joinAsMunicipality();
-		Geometry geo = MapUtils.getZonesCombined(1);
+		Geometry geo = MapUtils.getZonesCombined(connectionID, 1);
 		assertEquals(AREA_MUNICIPALITY / NUM_ZONES, geo.getArea(), 0);
 	}
 
@@ -142,7 +142,7 @@ public class MapUtilsTest {
 	public void testGetZonesCombinedBad() throws ManagementException, InterruptedException {
 		joinAsMunicipality();
 		final int badZone = 10;
-		Geometry geo = MapUtils.getZonesCombined(badZone);
+		Geometry geo = MapUtils.getZonesCombined(connectionID, badZone);
 		assertEquals(0, geo.getArea(), 0);
 	}
 
@@ -154,9 +154,9 @@ public class MapUtilsTest {
 	@Test
 	public void testRemoveZeroWater() throws ManagementException, InterruptedException {
 		joinAsMunicipality();
-		Geometry geo = MapUtils.getZonesCombined(ZONE_ONLY_GRASS);
+		Geometry geo = MapUtils.getZonesCombined(connectionID, ZONE_ONLY_GRASS);
 		MultiPolygon mp = JTSUtils.createMP(geo);
-		mp = MapUtils.removeWater(mp);
+		mp = MapUtils.removeWater(connectionID, mp);
 		assertEquals(AREA_MUNICIPALITY / NUM_ZONES, mp.getArea(), 0);
 	}
 
@@ -168,9 +168,9 @@ public class MapUtilsTest {
 	@Test
 	public void testRemoveAllWater() throws ManagementException, InterruptedException {
 		joinAsMunicipality();
-		Geometry geo = MapUtils.getZonesCombined(ZONE_WITH_WATER);
+		Geometry geo = MapUtils.getZonesCombined(connectionID, ZONE_WITH_WATER);
 		MultiPolygon mp = JTSUtils.createMP(geo);
-		mp = MapUtils.removeWater(mp);
+		mp = MapUtils.removeWater(connectionID, mp);
 		double expected = AREA_MUNICIPALITY / NUM_ZONES - 1;
 		assertEquals(expected, mp.getArea(), 0);
 	}
@@ -183,9 +183,9 @@ public class MapUtilsTest {
 	@Test
 	public void testRemoveAlmostAllLand() throws ManagementException, InterruptedException {
 		joinAsMunicipality();
-		Geometry geo = MapUtils.getZonesCombined(ZONE_WITH_WATER);
+		Geometry geo = MapUtils.getZonesCombined(connectionID, ZONE_WITH_WATER);
 		MultiPolygon mp = JTSUtils.createMP(geo);
-		mp = MapUtils.removeLand(mp);
+		mp = MapUtils.removeLand(connectionID, mp);
 		double expected = 1;
 		assertEquals(expected, mp.getArea(), 0);
 	}
@@ -198,9 +198,9 @@ public class MapUtilsTest {
 	@Test
 	public void testRemoveAllLand() throws ManagementException, InterruptedException {
 		joinAsMunicipality();
-		Geometry geo = MapUtils.getZonesCombined(ZONE_ONLY_GRASS);
+		Geometry geo = MapUtils.getZonesCombined(connectionID, ZONE_ONLY_GRASS);
 		MultiPolygon mp = JTSUtils.createMP(geo);
-		mp = MapUtils.removeLand(mp);
+		mp = MapUtils.removeLand(connectionID, mp);
 		assertEquals(0, mp.getArea(), 0);
 	}
 
@@ -213,9 +213,9 @@ public class MapUtilsTest {
 	@Test
 	public void testRemoveZeroReservedLand() throws ManagementException, InterruptedException {
 		joinAsMunicipality();
-		Geometry geo = MapUtils.getZonesCombined(ZONE_ONLY_GRASS);
+		Geometry geo = MapUtils.getZonesCombined(connectionID, ZONE_ONLY_GRASS);
 		MultiPolygon mp = JTSUtils.createMP(geo);
-		mp = MapUtils.removeReservedLand(mp);
+		mp = MapUtils.removeReservedLand(connectionID, mp);
 		assertEquals(AREA_MUNICIPALITY / NUM_ZONES, mp.getArea(), 0);
 	}
 
@@ -228,11 +228,11 @@ public class MapUtilsTest {
 	@Test
 	public void testRemoveAllReservedLand() throws ManagementException, InterruptedException {
 		joinAsMunicipality();
-		Geometry geo = MapUtils.getZonesCombined(ZONE_ONLY_GRASS);
+		Geometry geo = MapUtils.getZonesCombined(connectionID, ZONE_ONLY_GRASS);
 		MultiPolygon mp = JTSUtils.createMP(geo);
-		mp = MapUtils.removeLand(mp); //this gives us zero land
+		mp = MapUtils.removeLand(connectionID, mp); //this gives us zero land
 		assertEquals(0, mp.getArea(), 0);
-		mp = MapUtils.removeReservedLand(mp);
+		mp = MapUtils.removeReservedLand(connectionID, mp);
 		assertEquals(0, mp.getArea(), 0);
 	}
 
@@ -244,9 +244,9 @@ public class MapUtilsTest {
 	@Test
 	public void testRemoveBuildings() throws ManagementException, InterruptedException {
 		joinAsMunicipality();
-		Geometry geo = MapUtils.getZonesCombined(ZONE_WITH_BUILDING);
+		Geometry geo = MapUtils.getZonesCombined(connectionID, ZONE_WITH_BUILDING);
 		MultiPolygon mp = JTSUtils.createMP(geo);
-		mp = MapUtils.removeBuildings(mp);
+		mp = MapUtils.removeBuildings(connectionID, mp);
 		final int areaBuilding = 4;
 		assertEquals(AREA_MUNICIPALITY / NUM_ZONES - areaBuilding, mp.getArea(), 0);
 	}
@@ -270,6 +270,7 @@ public class MapUtilsTest {
 		parameters.put(STAKEHOLDERS, new ParameterList(new Identifier(MUNICIPALITY)));
 		// any slot so not specified.
 		env.init(parameters);
+		connectionID = env.entity.slotConnection.getConnectionID();
 
 		assertEquals(MUNICIPALITY, listener.waitForEntity());
 	}
@@ -279,8 +280,7 @@ public class MapUtilsTest {
 	 * @throws ManagementException {@link MangementExption}
 	 * @throws InterruptedException {@link InterruptedException}
 	 */
-	private void joinAsInhabitants()
-			throws ManagementException, InterruptedException {
+	private void joinAsInhabitants() throws ManagementException, InterruptedException {
 		MyEnvListener listener = new MyEnvListener();
 		env.attachEnvironmentListener(listener);
 
@@ -290,6 +290,7 @@ public class MapUtilsTest {
 
 		// any slot so not specified.
 		env.init(parameters);
+		connectionID = env.entity.slotConnection.getConnectionID();
 
 		assertEquals(INHABITANTS, listener.waitForEntity());
 	}

@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import com.vividsolutions.jts.geom.MultiPolygon;
+
+import contextvh.ContextEntity;
 import eis.eis2java.exception.TranslationException;
 import eis.eis2java.translation.Translator;
 import eis.iilang.Identifier;
@@ -13,7 +15,6 @@ import eis.iilang.ParameterList;
 import eis.iilang.Percept;
 import nl.tytech.data.engine.serializable.MapType;
 import nl.tytech.util.logger.TLogger;
-import tygronenv.TygronEntity;
 
 /**
  * Creates a list of areas that can be used with the corresponding actionType.
@@ -50,7 +51,7 @@ public class GetRelevantAreas implements CustomAction {
 	}
 
 	@Override
-	public Percept call(final TygronEntity caller, final LinkedList<Parameter> parameters)
+	public Percept call(final ContextEntity caller, final LinkedList<Parameter> parameters)
 			throws TranslationException {
 		try {
 			// Get and translate parameters.
@@ -75,14 +76,14 @@ public class GetRelevantAreas implements CustomAction {
 
 	/**
 	 * Create the actual Percept, after the parameters have been parsed.
-	 * @param caller		The TygronEntity that called the action.
+	 * @param caller		The ContextEntity that called the action.
 	 * @param actionType	The type of the action.
 	 * @param callID		The ID of the call.
 	 * @param parameters	A ParameterList of parameters provided by the agent.
 	 * @return The constructed Percept.
 	 * @throws TranslationException  When an invalid internal action parameter is provided.
 	 */
-	private Percept createPercept(final TygronEntity caller, final String actionType,
+	private Percept createPercept(final ContextEntity caller, final String actionType,
 			final Number callID, final ParameterList parameters) throws TranslationException {
 		Percept result = new Percept("relevant_areas");
 		result.addParameter(new Numeral(callID));
