@@ -43,6 +43,7 @@ public class GetRelevantAreas implements CustomAction {
 	 */
 	public void addInternalAction(final RelevantAreasAction action) {
 		internalActions.put(action.getInternalName(), action);
+		System.out.println(internalActions);
 	}
 
 	@Override
@@ -89,6 +90,7 @@ public class GetRelevantAreas implements CustomAction {
 		result.addParameter(new Numeral(callID));
 		debug("action called");
 
+		System.out.println(internalActions);
 		RelevantAreasAction action = internalActions.get(actionType);
 		if (action == null) {
 			throw new TranslationException("unknown action GetRelevantAreas(_, " + actionType + ", _)");

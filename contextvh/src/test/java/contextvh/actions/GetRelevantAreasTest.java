@@ -1,6 +1,13 @@
 package contextvh.actions;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+
+import java.util.LinkedList;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -8,8 +15,11 @@ import org.junit.Test;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
 
+import contextvh.ContextEntity;
 import eis.eis2java.exception.TranslationException;
+import eis.iilang.Identifier;
 import eis.iilang.Numeral;
+import eis.iilang.Parameter;
 import eis.iilang.ParameterList;
 import nl.tytech.util.JTSUtils;
 import tygronenv.translators.J2MultiPolygon;
@@ -21,12 +31,20 @@ import tygronenv.translators.J2MultiPolygon;
  */
 public class GetRelevantAreasTest {
 
+	private static final String SUB_ACTION_NAME = "test_action";
+
+	private GetRelevantAreas action = new GetRelevantAreas();
+	private RelevantAreasAction mockSubAction = mock(RelevantAreasAction.class);
+	private ContextEntity mockEntity = mock(ContextEntity.class);
+	
 	/**
 	 * Register the multipolygon translator.
 	 */
 	@Before
 	public void setUp() {
 		GetRelevantAreas.TRANSLATOR.registerJava2ParameterTranslator(new J2MultiPolygon());
+		when(mockSubAction.getInternalName()).thenReturn(SUB_ACTION_NAME);
+		action.addInternalAction(mockSubAction);
 	}
 
 	/**
@@ -43,4 +61,12 @@ public class GetRelevantAreasTest {
 		assertEquals(expected, area.getValue().doubleValue(), 0);
 	}
 
+	@Test
+	public void callTest() throws TranslationException {
+		LinkedList<Parameter> parameters = new LinkedList<Parameter>();
+		parameters.add(new Numeral(0));
+		parameters.add(new Identifier(SUB_ACTION_NAME));
+		action.call(mockEntity, parameters);
+		verify(mockSubAction).internalCall(any(), eq(mockEntity), any());
+	}
 }
