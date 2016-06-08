@@ -101,7 +101,7 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 		Integer connectionID = caller.getSlotConnection().getConnectionID();
 
 		final Integer stakeholderID = caller.getStakeholder().getID();
-		MultiPolygon constructableLand = MapUtils.getMyLands(connectionID, stakeholderID);
+		MultiPolygon constructableLand = MapUtils.getStakeholderLands(connectionID, stakeholderID);
 
 		// Remove all pieces of land that cannot be build on (water).
 		constructableLand = MapUtils.removeWater(connectionID, constructableLand);

@@ -70,7 +70,7 @@ public final class MapUtils {
 	 * @param stakeholderID The ID of the stakeholder.
 	 * @return The resulting Geometry.
 	 */
-	public static MultiPolygon getMyLands(final Integer connectionID, final Integer stakeholderID) {
+	public static MultiPolygon getStakeholderLands(final Integer connectionID, final Integer stakeholderID) {
 		MultiPolygon result = JTSUtils.EMPTY;
 		final ItemMap<Land> lands = EventManager.getItemMap(connectionID, MapLink.LANDS);
 		for (Land land : lands) {

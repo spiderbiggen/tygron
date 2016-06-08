@@ -76,7 +76,7 @@ public class MapUtilsTest {
 	@Test
 	public void testGetMyLandsInhabitant() throws ManagementException, InterruptedException {
 		joinAsInhabitants();
-		MultiPolygon mp = MapUtils.getMyLands(connectionID, INHABITANTS_ID);
+		MultiPolygon mp = MapUtils.getStakeholderLands(connectionID, INHABITANTS_ID);
 		assertTrue(mp.isEmpty());
 		assertEquals(0, mp.getArea(), 0);
 	}
@@ -89,7 +89,7 @@ public class MapUtilsTest {
 	@Test
 	public void testGetMyLandsMunicipality() throws ManagementException, InterruptedException {
 		 joinAsMunicipality();
-		 MultiPolygon mp = MapUtils.getMyLands(connectionID, MUNICIPALITY_ID);
+		 MultiPolygon mp = MapUtils.getStakeholderLands(connectionID, MUNICIPALITY_ID);
 		 assertEquals(AREA_MUNICIPALITY, mp.getArea(), 0);
 	}
 
