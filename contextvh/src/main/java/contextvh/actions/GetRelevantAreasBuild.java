@@ -59,43 +59,7 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 	@Override
 	public void internalCall(final Percept createdPercept,
 			final ContextEntity caller, final ParameterList parameters) {
-		final LinkedList<Integer> zoneIDs = new LinkedList<Integer>();
-		for (Parameter param : parameters) {
-			if (param instanceof Function) {
-				Function function = (Function) param;
-				if (function.getName().equals("zone")) {
-					for (Parameter functionParam : function.getParameters()) {
-						if (functionParam instanceof Numeral) {
-							zoneIDs.add((Integer) ((Numeral) functionParam).getValue());
-						}
-					}
-				}
-			}
-		}
-
-		// Get a MultiPolygon of all lands combined.
-		GetRelevantAreas.debug("combining land");
-		Integer connectionID = caller.getSlotConnection().getConnectionID();
-
-		final Integer stakeholderID = caller.getStakeholder().getID();
-		MultiPolygon constructableLand = MapUtils.getMyLands(connectionID, stakeholderID);
-
-		if (zoneIDs.size() > 0) {
-			Geometry zones = MapUtils.getZonesCombined(connectionID, zoneIDs);
-			constructableLand = JTSUtils.createMP(constructableLand.difference(zones));
-		}
-
-		// Remove all pieces of land that cannot be build on (water).
-		GetRelevantAreas.debug("removing water");
-		constructableLand = MapUtils.removeWater(connectionID, constructableLand);
-
-		// Remove all pieces of reserved land.
-		GetRelevantAreas.debug("removing reserved");
-		constructableLand = MapUtils.removeReservedLand(connectionID, constructableLand);
-
-		// Remove all pieces of occupied land.
-		GetRelevantAreas.debug("removing buildings");
-		constructableLand = MapUtils.removeBuildings(connectionID, constructableLand);
+		MultiPolygon constructableLand = getUsableArea(caller, parameters);
 
 		GetRelevantAreas.debug("finalizing selection. Total area found was " + constructableLand.getArea());
 		final int minArea = 200, maxArea = 2000;
@@ -132,6 +96,35 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 		}
 		createdPercept.addParameter(results);
 		GetRelevantAreas.debug("created result");
+	}
+
+	/**
+	 * Returns all area that can be built on.
+	 * @param caller The caller of the action.
+	 * @param parameters The parameters provided to the action.
+	 * @return The multiPolygon that can be built on.
+	 */
+	private MultiPolygon getUsableArea(final ContextEntity caller, final ParameterList parameters) {
+		// Get a MultiPolygon of all lands combined.
+		GetRelevantAreas.debug("combining land");
+		Integer connectionID = caller.getSlotConnection().getConnectionID();
+
+		final Integer stakeholderID = caller.getStakeholder().getID();
+		MultiPolygon constructableLand = MapUtils.getMyLands(connectionID, stakeholderID);
+
+		// Remove all pieces of land that cannot be build on (water).
+		GetRelevantAreas.debug("removing water");
+		constructableLand = MapUtils.removeWater(connectionID, constructableLand);
+
+		// Remove all pieces of reserved land.
+		GetRelevantAreas.debug("removing reserved");
+		constructableLand = MapUtils.removeReservedLand(connectionID, constructableLand);
+
+		// Remove all pieces of occupied land.
+		GetRelevantAreas.debug("removing buildings");
+		constructableLand = MapUtils.removeBuildings(connectionID, constructableLand);
+
+		return constructableLand;
 	}
 
 	/**
