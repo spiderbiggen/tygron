@@ -42,7 +42,6 @@ import java.util.LinkedList;
 public class ContextEnv extends EisEnv {
 	private static final long serialVersionUID = 2795668071082192962L;
 
-	private int connectionID;
 	private ContextEntity entity;
 
     private Java2Parameter<?>[] j2p = new Java2Parameter<?>[] {new J2ClientItemMap(), new ContextJ2Stakeholder(),
@@ -134,12 +133,6 @@ public class ContextEnv extends EisEnv {
         }
     }
 
-	/**
-	 * @return the connectionID
-	 */
-	public int getConnectionID() {
-		return connectionID;
-	}
 
 	/**
 	 * @return the entity
