@@ -19,7 +19,7 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import login.Login;
 import nl.tytech.core.client.event.EventManager;
 import nl.tytech.core.client.net.ServicesManager;
-import nl.tytech.core.client.net.SlotConnection;
+import nl.tytech.core.client.net.TSlotConnection;
 import nl.tytech.core.net.Network.AppType;
 import nl.tytech.core.net.Network.SessionType;
 import nl.tytech.core.net.event.IOServiceEventType;
@@ -61,7 +61,7 @@ public class BuyLandTest {
 
 	private static ProjectData data;
 
-	private static SlotConnection slotConnection;
+	private static TSlotConnection slotConnection;
 
 	private static ExampleEventHandler eventHandler;
 
@@ -114,14 +114,15 @@ public class BuyLandTest {
 		reply = ServicesManager.fireServiceEvent(IOServiceEventType.JOIN_SESSION, slotID, AppType.EDITOR);
 		assertNotNull(reply);
 
-		slotConnection = new SlotConnection();
+		slotConnection = TSlotConnection.createSlotConnection();
+
 		slotConnection.initSettings(AppType.EDITOR, SettingsManager.getServerIP(), slotID, reply.serverToken,
 				reply.client.getClientToken());
 
 		assertTrue(slotConnection.connect());
 
 		// add event handler to receive updates on
-		eventHandler = new ExampleEventHandler();
+		eventHandler = new ExampleEventHandler(slotConnection);
 	}
 
 	@Test
@@ -174,14 +175,14 @@ public class BuyLandTest {
 		reply = ServicesManager.fireServiceEvent(IOServiceEventType.JOIN_SESSION, slotID, AppType.PARTICIPANT);
 		assertNotNull(reply);
 
-		slotConnection = new SlotConnection();
+		slotConnection = TSlotConnection.createSlotConnection();
 		slotConnection.initSettings(AppType.PARTICIPANT, SettingsManager.getServerIP(), slotID, reply.serverToken,
 				reply.client.getClientToken());
 
 		assertTrue(slotConnection.connect());
 
 		// add event handler to receive updates on
-		eventHandler = new ExampleEventHandler();
+		eventHandler = new ExampleEventHandler(slotConnection);
 
 		boolean updated = false;
 		for (int i = 0; i < 60; i++) {
@@ -204,7 +205,8 @@ public class BuyLandTest {
 
 		holdersIDs = new ArrayList<>();
 
-		ItemMap<Stakeholder> stakeholders = EventManager.getItemMap(MapLink.STAKEHOLDERS);
+		ItemMap<Stakeholder> stakeholders = EventManager.getItemMap(slotConnection.getConnectionID(),
+				MapLink.STAKEHOLDERS);
 		for (Stakeholder stakeholder : stakeholders) {
 			holdersIDs.add(stakeholder.getID());
 		}
@@ -213,7 +215,7 @@ public class BuyLandTest {
 
 	@Test
 	public void test09Stakeholder0buyLand() throws Exception {
-		ItemMap<Land> lands = EventManager.getItemMap(MapLink.LANDS);
+		ItemMap<Land> lands = EventManager.getItemMap(slotConnection.getConnectionID(), MapLink.LANDS);
 
 		Land sellLand = null;
 		for (Land land : lands) {
@@ -227,7 +229,8 @@ public class BuyLandTest {
 
 		sellerID = sellLand.getOwnerID();
 		buyerID = Item.NONE;
-		for (Stakeholder stakeholder : EventManager.<Stakeholder> getItemMap(MapLink.STAKEHOLDERS)) {
+		for (Stakeholder stakeholder : EventManager.<Stakeholder> getItemMap(slotConnection.getConnectionID(),
+				MapLink.STAKEHOLDERS)) {
 			if (!stakeholder.getID().equals(sellerID)) {
 				buyerID = stakeholder.getID();
 				break;
@@ -260,11 +263,12 @@ public class BuyLandTest {
 
 		eventHandler.resetUpdate(MapLink.LANDS, MapLink.POPUPS);
 
-		ItemMap<PopupData> popups = EventManager.getItemMap(MapLink.POPUPS);
+		ItemMap<PopupData> popups = EventManager.getItemMap(slotConnection.getConnectionID(), MapLink.POPUPS);
 		for (PopupData popupData : popups) {
 			boolean forBuyer = popupData.getVisibleForStakeholderIDs().contains(sellerID);
 			boolean correctMapLink = popupData.getContentMapLink() == MapLink.SPECIAL_OPTIONS;
-			SpecialOption specialOption = EventManager.getItem(MapLink.SPECIAL_OPTIONS, popupData.getContentLinkID());
+			SpecialOption specialOption = EventManager.getItem(slotConnection.getConnectionID(),
+					MapLink.SPECIAL_OPTIONS, popupData.getContentLinkID());
 			boolean isBuyLand = specialOption != null && specialOption.getType() == SpecialOption.Type.BUY_LAND;
 
 			if (forBuyer && correctMapLink && isBuyLand) {
@@ -288,10 +292,12 @@ public class BuyLandTest {
 	}
 
 	public Double getPriceFromPopup(PopupData popupData) {
-		Setting unitSystemSetting = EventManager.getItem(MapLink.SETTINGS, Setting.Type.MEASUREMENT_SYSTEM_TYPE);
+		Setting unitSystemSetting = EventManager.getItem(slotConnection.getConnectionID(), MapLink.SETTINGS,
+				Setting.Type.MEASUREMENT_SYSTEM_TYPE);
 		UnitSystemType type = unitSystemSetting.getEnumValue(UnitSystemType.class);
 		UnitSystem unitSystem = type.getImpl();
-		Setting currency = EventManager.getItem(MapLink.SETTINGS, Setting.Type.CURRENCY);
+		Setting currency = EventManager.getItem(slotConnection.getConnectionID(), MapLink.SETTINGS,
+				Setting.Type.CURRENCY);
 		TCurrency tcurrency = currency.getEnumValue(TCurrency.class);
 
 		char decimalSeperator = '.';
@@ -335,14 +341,14 @@ public class BuyLandTest {
 
 		boolean landBuyConfirmed = false;
 		boolean landSellConfirmed = false;
-		ItemMap<PopupData> popups = EventManager.getItemMap(MapLink.POPUPS);
+		ItemMap<PopupData> popups = EventManager.getItemMap(slotConnection.getConnectionID(), MapLink.POPUPS);
 		for (PopupData popupData : popups) {
 
 			for (Integer stakeholderID : popupData.getVisibleForStakeholderIDs()) {
 
 				boolean correctMapLink = popupData.getContentMapLink() == MapLink.SPECIAL_OPTIONS;
-				SpecialOption specialOption = EventManager.getItem(MapLink.SPECIAL_OPTIONS,
-						popupData.getContentLinkID());
+				SpecialOption specialOption = EventManager.getItem(slotConnection.getConnectionID(),
+						MapLink.SPECIAL_OPTIONS, popupData.getContentLinkID());
 				boolean isSellLand = specialOption != null && specialOption.getType() == SpecialOption.Type.BUY_LAND;
 
 				if (correctMapLink && isSellLand) {
@@ -375,7 +381,7 @@ public class BuyLandTest {
 		 */
 		Integer functionID = 0;
 		int floors = 1;
-		ItemMap<Function> functions = EventManager.getItemMap(MapLink.FUNCTIONS);
+		ItemMap<Function> functions = EventManager.getItemMap(slotConnection.getConnectionID(), MapLink.FUNCTIONS);
 		for (Function function : functions) {
 			if (function.getCategories().contains(Category.ROAD)) {
 				functionID = function.getID();

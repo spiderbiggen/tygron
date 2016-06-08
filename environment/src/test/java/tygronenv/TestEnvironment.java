@@ -65,7 +65,6 @@ public class TestEnvironment {
 	@Test
 	public void testGetStakeHolder() throws ManagementException {
 		Map<String, Parameter> parameters = new HashMap<String, Parameter>();
-		System.out.println(parameters.toString());
 		parameters.put(PROJECT, PROJECTNAME);
 		// parameters.put(STAKEHOLDER, new Identifier("MUNICIPALITY"));
 		parameters.put(STAKEHOLDERS, new ParameterList(new Identifier(MUNICIPALITY)));

@@ -35,7 +35,7 @@ When Tygron provides a new zip file, the following steps are needed
 
  * unzip the zip file. 
  * locate the lib directory 
- * unzip the tygron-sdk-source.zip file. Copy the unzipped files into the src/main/java directory
+ * unzip the tygron-sdk-source.zip file. Copy the unzipped files into the src/main/java directory (replaces ALL source except login package)
  * copy the tygron-sdk.jar file into the src/jars directory.
  * Check the README.txt in the zip file and check the VERSION, something like this ```VERSION:XXX``` 
  where XX is the version we are looking for.
