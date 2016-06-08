@@ -40,17 +40,28 @@ public final class MapUtils {
 	 * @param ids The list of zone ID's. If the list is empty, all zones will be used.
 	 * @return The resulting Geometry.
 	 */
-	public static Geometry getZonesCombined(final Integer connectionID, final Integer... ids) {
-		final boolean getAll = ids.length == 0;
+	public static Geometry getZonesCombined(final Integer connectionID, final List<Integer> ids) {
+		final boolean getAll = ids.size() == 0;
 		final ItemMap<Zone> zones = EventManager.getItemMap(connectionID, MapLink.ZONES);
 		Geometry result = JTSUtils.EMPTY;
-		List<Integer> idList = Arrays.asList(ids);
 		for (Zone zone : zones) {
-			if (getAll || idList.contains(zone.getID())) {
+			if (getAll || ids.contains(zone.getID())) {
 				result = result.union(zone.getMultiPolygon());
 			}
 		}
 		return result;
+	}
+
+	/**
+	 * Returns a Geometry of all zones with its ID in ids combined, if an empty list or no ids are given,
+	 * a Geometry containing all zones will be returned.
+	 * @param connectionID The id of the connection.
+	 * @param ids The list of zone ID's. If the list is empty, all zones will be used.
+	 * @return The resulting Geometry.
+	 */
+	public static Geometry getZonesCombined(final Integer connectionID, final Integer... ids) {
+		List<Integer> zoneIDs = Arrays.asList(ids);
+		return getZonesCombined(connectionID, zoneIDs);
 	}
 
 	/**

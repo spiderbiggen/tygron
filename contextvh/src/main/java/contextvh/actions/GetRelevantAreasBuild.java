@@ -13,7 +13,9 @@ import contextvh.ContextEntity;
 import contextvh.util.CoordinateUtils;
 import contextvh.util.MapUtils;
 import eis.eis2java.exception.TranslationException;
+import eis.iilang.Function;
 import eis.iilang.Identifier;
+import eis.iilang.Numeral;
 import eis.iilang.Parameter;
 import eis.iilang.ParameterList;
 import eis.iilang.Percept;
@@ -57,12 +59,31 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 	@Override
 	public void internalCall(final Percept createdPercept,
 			final ContextEntity caller, final ParameterList parameters) {
+		final LinkedList<Integer> zoneIDs = new LinkedList<Integer>();
+		for (Parameter param : parameters) {
+			if (param instanceof Function) {
+				Function function = (Function) param;
+				if (function.getName().equals("zone")) {
+					for (Parameter functionParam : function.getParameters()) {
+						if (functionParam instanceof Numeral) {
+							zoneIDs.add((Integer) ((Numeral) functionParam).getValue());
+						}
+					}
+				}
+			}
+		}
+
 		// Get a MultiPolygon of all lands combined.
 		GetRelevantAreas.debug("combining land");
 		Integer connectionID = caller.getSlotConnection().getConnectionID();
 
 		final Integer stakeholderID = caller.getStakeholder().getID();
 		MultiPolygon constructableLand = MapUtils.getMyLands(connectionID, stakeholderID);
+
+		if (zoneIDs.size() > 0) {
+			Geometry zones = MapUtils.getZonesCombined(connectionID, zoneIDs);
+			constructableLand = JTSUtils.createMP(constructableLand.difference(zones));
+		}
 
 		// Remove all pieces of land that cannot be build on (water).
 		GetRelevantAreas.debug("removing water");
