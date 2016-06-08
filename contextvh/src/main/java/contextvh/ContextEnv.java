@@ -41,9 +41,9 @@ import java.util.LinkedList;
  */
 public class ContextEnv extends EisEnv {
 
-	public int connectionID;
-	public ContextEntity entity;
-	
+	private int connectionID;
+	private ContextEntity entity;
+
     private Java2Parameter<?>[] j2p = new Java2Parameter<?>[] {new J2ClientItemMap(), new ContextJ2Stakeholder(),
             new J2Setting(), new J2Function(), new J2Category(), new ContextJ2Building(), new J2TimeState(),
             new J2ActionLog(), new J2ActionMenu(), new ContextJ2Zone(), new J2Land(), new J2MultiPolygon(),
@@ -70,23 +70,23 @@ public class ContextEnv extends EisEnv {
     }
 
     @Override
-    protected boolean isSupportedByEntity(final Action action, final String entity) {
-        return getEntity(entity).isSupported(action);
+    protected boolean isSupportedByEntity(final Action action, final String ent) {
+        return getEntity(ent).isSupported(action);
     }
 
     /**
      * Perform action for a given entity, possibly return a {@link Percept}.
      *
-     * @param entity the entity to perform this {@link Action}.
+     * @param ent the entity to perform this {@link Action}.
      * @param action the {@link Action} to perform.
      * @return returns a {@link Percept} if the {@link Action} returns one.
      * @throws ActException thrown if the action failed to execute
      */
     @Override
-    protected Percept performEntityAction(final String entity,
+    protected Percept performEntityAction(final String ent,
                                           final Action action) throws ActException {
         try {
-            getEntity(entity).performAction(action);
+            getEntity(ent).performAction(action);
         } catch (TranslationException | IllegalArgumentException e1) {
             throw new ActException("Failed to execute action " + action, e1);
         }
@@ -132,4 +132,18 @@ public class ContextEnv extends EisEnv {
             translatorfactory.registerParameter2JavaTranslator(translator);
         }
     }
+
+	/**
+	 * @return the connectionID
+	 */
+	public int getConnectionID() {
+		return connectionID;
+	}
+
+	/**
+	 * @return the entity
+	 */
+	public ContextEntity getEntity() {
+		return entity;
+	}
 }

@@ -35,9 +35,6 @@ public class MapUtilsTest {
 	private static final String PROJECT = "project";
 	private static final Identifier PROJECTNAME = new Identifier("testutilsmap");
 
-	private static final String DOMAIN = "domain";
-	private static final Identifier DOMAIN_NAME = new Identifier("tudelft");
-
 
 	private static final int INHABITANTS_ID = 1;
 	private static final int MUNICIPALITY_ID = 0;
@@ -270,7 +267,7 @@ public class MapUtilsTest {
 		parameters.put(STAKEHOLDERS, new ParameterList(new Identifier(MUNICIPALITY)));
 		// any slot so not specified.
 		env.init(parameters);
-		connectionID = env.entity.slotConnection.getConnectionID();
+		connectionID = env.getEntity().getSlotConnection().getConnectionID();
 
 		assertEquals(MUNICIPALITY, listener.waitForEntity());
 	}
@@ -290,7 +287,7 @@ public class MapUtilsTest {
 
 		// any slot so not specified.
 		env.init(parameters);
-		connectionID = env.entity.slotConnection.getConnectionID();
+		connectionID = env.getEntity().getSlotConnection().getConnectionID();
 
 		assertEquals(INHABITANTS, listener.waitForEntity());
 	}
