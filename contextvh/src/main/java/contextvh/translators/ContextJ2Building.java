@@ -1,5 +1,6 @@
 package contextvh.translators;
 
+import com.vividsolutions.jts.geom.MultiPolygon;
 import eis.eis2java.exception.TranslationException;
 import eis.eis2java.translation.Translator;
 import eis.iilang.Function;
@@ -20,6 +21,7 @@ public class ContextJ2Building extends tygronenv.translators.J2Building {
 
     @Override
     public Parameter[] translate(final Building b) throws TranslationException {
+        final MultiPolygon multiPolygon = b.getMultiPolygon(MapType.MAQUETTE);
         return new Parameter[] {
                 new Function("building",
                         new Numeral(b.getID()),
@@ -29,7 +31,8 @@ public class ContextJ2Building extends tygronenv.translators.J2Building {
                         translator.translate2Parameter(b.getCategories())[0],
                         new Numeral(b.getFunctionID()),
                         new Numeral(b.getFloors()),
-                        translator.translate2Parameter(b.getMultiPolygon(MapType.MAQUETTE))[0]),
+                        translator.translate2Parameter(multiPolygon)[0]),
+                        new Numeral(multiPolygon.getArea())
         };
     }
 

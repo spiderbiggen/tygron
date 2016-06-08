@@ -44,7 +44,7 @@ public class ContextJ2BuildingsTest {
     @Test
     public void J2BuildingTest() throws TranslationException {
         GeometryFactory gf = new GeometryFactory();
-        MultiPolygon mp = gf.createMultiPolygon(new Polygon[0]);
+        MultiPolygon mp = PowerMockito.spy(gf.createMultiPolygon(new Polygon[0]));
         Collection<Category> categories = Arrays.asList(Category.EDUCATION, Category.BRIDGE);
 
         Building b = PowerMockito.mock(Building.class);
@@ -70,6 +70,7 @@ public class ContextJ2BuildingsTest {
         verify(b, times(1)).getFloors();
         verify(b, times(1)).getFunctionID();
         verify(b, times(1)).getMultiPolygon(any());
+        verify(mp, times(1)).getArea();
         verify(j2c, times(2)).translate(any());
         verify(j2mp, times(1)).translate(any());
     }
