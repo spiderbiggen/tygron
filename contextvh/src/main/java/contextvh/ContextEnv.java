@@ -86,11 +86,10 @@ public class ContextEnv extends EisEnv {
     protected Percept performEntityAction(final String ent,
                                           final Action action) throws ActException {
         try {
-            getEntity(ent).performAction(action);
+            return getEntity(ent).performAction(action);
         } catch (TranslationException | IllegalArgumentException e1) {
             throw new ActException("Failed to execute action " + action, e1);
         }
-        return null;
     }
 
     @Override
