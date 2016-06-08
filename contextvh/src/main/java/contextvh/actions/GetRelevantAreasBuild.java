@@ -102,7 +102,7 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 	 * @param parameters The parameters provided to the action.
 	 * @return The multiPolygon that can be built on.
 	 */
-	private MultiPolygon getUsableArea(final ContextEntity caller, final ParameterList parameters) {
+	protected MultiPolygon getUsableArea(final ContextEntity caller, final ParameterList parameters) {
 		// Get a MultiPolygon of all lands combined.
 		GetRelevantAreas.debug("combining land");
 		Integer connectionID = caller.getSlotConnection().getConnectionID();
