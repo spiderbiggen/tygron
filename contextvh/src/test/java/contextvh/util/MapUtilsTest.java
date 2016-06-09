@@ -267,7 +267,7 @@ public class MapUtilsTest {
 		parameters.put(STAKEHOLDERS, new ParameterList(new Identifier(MUNICIPALITY)));
 		// any slot so not specified.
 		env.init(parameters);
-		connectionID = env.getEntity().getSlotConnection().getConnectionID();
+		connectionID = env.getEntity(MUNICIPALITY).getSlotConnection().getConnectionID();
 
 		assertEquals(MUNICIPALITY, listener.waitForEntity());
 	}
@@ -287,7 +287,7 @@ public class MapUtilsTest {
 
 		// any slot so not specified.
 		env.init(parameters);
-		connectionID = env.getEntity().getSlotConnection().getConnectionID();
+		connectionID = env.getEntity(INHABITANTS).getSlotConnection().getConnectionID();
 
 		assertEquals(INHABITANTS, listener.waitForEntity());
 	}

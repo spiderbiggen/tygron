@@ -42,8 +42,6 @@ import java.util.LinkedList;
 public class ContextEnv extends EisEnv {
 	private static final long serialVersionUID = 2795668071082192962L;
 
-	private ContextEntity entity;
-
     private Java2Parameter<?>[] j2p = new Java2Parameter<?>[] {new J2ClientItemMap(), new ContextJ2Stakeholder(),
             new J2Setting(), new J2Function(), new J2Category(), new ContextJ2Building(), new J2TimeState(),
             new J2ActionLog(), new J2ActionMenu(), new ContextJ2Zone(), new J2Land(), new J2MultiPolygon(),
@@ -109,8 +107,7 @@ public class ContextEnv extends EisEnv {
      */
     @Override
     public TygronEntity createNewEntity(final EntityListener listener, final String stakeholder, final Integer slot) {
-    	entity =  new ContextEntity(listener, stakeholder, slot);
-    	return entity;
+    	return new ContextEntity(listener, stakeholder, slot);
     }
 
     @Override
@@ -134,9 +131,11 @@ public class ContextEnv extends EisEnv {
 
 
 	/**
-	 * @return the entity
+	 * Get an entity by stakeholder name.
+	 * @param stakeholder The stakeholder.
+	 * @return The entity
 	 */
-	public ContextEntity getEntity() {
-		return entity;
+	public ContextEntity getEntity(final String stakeholder) {
+		return (ContextEntity) super.getEntity(stakeholder);
 	}
 }
