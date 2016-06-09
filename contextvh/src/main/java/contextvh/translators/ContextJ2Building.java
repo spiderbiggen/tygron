@@ -20,17 +20,17 @@ public class ContextJ2Building extends tygronenv.translators.J2Building {
     private final Translator translator = Translator.getInstance();
 
     @Override
-    public Parameter[] translate(final Building b) throws TranslationException {
-        final MultiPolygon multiPolygon = b.getMultiPolygon(MapType.MAQUETTE);
+    public Parameter[] translate(final Building building) throws TranslationException {
+        final MultiPolygon multiPolygon = building.getMultiPolygon(MapType.MAQUETTE);
         return new Parameter[] {
                 new Function("building",
-                        new Numeral(b.getID()),
-                        new Identifier(b.getName()),
-                        new Numeral(b.getOwnerID()),
-                        new Numeral(b.getConstructionYear()),
-                        translator.translate2Parameter(b.getCategories())[0],
-                        new Numeral(b.getFunctionID()),
-                        new Numeral(b.getFloors()),
+                        new Numeral(building.getID()),
+                        new Identifier(building.getName()),
+                        new Numeral(building.getOwnerID()),
+                        new Numeral(building.getConstructionYear()),
+                        translator.translate2Parameter(building.getCategories())[0],
+                        new Numeral(building.getFunctionID()),
+                        new Numeral(building.getFloors()),
                         translator.translate2Parameter(multiPolygon)[0]),
                         new Numeral(multiPolygon.getArea())
         };
