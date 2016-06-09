@@ -1,5 +1,8 @@
 package contextvh;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import contextvh.actions.ActionContainer;
 import contextvh.actions.CustomAction;
 import eis.eis2java.exception.TranslationException;
@@ -46,6 +49,15 @@ public class ContextEntity extends tygronenv.TygronEntityImpl {
 	public tygronenv.EntityEventHandler createEntityEventhandler(final TSlotConnection slotCon) {
 		this.slotConnection = slotCon;
 		return new ContextEntityEventHandler(this, slotCon.getConnectionID(), this);
+	}
+	
+	@Override
+	public LinkedList<Percept> getPercepts() {
+		LinkedList<Percept> allPercepts = new LinkedList<Percept>();
+		for (List<Percept> percepts : eventHandler.getPercepts().values()) {
+			allPercepts.addAll(percepts);
+		}
+		return allPercepts;
 	}
 
 	/**
