@@ -23,12 +23,12 @@ public class J2UpgradePair implements Java2Parameter<UpgradePair> {
      * {@code upgrade_type(<ID>)} if there is no pair available.
      */
     @Override
-    public Parameter[] translate(final UpgradePair u) throws TranslationException {
+    public Parameter[] translate(final UpgradePair upgradePair) throws TranslationException {
         return new Parameter[]{
                 new Function(
                         "upgrade_pair",
-                        new Numeral(u.getSourceFunctionID()),
-                        new Numeral(u.getTargetFunctionID())
+                        new Numeral(upgradePair.getSourceFunctionID()),
+                        new Numeral(upgradePair.getTargetFunctionID())
                 )
         };
     }
