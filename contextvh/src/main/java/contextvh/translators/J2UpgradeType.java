@@ -29,6 +29,7 @@ public class J2UpgradeType implements Java2Parameter<UpgradeType> {
                     )
             };
     }
+	private static Translator translator = Translator.getInstance();
 
     /**
      * Class used for translation.
