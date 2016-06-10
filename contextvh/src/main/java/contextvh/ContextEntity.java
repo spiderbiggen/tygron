@@ -5,10 +5,12 @@ import java.util.List;
 
 import contextvh.actions.ActionContainer;
 import contextvh.actions.CustomAction;
+import contextvh.actions.FilterPercepts;
 import eis.eis2java.exception.TranslationException;
 import eis.iilang.Action;
 import eis.iilang.Percept;
 import nl.tytech.core.client.net.TSlotConnection;
+import tygronenv.EntityEventHandler;
 import tygronenv.EntityListener;
 
 /**
@@ -21,6 +23,8 @@ public class ContextEntity extends tygronenv.TygronEntityImpl {
 	private TSlotConnection slotConnection;
 
 	private ActionContainer customActions = new ActionContainer();
+	
+	private EntityEventHandler eventHandler;
 
 	/**
 	 * Create new Tygron entity. It will report to env when the entity is ready
@@ -54,11 +58,14 @@ public class ContextEntity extends tygronenv.TygronEntityImpl {
 	@Override
 	public LinkedList<Percept> getPercepts() {
 		LinkedList<Percept> allPercepts = new LinkedList<Percept>();
+		FilterPercepts filter = (FilterPercepts) customActions.get("FilterPercepts");
 		for (List<Percept> percepts : eventHandler.getPercepts().values()) {
-			allPercepts.addAll(percepts);
+			allPercepts.addAll(filter.filterPercepts(percepts));
 		}
 		return allPercepts;
 	}
+
+
 
 	/**
 	 * Returns the saved TSlotConnection.
