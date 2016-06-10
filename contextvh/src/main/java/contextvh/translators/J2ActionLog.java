@@ -15,9 +15,8 @@ import nl.tytech.data.engine.item.Indicator;
 import nl.tytech.data.engine.item.Stakeholder;
 
 /**
- * Translates {@link ActionLog} into
- * actionlog(StakeholderID, ActionDescription, ActionLogID, X).
- * X is a list of (IndicatorID,Increase).
+ * Translates {@link ActionLog} into actionlog(StakeholderID, ActionDescription,
+ * ActionLogID, X). X is a list of (IndicatorID,Increase).
  *
  * @author Frank Baars
  */
@@ -36,11 +35,12 @@ public class J2ActionLog implements Java2Parameter<ActionLog> {
     public Parameter[] translate(final ActionLog actionLog) throws TranslationException {
         ParameterList parList = new ParameterList();
         ItemMap<Indicator> map = EventManager.<Indicator>getItemMap(MapLink.INDICATORS);
-        for (Indicator indicator : map.values()) {
-            Double increase = actionLog.getIncrease(indicator);
-            if (increase != null && increase != 0.0) {
-                parList.add(new ParameterList(new Numeral(indicator.getID()),
-                        new Numeral(increase)));
+        if (map != null) {
+            for (Indicator indicator : map.values()) {
+                Double increase = actionLog.getIncrease(indicator);
+                if (increase != null && increase != 0.0) {
+                    parList.add(new ParameterList(new Numeral(indicator.getID()), new Numeral(increase)));
+                }
             }
         }
 
