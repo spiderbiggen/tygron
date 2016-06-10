@@ -44,13 +44,13 @@ public class ContextJ2BuildingsTest {
     @Test
     public void J2BuildingTest() throws TranslationException {
         GeometryFactory gf = new GeometryFactory();
-        MultiPolygon mp = gf.createMultiPolygon(new Polygon[0]);
+        MultiPolygon mp = PowerMockito.spy(gf.createMultiPolygon(new Polygon[0]));
         Collection<Category> categories = Arrays.asList(Category.EDUCATION, Category.BRIDGE);
 
-        Building b = PowerMockito.mock(Building.class);
+        Building building = PowerMockito.mock(Building.class);
 
-        PowerMockito.when(b.getMultiPolygon(any())).thenReturn(mp);
-        PowerMockito.when(b.getCategories()).thenReturn(categories);
+        PowerMockito.when(building.getMultiPolygon(any())).thenReturn(mp);
+        PowerMockito.when(building.getCategories()).thenReturn(categories);
 
         J2Category j2c = PowerMockito.spy(new J2Category());
         J2MultiPolygon j2mp = PowerMockito.spy(new J2MultiPolygon());
@@ -58,18 +58,19 @@ public class ContextJ2BuildingsTest {
         translator.registerJava2ParameterTranslator(j2c);
         translator.registerJava2ParameterTranslator(j2mp);
 
-        Parameter[] params = translator.translate2Parameter(b);
+        Parameter[] params = translator.translate2Parameter(building);
         Function func = (Function) params[0];
 
         assertEquals("building", func.getName());
-        verify(b, times(1)).getID();
-        verify(b, times(1)).getName();
-        verify(b, times(1)).getOwnerID();
-        verify(b, times(1)).getConstructionYear();
-        verify(b, times(1)).getCategories();
-        verify(b, times(1)).getFloors();
-        verify(b, times(1)).getFunctionID();
-        verify(b, times(1)).getMultiPolygon(any());
+        verify(building, times(1)).getID();
+        verify(building, times(1)).getName();
+        verify(building, times(1)).getOwnerID();
+        verify(building, times(1)).getConstructionYear();
+        verify(building, times(1)).getCategories();
+        verify(building, times(1)).getFloors();
+        verify(building, times(1)).getFunctionID();
+        verify(building, times(1)).getMultiPolygon(any());
+        verify(mp, times(1)).getArea();
         verify(j2c, times(2)).translate(any());
         verify(j2mp, times(1)).translate(any());
     }
