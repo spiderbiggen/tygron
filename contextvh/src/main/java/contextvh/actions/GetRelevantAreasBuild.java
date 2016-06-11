@@ -26,7 +26,7 @@ import nl.tytech.util.logger.TLogger;
  */
 public class GetRelevantAreasBuild implements RelevantAreasAction {
 
-	private static GetRelevantAreas parent;
+	private GetRelevantAreas parent;
 
 	/**
 	 * Create a new <code>GetRelevantAreasBuild</code> action.

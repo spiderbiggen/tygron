@@ -74,7 +74,7 @@ public final class MapUtils {
 		MultiPolygon result = JTSUtils.EMPTY;
 		final ItemMap<Land> lands = EventManager.getItemMap(connectionID, MapLink.LANDS);
 		for (Land land : lands) {
-			if (land.getOwnerID() == stakeholderID) {
+			if (land.getOwnerID().equals(stakeholderID)) {
 				result = JTSUtils.union(result, land.getMultiPolygon());
 			}
 		}

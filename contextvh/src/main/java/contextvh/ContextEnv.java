@@ -5,6 +5,7 @@ import contextvh.translators.ContextJ2Stakeholder;
 import contextvh.translators.ContextJ2Zone;
 import contextvh.translators.J2ActionLog;
 import contextvh.translators.J2Indicator;
+import contextvh.translators.J2UpgradePair;
 import contextvh.translators.J2UpgradeType;
 import contextvh.translators.J2Land;
 import contextvh.translators.J2PopupData;
@@ -45,9 +46,9 @@ public class ContextEnv extends EisEnv {
 	private Java2Parameter<?>[] j2p = new Java2Parameter<?>[] {new J2ClientItemMap(), new ContextJ2Stakeholder(),
 			new J2Setting(), new J2Function(), new J2Category(), new ContextJ2Building(), new J2TimeState(),
 			new J2ActionLog(), new J2ActionMenu(), new ContextJ2Zone(), new J2Land(), new J2MultiPolygon(),
-			new J2PopupData(), new J2Answer(), new J2Indicator(), new J2UpgradeType() };
+			new J2PopupData(), new J2Answer(), new J2Indicator(), new J2UpgradeType(), new J2UpgradePair()};
 	private Parameter2Java<?>[] p2j = new Parameter2Java<?>[] {new ParamEnum2J(), new HashMap2J(),
-			new Stakeholder2J(), new MultiPolygon2J() };
+			new Stakeholder2J(), new MultiPolygon2J()};
 
 	/**
 	 * General initialization: translators.
