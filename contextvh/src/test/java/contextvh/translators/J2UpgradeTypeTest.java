@@ -50,7 +50,7 @@ public class J2UpgradeTypeTest {
 	 *             thrown if translation fails.
 	 */
 	@Test
-	public void tranlatorTest1() throws TranslationException {
+	public void translatorTest1() throws TranslationException {
 		a.add(upgradePair);
 		when(upgradeType.getPairs()).thenReturn(a);
 		translator.translate(upgradeType);
