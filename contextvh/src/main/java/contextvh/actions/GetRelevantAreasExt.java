@@ -61,8 +61,8 @@ public class GetRelevantAreasExt implements RelevantAreasAction {
 			final ContextEntity caller, final ParameterList filters) {
 		//get min and max size out of the filters
 		Iterator<Parameter> filter = filters.iterator();
-		final double minArea = (double)((Numeral)filter.next()).getValue();
-		final double maxArea = (double)((Numeral)filter.next()).getValue();
+		final double minArea = ((Numeral)filter.next()).getValue().doubleValue();
+		final double maxArea = ((Numeral)filter.next()).getValue().doubleValue();
 		//get zones out of the filters
 		List<Integer> Zones = new LinkedList<Integer>();
 		while(filter.hasNext()){
