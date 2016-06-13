@@ -26,7 +26,7 @@ import nl.tytech.util.logger.TLogger;
  */
 public class GetRelevantAreasBuild implements RelevantAreasAction {
 
-	private static GetRelevantAreas parent;
+	private GetRelevantAreas parent;
 
 	/**
 	 * Create a new <code>GetRelevantAreasBuild</code> action.
@@ -110,7 +110,7 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 		constructableLand = MapUtils.removeReservedLand(connectionID, constructableLand);
 
 		// Remove all pieces of occupied land.
-		constructableLand = MapUtils.removeBuildings(connectionID, constructableLand);
+		constructableLand = MapUtils.removeBuildings(connectionID, stakeholderID, constructableLand);
 
 		return constructableLand;
 	}
