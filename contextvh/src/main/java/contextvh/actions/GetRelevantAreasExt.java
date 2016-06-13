@@ -61,6 +61,7 @@ public class GetRelevantAreasExt implements RelevantAreasAction {
 			final ContextEntity caller, final ParameterList filters) {
 		//get min and max size out of the filters
 		Iterator<Parameter> filter = filters.iterator();
+		final int maxPolys = ((Numeral)filter.next()).getValue().intValue();
 		final double minArea = ((Numeral)filter.next()).getValue().doubleValue();
 		final double maxArea = ((Numeral)filter.next()).getValue().doubleValue();
 		//get zones out of the filters
@@ -69,7 +70,6 @@ public class GetRelevantAreasExt implements RelevantAreasAction {
 			Zones.add((int)((Numeral)filter.next()).getValue());
 		}
 		MultiPolygon constructableLand = getUsableArea(caller,Zones);
-		final int maxPolys = 1;
 		final int bufferUp = 5, bufferDown = -10;
 		int numPolys = 0;
 		final ParameterList results = new ParameterList();
