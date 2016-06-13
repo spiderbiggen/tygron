@@ -90,11 +90,7 @@ public class GetRelevantAreasBuy implements RelevantAreasAction {
 		}
 		MultiPolygon land = JTSUtils.createMP(MapUtils.getZonesCombined(connectionID, zones));
 		// Remove all pieces of reserved land.
-		try {
-			land = MapUtils.removeReservedLand(connectionID, land);
-		} catch (NullPointerException e) {
-			TLogger.exception(e);
-		}
+		land = MapUtils.removeReservedLand(connectionID, land);
 		return land;
 	}
 
