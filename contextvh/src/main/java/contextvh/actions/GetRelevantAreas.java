@@ -3,6 +3,7 @@ package contextvh.actions;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+
 import com.vividsolutions.jts.geom.MultiPolygon;
 
 import contextvh.ContextEntity;
@@ -21,6 +22,7 @@ import nl.tytech.util.logger.TLogger;
  * Possible actionTypes are "build", "demolish" and "sell".
  * It is also possible to specify a filter, with zone([id1],[id2]) or stakeholder([id1],[id2]) functions, filtering
  * only on pieces of land that are owned by the specified stakeholder, or are in the specified zone.
+ *
  * @author Max Groenenboom
  */
 public class GetRelevantAreas implements CustomAction {
@@ -35,10 +37,12 @@ public class GetRelevantAreas implements CustomAction {
 	 */
 	public GetRelevantAreas() {
 		addInternalAction(new GetRelevantAreasBuild(this));
+		addInternalAction(new GetRelevantAreasBuy(this));
 	}
 
 	/**
 	 * Adds an internal action to the hashMap of internal actions.
+	 *
 	 * @param action The RelevantAreasAction to add.
 	 */
 	public void addInternalAction(final RelevantAreasAction action) {
@@ -76,15 +80,17 @@ public class GetRelevantAreas implements CustomAction {
 
 	/**
 	 * Create the actual Percept, after the parameters have been parsed.
-	 * @param caller		The ContextEntity that called the action.
-	 * @param actionType	The type of the action.
-	 * @param callID		The ID of the call.
-	 * @param parameters	A ParameterList of parameters provided by the agent.
+	 *
+	 * @param caller     The ContextEntity that called the action.
+	 * @param actionType The type of the action.
+	 * @param callID     The ID of the call.
+	 * @param parameters A ParameterList of parameters provided by the agent.
 	 * @return The constructed Percept.
-	 * @throws TranslationException  When an invalid internal action parameter is provided.
+	 * @throws TranslationException When an invalid internal action parameter is provided.
 	 */
-	private Percept createPercept(final ContextEntity caller, final String actionType,
-			final Number callID, final ParameterList parameters) throws TranslationException {
+	private Percept createPercept(final ContextEntity caller, final String actionType, final Number callID,
+								  final ParameterList parameters)
+			throws TranslationException {
 		Percept result = new Percept("relevant_areas");
 		result.addParameter(new Numeral(callID));
 
@@ -100,6 +106,7 @@ public class GetRelevantAreas implements CustomAction {
 
 	/**
 	 * Converts a MultiPolygon to a ParameterList.
+	 *
 	 * @param mp The given MultiPolygon.
 	 * @return The resulting ParameterList.
 	 * @throws TranslationException If an error occurred while translating.
