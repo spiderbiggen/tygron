@@ -1,14 +1,18 @@
 package contextvh.translators;
 
-import static org.mockito.Mockito.mock;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import eis.eis2java.translation.Translator;
+import eis.iilang.Parameter;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,19 +35,21 @@ public class J2UpgradeTypeTest {
 	 * The indicators to translate.
 	 */
 	private UpgradeType upgradeType;
-	private UpgradePair upgradePair;
-	private ArrayList<UpgradePair> a;
 	private List<UpgradePair> pairs;
+	private J2UpgradePair pairTranslator;
 	/**
 	 * Initialise before every test.
+	 * @throws TranslationException thrown when translation fails
 	 */
 	@Before
-	public void init() {
-		translator.registerJava2ParameterTranslator(new J2UpgradeType());
-		translator.registerJava2ParameterTranslator(new J2UpgradePair());
+	public void init() throws TranslationException {
 		upgradeType = mock(UpgradeType.class);
-		upgradePair = mock(UpgradePair.class);
+		pairTranslator = mock(J2UpgradePair.class);
+		when(pairTranslator.translatesFrom()).thenCallRealMethod();
+		when(pairTranslator.translate(any())).thenReturn(new Parameter[0]);
 		pairs = new ArrayList<>();
+		translator.registerJava2ParameterTranslator(new J2UpgradeType());
+		translator.registerJava2ParameterTranslator(pairTranslator);
 	}
 
 	/**
@@ -54,11 +60,10 @@ public class J2UpgradeTypeTest {
 	 */
 	@Test
 	public void tranlatorTest1() throws TranslationException {
-		pairs.add(upgradePair);
+		pairs = Collections.singletonList(new UpgradePair());
 		when(upgradeType.getPairs()).thenReturn(pairs);
 		translator.translate2Parameter(upgradeType);
-		verify(upgradePair, times(1)).getSourceFunctionID();
-		verify(upgradePair, times(1)).getTargetFunctionID();
+		verify(pairTranslator, times(1)).translate(any());
 	}
 
 	/**
@@ -72,8 +77,7 @@ public class J2UpgradeTypeTest {
 	public void translatorTest2() throws TranslationException {
 		translator.translate2Parameter(upgradeType);
 		verify(upgradeType, times(1)).getPairs();
-		verify(upgradePair, times(0)).getSourceFunctionID();
-		verify(upgradePair, times(0)).getTargetFunctionID();
+		verify(pairTranslator, times(0)).translate(any());
 	}
 
 	/**
@@ -82,12 +86,10 @@ public class J2UpgradeTypeTest {
 	 */
 	@Test
 	public void tranlatorTest3() throws TranslationException {
-		pairs.add(upgradePair);
-		pairs.add(upgradePair);
+		pairs = Arrays.asList(new UpgradePair(), new UpgradePair());
 		when(upgradeType.getPairs()).thenReturn(pairs);
 		translator.translate2Parameter(upgradeType);
-		verify(upgradePair, times(2)).getSourceFunctionID();
-		verify(upgradePair, times(2)).getTargetFunctionID();
+		verify(pairTranslator, times(2)).translate(any());
 	}
 
 }
