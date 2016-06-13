@@ -48,12 +48,12 @@ public class GetRelevantAreasExt implements RelevantAreasAction {
 
 	@Override
 	public String getName() {
-		return "get_azc_areas";
+		return "get_ext_areas_";
 	}
 
 	@Override
 	public String getInternalName() {
-		return "azc";
+		return "ext";
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class GetRelevantAreasExt implements RelevantAreasAction {
 			Zones.add((int)((Numeral)filter.next()).getValue());
 		}
 		MultiPolygon constructableLand = getUsableArea(caller,Zones);
-		final int maxPolys = 15;
+		final int maxPolys = 1;
 		final int bufferUp = 5, bufferDown = -10;
 		int numPolys = 0;
 		final ParameterList results = new ParameterList();

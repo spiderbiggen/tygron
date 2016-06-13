@@ -35,6 +35,7 @@ public class GetRelevantAreas implements CustomAction {
 	 */
 	public GetRelevantAreas() {
 		addInternalAction(new GetRelevantAreasBuild(this));
+		addInternalAction(new GetRelevantAreasExt(this));
 	}
 
 	/**
