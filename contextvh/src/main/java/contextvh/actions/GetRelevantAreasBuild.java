@@ -59,8 +59,8 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 			final ContextEntity caller, final ParameterList filters) {
 		MultiPolygon constructableLand = getUsableArea(caller, filters);
 
-		final int minArea = 200, maxArea = 2000;
-		final int maxPolys = 15;
+		final double minArea = 200, maxArea = 2000;
+		final double maxPolys = 15;
 		final int bufferUp = 5, bufferDown = -10;
 		int numPolys = 0;
 		final ParameterList results = new ParameterList();
