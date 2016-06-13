@@ -18,13 +18,6 @@ public class J2UpgradeType implements Java2Parameter<UpgradeType> {
 	private static Translator translator = Translator.getInstance();
 
 	/**
-	 * Adds a translator for J2UpgradePair if it isn't added yet.
-	 */
-	public J2UpgradeType() {
-		translator.registerJava2ParameterTranslator(new J2UpgradePair());
-	}
-
-	/**
 	 * Translates the UpgradeType object in the form of: {@code upgrade_type(
 	 * <ID>, <SourceFunctionID>, <TargetFunctionID>)} or {@code upgrade_type(
 	 * <ID>)} if there is no pair available.
