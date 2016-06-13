@@ -1,7 +1,6 @@
 package contextvh.actions;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,12 +8,10 @@ import java.util.List;
 import contextvh.ContextEntity;
 import eis.eis2java.exception.TranslationException;
 import eis.iilang.Identifier;
-import eis.iilang.Numeral;
 import eis.iilang.Parameter;
 import eis.iilang.ParameterList;
 import eis.iilang.Percept;
 import nl.tytech.util.logger.TLogger;
-import tygronenv.TygronEntity;
 
 public class FilterPercepts implements CustomAction {
 	
@@ -83,8 +80,8 @@ public class FilterPercepts implements CustomAction {
 		return true;
 	}
 
-	public List<Percept> filterPercepts(List<Percept> percepts) {
-		List<Percept> result = new LinkedList<Percept>();
+	public LinkedList<Percept> filterPercepts(List<Percept> percepts) {
+		LinkedList<Percept> result = new LinkedList<Percept>();
 		
 		for (Percept percept : percepts) {
 			if (!disabledPercepts.contains(percept.getName()))
