@@ -1,6 +1,7 @@
 package contextvh.actions;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -25,7 +26,7 @@ import nl.tytech.util.logger.TLogger;
  * TODO Make javadoc for class.
  * @author Dionytadema
  */
-public class GetRelevantAreasAzc implements RelevantAreasAction {
+public class GetRelevantAreasExt implements RelevantAreasAction {
 
 	private static GetRelevantAreas parent;
 
@@ -33,7 +34,7 @@ public class GetRelevantAreasAzc implements RelevantAreasAction {
 	 * Create a new <code>GetRelevantAreasBuild</code> action.
 	 * @param par The parent GetRelevantAreas of this action.
 	 */
-	public GetRelevantAreasAzc(final GetRelevantAreas par) {
+	public GetRelevantAreasExt(final GetRelevantAreas par) {
 		parent = par;
 	}
 
@@ -57,13 +58,17 @@ public class GetRelevantAreasAzc implements RelevantAreasAction {
 
 	@Override
 	public void internalCall(final Percept createdPercept,
-			final ContextEntity caller, final ParameterList parameters) {
-		//TO-DO fix this parameter shit!
-		List<Integer> Zones = null;//parameters.get(2).;
-		Zones.add(parameters.get(3));
+			final ContextEntity caller, final ParameterList filters) {
+		//get min and max size out of the filters
+		Iterator<Parameter> filter = filters.iterator();
+		final int minArea = (int)((Numeral)filter.next()).getValue();
+		final int maxArea = (int)((Numeral)filter.next()).getValue();
+		//get zones out of the filters
+		List<Integer> Zones = new LinkedList<Integer>();
+		while(filter.hasNext()){
+			Zones.add((int)((Numeral)filter.next()).getValue());
+		}
 		MultiPolygon constructableLand = getUsableArea(caller,Zones);
-
-		final int minArea = 750, maxArea = (int) ((Numeral)parameters.get(2)).getValue();
 		final int maxPolys = 15;
 		final int bufferUp = 5, bufferDown = -10;
 		int numPolys = 0;
@@ -97,6 +102,7 @@ public class GetRelevantAreasAzc implements RelevantAreasAction {
 	/**
 	 * Returns all area that can be built on.
 	 * @param caller The caller of the action.
+	 * @param the list of Zones that have to be looked at
 	 * @return The multiPolygon that can be built on.
 	 */
 	protected MultiPolygon getUsableArea(final ContextEntity caller, List<Integer> Zones) {

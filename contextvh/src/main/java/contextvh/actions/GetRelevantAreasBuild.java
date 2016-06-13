@@ -56,8 +56,8 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 
 	@Override
 	public void internalCall(final Percept createdPercept,
-			final ContextEntity caller, final ParameterList parameters) {
-		MultiPolygon constructableLand = getUsableArea(caller, parameters);
+			final ContextEntity caller, final ParameterList filters) {
+		MultiPolygon constructableLand = getUsableArea(caller, filters);
 
 		final int minArea = 200, maxArea = 2000;
 		final int maxPolys = 15;
@@ -96,7 +96,7 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 	 * @param parameters The parameters provided to the action.
 	 * @return The multiPolygon that can be built on.
 	 */
-	protected MultiPolygon getUsableArea(final ContextEntity caller, final ParameterList parameters) {
+	protected MultiPolygon getUsableArea(final ContextEntity caller, final ParameterList filters) {
 		// Get a MultiPolygon of all lands combined.
 		Integer connectionID = caller.getSlotConnection().getConnectionID();
 

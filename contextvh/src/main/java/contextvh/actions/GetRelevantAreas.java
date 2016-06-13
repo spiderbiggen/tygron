@@ -84,7 +84,7 @@ public class GetRelevantAreas implements CustomAction {
 	 * @throws TranslationException  When an invalid internal action parameter is provided.
 	 */
 	private Percept createPercept(final ContextEntity caller, final String actionType,
-			final Number callID, final ParameterList parameters) throws TranslationException {
+			final Number callID, final ParameterList filters) throws TranslationException {
 		Percept result = new Percept("relevant_areas");
 		result.addParameter(new Numeral(callID));
 
@@ -92,7 +92,7 @@ public class GetRelevantAreas implements CustomAction {
 		if (action == null) {
 			throw new TranslationException("unknown action GetRelevantAreas(_, " + actionType + ", _)");
 		} else {
-			action.internalCall(result, caller, parameters);
+			action.internalCall(result, caller, filters);
 		}
 
 		return result;
