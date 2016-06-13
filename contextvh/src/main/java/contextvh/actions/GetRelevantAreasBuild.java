@@ -110,7 +110,7 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 		constructableLand = MapUtils.removeReservedLand(connectionID, constructableLand);
 
 		// Remove all pieces of occupied land.
-		constructableLand = MapUtils.removeBuildings(connectionID, constructableLand);
+		constructableLand = MapUtils.removeBuildings(connectionID, stakeholderID, constructableLand);
 
 		return constructableLand;
 	}
