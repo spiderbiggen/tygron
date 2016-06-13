@@ -9,7 +9,12 @@ import contextvh.actions.FilterPercepts;
 import eis.eis2java.exception.TranslationException;
 import eis.iilang.Action;
 import eis.iilang.Percept;
+import nl.tytech.core.client.net.ServicesManager;
 import nl.tytech.core.client.net.TSlotConnection;
+import nl.tytech.core.net.Network.AppType;
+import nl.tytech.core.net.event.IOServiceEventType;
+import nl.tytech.core.net.serializable.JoinReply;
+import nl.tytech.core.util.SettingsManager;
 import tygronenv.EntityEventHandler;
 import tygronenv.EntityListener;
 
@@ -21,6 +26,7 @@ import tygronenv.EntityListener;
 public class ContextEntity extends tygronenv.TygronEntityImpl {
 
 	private TSlotConnection slotConnection;
+	private JoinReply joinedConfirm;
 
 	private ActionContainer customActions = new ActionContainer();
 	
@@ -57,10 +63,10 @@ public class ContextEntity extends tygronenv.TygronEntityImpl {
 	
 	@Override
 	public LinkedList<Percept> getPercepts() {
-		LinkedList<Percept> allPercepts = new LinkedList<Percept>();
+		LinkedList<Percept> allPercepts = super.getPercepts();
 		FilterPercepts filter = (FilterPercepts) customActions.get("FilterPercepts");
 		for (List<Percept> percepts : eventHandler.getPercepts().values()) {
-			allPercepts.addAll(filter.filterPercepts(percepts));
+			allPercepts.addAll(percepts);
 		}
 		return allPercepts;
 	}
