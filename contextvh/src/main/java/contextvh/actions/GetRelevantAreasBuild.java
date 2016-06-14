@@ -77,9 +77,10 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 		int numPolys = 0;
 		final ParameterList results = new ParameterList();
 		for (Polygon poly: JTSUtils.getPolygons(constructableLand)) {
+			
 			final List<Polygon> listPolygon = JTSUtils.getTriangles(poly, minArea);
 			for (Geometry geom : listPolygon) {
-				if (numPolys > maxPolys) {
+				if (numPolys >= maxPolys) {
 					break;
 				}
 				geom = createNewPolygon(geom);
