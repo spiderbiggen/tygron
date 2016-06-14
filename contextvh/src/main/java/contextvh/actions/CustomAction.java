@@ -1,8 +1,7 @@
 package contextvh.actions;
 
-import java.util.Collection;
+
 import java.util.LinkedList;
-import java.util.List;
 
 import contextvh.ContextEntity;
 import eis.eis2java.exception.TranslationException;
@@ -30,5 +29,5 @@ public interface CustomAction {
 	 */
 	String getName();
 
-	
+
 }

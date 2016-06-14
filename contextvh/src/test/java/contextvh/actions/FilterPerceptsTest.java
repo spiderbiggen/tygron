@@ -1,7 +1,6 @@
 package contextvh.actions;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
@@ -13,7 +12,6 @@ import org.powermock.reflect.Whitebox;
 import contextvh.ContextEntity;
 import eis.eis2java.exception.TranslationException;
 import eis.iilang.Identifier;
-import eis.iilang.Numeral;
 import eis.iilang.Parameter;
 import eis.iilang.ParameterList;
 import eis.iilang.Percept;
@@ -28,7 +26,7 @@ public class FilterPerceptsTest {
 	private FilterPercepts mockFilterPercepts = mock(FilterPercepts.class);
 	private ContextEntity mockEntity = mock(ContextEntity.class);
 	/**
-	 * Tests the call function
+	 * Tests the call function.
 	 * @throws TranslationException  When an invalid internal action parameter is provided.
 	 */
 	@Test
@@ -45,7 +43,7 @@ public class FilterPerceptsTest {
 	}
 
 	/**
-	 * Tests the getName function
+	 * Tests the getName function.
 	 * @throws TranslationException  When an invalid internal action parameter is provided.
 	 */
 	@Test
@@ -53,9 +51,9 @@ public class FilterPerceptsTest {
 		FilterPercepts action = new FilterPercepts();
 		assertTrue(action.getName().equals("filter_percepts"));
 	}
-	
+
 	/**
-	 * Tests the filterPercepts function
+	 * Tests the filterPercepts function.
 	 * @throws TranslationException  When an invalid internal action parameter is provided.
 	 */
 	@Test
@@ -70,7 +68,6 @@ public class FilterPerceptsTest {
 		filter.add(perceptParameter2);
 		filter.add(perceptParameter3);
 		parameters.add(filter);
-		
 		LinkedList<Percept> percepts = new LinkedList<Percept>();
 		Percept percept1 = new Percept("functions");
 		Percept percept2 = new Percept("stakeholders");
@@ -78,27 +75,29 @@ public class FilterPerceptsTest {
 		percepts.add(percept1);
 		percepts.add(percept2);
 		percepts.add(percept3);
-		
-		
+
+
 		action.call(mockEntity, parameters);
 		LinkedList<Percept> filteredPercepts = action.filterPercepts(percepts);
 		LinkedList<String> filteredPerceptNames = getPerceptNames(filteredPercepts);
-		
-		assertTrue(filteredPerceptNames.contains("functions")&&!(filteredPerceptNames.contains("stakeholders")));
+
+		assertTrue(filteredPerceptNames.contains("functions")
+				&& !(filteredPerceptNames.contains("stakeholders")));
 		filteredPerceptNames.remove("functions");
 		assertTrue(filteredPerceptNames.isEmpty());
-		
+
 	}
 
 	/**
-	 * Creates a LinkedList of the names from a linkedlist of percepts
+	 * Creates a LinkedList of the names from a linkedlist of percepts.
 	 * @param percepts the linkedlist of percepts
 	 * @return linkedList of names from the input parameter
 	 */
-	private LinkedList<String> getPerceptNames(LinkedList<Percept> percepts) {
+	private LinkedList<String> getPerceptNames(final LinkedList<Percept> percepts) {
 		LinkedList<String> result = new LinkedList<String>();
-		for (Percept percept : percepts)
+		for (Percept percept : percepts) {
 			result.add(percept.getName());
+		}
 		return result;
 	}
 
