@@ -47,11 +47,10 @@ public final class MapUtils {
 	 * @return The resulting Geometry.
 	 */
 	public static Geometry getZonesCombined(final Integer connectionID, final List<Integer> ids) {
-		final boolean getAll = ids.size() == 0;
 		final ItemMap<Zone> zones = EventManager.getItemMap(connectionID, MapLink.ZONES);
 		Geometry result = JTSUtils.EMPTY;
 		for (Zone zone : zones) {
-			if (getAll || ids.contains(zone.getID())) {
+			if (ids.isEmpty() || ids.contains(zone.getID())) {
 				result = result.union(zone.getMultiPolygon());
 			}
 		}

@@ -11,12 +11,15 @@ import eis.iilang.Numeral;
 import eis.iilang.Parameter;
 import eis.iilang.ParameterList;
 import eis.iilang.Percept;
+import nl.tytech.core.client.event.EventManager;
+import nl.tytech.core.event.Event;
 import nl.tytech.util.JTSUtils;
 import nl.tytech.util.logger.TLogger;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Custom action to retrieve a list of all possible bits of land you can buy,
@@ -48,7 +51,7 @@ public class GetRelevantAreasBuy implements RelevantAreasAction {
 
 	@Override
 	public void internalCall(final Percept createdPercept, final ContextEntity caller,
-							 final ParameterList parameters) {
+							 final Parameters parameters) {
 		MultiPolygon usableArea = getUsableArea(caller, parameters);
 		final ParameterList parameterList = new ParameterList();
 		for (Polygon polygon : JTSUtils.getPolygons(usableArea)) {
@@ -75,20 +78,17 @@ public class GetRelevantAreasBuy implements RelevantAreasAction {
 	 * @param parameters The parameters provided to the action.
 	 * @return The multiPolygon that can be built on.
 	 */
-	protected MultiPolygon getUsableArea(final ContextEntity caller, final ParameterList parameters) {
+	protected MultiPolygon getUsableArea(final ContextEntity caller, final Parameters parameters) {
 		// Get a MultiPolygon of all lands combined.
 		final Integer connectionID = caller.getSlotConnection().getConnectionID();
-		final List<Integer> zones = new ArrayList<>();
+		List<Integer> zoneFilter = new ArrayList<>();
 		if (parameters != null) {
-			parameters.forEach(parameter -> {
-				if (parameter instanceof Numeral) {
-					zones.add(((Numeral) parameter).getValue().intValue());
-				} else {
-					throw new IllegalArgumentException("Zone filter can only contain numbers");
-				}
-			});
+			zoneFilter = parameters.get("zones").parallelStream()
+					.filter(par -> par instanceof Numeral)
+					.map(parameter -> ((Numeral) parameter).getValue().intValue())
+					.collect(Collectors.toList());
 		}
-		MultiPolygon land = JTSUtils.createMP(MapUtils.getZonesCombined(connectionID, zones));
+		MultiPolygon land = JTSUtils.createMP(MapUtils.getZonesCombined(connectionID, zoneFilter));
 		// Remove all pieces of reserved land.
 		land = MapUtils.removeReservedLand(connectionID, land);
 		return land;
