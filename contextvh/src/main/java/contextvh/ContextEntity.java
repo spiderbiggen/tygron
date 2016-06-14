@@ -22,6 +22,8 @@ public class ContextEntity extends tygronenv.TygronEntityImpl {
 
 	private ActionContainer customActions = new ActionContainer();
 	
+	private FilterPercepts perceptsFilter = new FilterPercepts();
+	
 
 	/**
 	 * Create new Tygron entity. It will report to env when the entity is ready
@@ -34,6 +36,7 @@ public class ContextEntity extends tygronenv.TygronEntityImpl {
 	 */
 	public ContextEntity(final EntityListener env, final String intendedStakeholder, final Integer slotID) {
 		super(env, intendedStakeholder, slotID);
+		customActions.addAction(perceptsFilter);
 	}
 
 	@Override
@@ -55,8 +58,8 @@ public class ContextEntity extends tygronenv.TygronEntityImpl {
 	@Override
 	public LinkedList<Percept> getPercepts() {
 		LinkedList<Percept> allPercepts = super.getPercepts();
-		FilterPercepts filter = (FilterPercepts) customActions.get("FilterPercepts");
-		return filter.filterPercepts(allPercepts);
+		LinkedList<Percept> result =  perceptsFilter.filterPercepts(allPercepts);
+		return result;
 	}
 
 

@@ -22,7 +22,6 @@ public class ActionContainer extends HashMap<String, CustomAction> {
 
 		// Add actions here:
 		addAction(new GetRelevantAreas());
-		addAction(FilterPercepts.getinstance());
 	}
 
 	/**
@@ -42,12 +41,5 @@ public class ActionContainer extends HashMap<String, CustomAction> {
 		return get(action.getName().toLowerCase());
 	}
 	
-	/**
-	 * Returns the CustomAction the given String represents to.
-	 * @param String The called action.
-	 * @return The CustomAction the String refers to.
-	 */
-	public CustomAction get(String action) {
-		return get(action.toLowerCase());
-	}
+
 }

@@ -15,10 +15,14 @@ import nl.tytech.util.logger.TLogger;
 
 public class FilterPercepts implements CustomAction {
 	
-	public static final FilterPercepts instance = new FilterPercepts();
 	
-	private ArrayList<String> disabledPercepts = new ArrayList<String>();
+	private ArrayList<String> disabledPercepts;
 
+	
+	public FilterPercepts() {
+		disabledPercepts = new ArrayList<String>();
+	}
+	
 	@Override
 	public Percept call(ContextEntity caller, LinkedList<Parameter> parameters) throws TranslationException {
 	try {
@@ -92,9 +96,6 @@ public class FilterPercepts implements CustomAction {
 		
 	}
 
-	public static CustomAction getinstance() {
-		return instance;
-	}
 
 
 }
