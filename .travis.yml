@@ -10,10 +10,10 @@ install:
 script:
 # add login credentials in registry
 - java -cp contextvh/target/contextvh-*-jar-with-dependencies.jar login.Login $email $password
-# test the code
-- mvn test -Dcobertura.skip
-#check pmd and checkstyle only for context environment
+# test the code run cobertura only in environment build fails when coverage is too low
 - cd contextvh
+- mvn test
+# check pmd and checkstyle only for context environment
 # checkstyle check is configured with these arguments -Dcheckstyle.config.location="$TRAVIS_BUILD_DIR/sun_checks_custom.xml"
 - mvn checkstyle:check 
 - mvn pmd:pmd
@@ -22,7 +22,5 @@ script:
 - echo "*PMD-Results*" && cat "java-basic.xml" && cat "java-imports.xml" && cat "java-unusedcode.xml" && echo "PMD-Results END"
 - echo "*FINDBUGS-Results*" && cat "findbugsXml.xml" && echo "FINDBUGS-Results END"
 - cd ..
-# run cobertura only in environment build fails when coverage is too low
-- mvn cobertura:check
 notifications:
   slack: $slack_token
