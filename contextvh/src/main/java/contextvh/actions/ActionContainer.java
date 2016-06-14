@@ -40,6 +40,4 @@ public class ActionContainer extends HashMap<String, CustomAction> {
 	public CustomAction get(final Action action) {
 		return get(action.getName().toLowerCase());
 	}
-
-
 }

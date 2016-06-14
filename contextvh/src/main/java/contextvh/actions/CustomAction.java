@@ -1,6 +1,5 @@
 package contextvh.actions;
 
-
 import java.util.LinkedList;
 
 import contextvh.ContextEntity;
@@ -28,6 +27,4 @@ public interface CustomAction {
 	 * @return The name of the action.
 	 */
 	String getName();
-
-
 }
