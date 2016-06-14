@@ -49,20 +49,29 @@ public class GetRelevantAreasBuy implements RelevantAreasAction {
 	@Override
 	public void internalCall(final Percept createdPercept, final ContextEntity caller,
 							 final Parameters parameters) {
+		final int maxPolys = 15;
+		final int bufferUp = 5;
+		final int bufferDown = -10;
+		int numPolys = 0;
 		MultiPolygon usableArea = getUsableArea(caller, parameters);
 		final ParameterList parameterList = new ParameterList();
 		for (Polygon polygon : JTSUtils.getPolygons(usableArea)) {
 			final List<Polygon> polygonList = JTSUtils.getTriangles(polygon, MIN_AREA);
 			for (Geometry geometry : polygonList) {
-				if (geometry.getArea() > MAX_AREA) {
+				if (numPolys > maxPolys) {
+					break;
+				}
+				Geometry geom = geometry.buffer(bufferDown).buffer(bufferUp);
+				if (geom.getArea() > MAX_AREA) {
 					continue;
 				}
-				MultiPolygon multiPolygon = JTSUtils.createMP(geometry);
+				MultiPolygon multiPolygon = JTSUtils.createMP(geom);
 				try {
 					parameterList.add(GetRelevantAreas.convertMPtoPL(multiPolygon));
 				} catch (TranslationException exception) {
 					TLogger.exception(exception);
 				}
+				numPolys++;
 			}
 		}
 		createdPercept.addParameter(parameterList);
@@ -78,16 +87,18 @@ public class GetRelevantAreasBuy implements RelevantAreasAction {
 	protected MultiPolygon getUsableArea(final ContextEntity caller, final Parameters parameters) {
 		// Get a MultiPolygon of all lands combined.
 		final Integer connectionID = caller.getSlotConnection().getConnectionID();
+		final Integer stakeholderID = caller.getStakeholder().getID();
 		List<Integer> zoneFilter = new ArrayList<>();
-		if (parameters != null) {
+		if (!parameters.isEmpty()) {
 			zoneFilter = parameters.get("zones").parallelStream()
-					.filter(par -> par instanceof Numeral)
-					.map(parameter -> ((Numeral) parameter).getValue().intValue())
+					.filter(par -> par instanceof Numeral).collect(Collectors.toList())
+					.stream().map(parameter -> ((Numeral) parameter).getValue().intValue())
 					.collect(Collectors.toList());
 		}
 		MultiPolygon land = JTSUtils.createMP(MapUtils.getZonesCombined(connectionID, zoneFilter));
 		// Remove all pieces of reserved land.
 		land = MapUtils.removeReservedLand(connectionID, land);
+		land = JTSUtils.createMP(land.difference(MapUtils.getStakeholderLands(connectionID, stakeholderID)));
 		return land;
 	}
 

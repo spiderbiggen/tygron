@@ -10,13 +10,9 @@ import eis.iilang.ParameterList;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import tygronenv.EisEnv;
 import tygronenv.MyEnvListener;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -33,7 +29,7 @@ public class GetRelevantAreasBuyTest {
 	private static final String PROJECT = "project";
 	private static final Identifier PROJECT_NAME = new Identifier("testutilsmap");
 
-	private static final double AREA_MUNICIPALITY = 1_000_000;
+	private static final double AREA_MUNICIPALITY = 0;
 	private static final double MAX_DEVIATION = 0.0001;
 
 	private ContextEnv env;
@@ -79,7 +75,7 @@ public class GetRelevantAreasBuyTest {
 	 * Test the getUsableLand function.
 	 */
 	@Test
-	public void testGetUsableLandWithZones(){
+	public void testGetUsableLandWithZones() {
 		final ParameterList zones = new ParameterList(new Numeral(0), new Numeral(1), new Numeral(2));
 		final Parameters parameters = new Parameters(new ParameterList(new Function("zones", zones)));
 		final GetRelevantAreasBuy action = new GetRelevantAreasBuy(null);
