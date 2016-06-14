@@ -10,9 +10,9 @@ install:
 script:
 # add login credentials in registry
 - java -cp contextvh/target/contextvh-*-jar-with-dependencies.jar login.Login $email $password
-# test the code run cobertura only in environment build fails when coverage is too low
+# test the code run cobertura only in context environment build fails when coverage is too low
 - cd contextvh
-- mvn test
+- mvn cobertura:check
 # check pmd and checkstyle only for context environment
 # checkstyle check is configured with these arguments -Dcheckstyle.config.location="$TRAVIS_BUILD_DIR/sun_checks_custom.xml"
 - mvn checkstyle:check 
