@@ -16,8 +16,8 @@ import eis.iilang.ParameterList;
 public class Parameters extends HashMap<String, LinkedList<Parameter>> {
 	private static final long serialVersionUID = 6054823572206388545L;
 
-	/**.
-	 * Create a Empty Parameters object b
+	/**
+	 * Create a Empty Parameters object b.
 	 */
 	public Parameters() {
 		super();
