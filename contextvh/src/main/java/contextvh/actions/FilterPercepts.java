@@ -13,12 +13,25 @@ import eis.iilang.ParameterList;
 import eis.iilang.Percept;
 import nl.tytech.util.logger.TLogger;
 
+/**
+ * The filter_percepts(PerceptList) action can be called with as only parameter
+ * a list of percepts that won't be send to the agent in the next cycle.
+ * The connector will also send a response percept: filtered_percepts([PerceptList]) 
+ * with a list of percepts that are currently being filtered by the connector.
+ * 
+ * The filter_percepts(PerceptList) action requires a complete list of percepts to be filtered, 
+ * any percepts not included will not be filtered even if they were previously.
+ * This allows you to re-enable all percepts by sending a empty list as parameter.
+ * @author Dennis van Peer
+ */
 public class FilterPercepts implements CustomAction {
 	
 	
 	private ArrayList<String> disabledPercepts;
 
-	
+	/**
+	 * Creates a FilterPercepts actions
+	 */
 	public FilterPercepts() {
 		disabledPercepts = new ArrayList<String>();
 	}
@@ -45,7 +58,12 @@ public class FilterPercepts implements CustomAction {
 		throw e;
 	}
 	}
-
+	
+	/**
+	 * Replaces disabledPercepts with an arraylist containing the new percepts
+	 * @param filterParam	A ParameterList of parameters provided by the agent.
+	 * @return An arraylist containing the new percepts
+	 */
 	private void processFilter(ParameterList filterParam) {
 		disabledPercepts = new ArrayList<String>();
 		for (int i = 0; i < filterParam.size(); i++){
@@ -65,6 +83,13 @@ public class FilterPercepts implements CustomAction {
 		return "filter_percepts";
 	}
 	
+	/**
+	 * Create the response Percept, after the parameters have been parsed.
+	 * @param caller		The ContextEntity that called the action.
+	 * @param parameters	A ParameterList of parameters provided by the agent.
+	 * @return The constructed Percept.
+	 * @throws TranslationException  When an invalid internal action parameter is provided.
+	 */
 	private Percept createPercept(final ContextEntity caller, final ParameterList parameters) throws TranslationException {
 		Percept result = new Percept("filtered_percepts");
 		
@@ -74,6 +99,11 @@ public class FilterPercepts implements CustomAction {
 		return result;
 	}
 	
+	/**
+	 * Returns A boolean true iff parameters consists solely of identifiers.
+	 * @param parameters	A ParameterList of parameters provided by the agent.
+	 * @return A boolean true iff parameters consists solely of identifiers
+	 */
 	private boolean identifierCheck(final ParameterList parameters) {
 		for (int i = 0; i < parameters.size(); i++){
 			Parameter param = parameters.get(i);
@@ -84,6 +114,11 @@ public class FilterPercepts implements CustomAction {
 		return true;
 	}
 
+	/**
+	 * Filters out any percepts that are currently on the disabledPercept-list
+	 * @param parameters	A list of percepts
+	 * @return The given perceptlist without the percepts currently in disabledPercepts
+	 */
 	public LinkedList<Percept> filterPercepts(List<Percept> percepts) {
 		LinkedList<Percept> result = new LinkedList<Percept>();
 		
