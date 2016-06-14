@@ -56,9 +56,10 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 
 	@Override
 	public void internalCall(final Percept createdPercept,
-			final ContextEntity caller, final ParameterList parameters) {
+			final ContextEntity caller, final Parameters parameters) {
 		MultiPolygon constructableLand = getUsableArea(caller, parameters);
 
+		// This should really be added as an "after-effect" instead of compulsory code.
 		final int minArea = 200, maxArea = 2000;
 		final int maxPolys = 15;
 		final int bufferUp = 5, bufferDown = -10;
@@ -96,7 +97,7 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 	 * @param parameters The parameters provided to the action.
 	 * @return The multiPolygon that can be built on.
 	 */
-	protected MultiPolygon getUsableArea(final ContextEntity caller, final ParameterList parameters) {
+	protected MultiPolygon getUsableArea(final ContextEntity caller, final Parameters parameters) {
 		// Get a MultiPolygon of all lands combined.
 		Integer connectionID = caller.getSlotConnection().getConnectionID();
 
