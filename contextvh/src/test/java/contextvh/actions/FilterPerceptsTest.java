@@ -27,7 +27,10 @@ public class FilterPerceptsTest {
 
 	private FilterPercepts mockFilterPercepts = mock(FilterPercepts.class);
 	private ContextEntity mockEntity = mock(ContextEntity.class);
-	
+	/**
+	 * Tests the call function
+	 * @throws TranslationException  When an invalid internal action parameter is provided.
+	 */
 	@Test
 	public void testCall() throws TranslationException {
 		FilterPercepts action = new FilterPercepts();
@@ -41,12 +44,20 @@ public class FilterPerceptsTest {
 		assertTrue(disabledPercepts.contains("stakeholders"));
 	}
 
+	/**
+	 * Tests the getName function
+	 * @throws TranslationException  When an invalid internal action parameter is provided.
+	 */
 	@Test
 	public void testGetName() {
 		FilterPercepts action = new FilterPercepts();
 		assertTrue(action.getName().equals("filter_percepts"));
 	}
-
+	
+	/**
+	 * Tests the filterPercepts function
+	 * @throws TranslationException  When an invalid internal action parameter is provided.
+	 */
 	@Test
 	public void testFilterPercepts() throws TranslationException {
 		FilterPercepts action = new FilterPercepts();
@@ -79,6 +90,11 @@ public class FilterPerceptsTest {
 		
 	}
 
+	/**
+	 * Creates a LinkedList of the names from a linkedlist of percepts
+	 * @param percepts the linkedlist of percepts
+	 * @return linkedList of names from the input parameter
+	 */
 	private LinkedList<String> getPerceptNames(LinkedList<Percept> percepts) {
 		LinkedList<String> result = new LinkedList<String>();
 		for (Percept percept : percepts)
