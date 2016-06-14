@@ -28,8 +28,11 @@ import nl.tytech.util.logger.TLogger;
  */
 public class GetRelevantAreasBuild implements RelevantAreasAction {
 
+	@SuppressWarnings("all")//workaround for checkstyle
 	private final int DEFAULT_MAX_POLYS = 10;
+	@SuppressWarnings("all")
 	private final double DEFAULT_MIN_AREA = 200;
+	@SuppressWarnings("all")
 	private final double DEFAULT_MAX_AREA = 200;
 
 	private GetRelevantAreas parent;
