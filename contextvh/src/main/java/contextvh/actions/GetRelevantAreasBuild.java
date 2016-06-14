@@ -31,7 +31,7 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 	private final int DEFAULT_MAX_POLYS = 10;
 	private final double DEFAULT_MIN_AREA = 200;
 	private final double DEFAULT_MAX_AREA = 200;
-	
+
 	private GetRelevantAreas parent;
 
 	/**
@@ -68,14 +68,16 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 		int maxPolys = DEFAULT_MAX_POLYS;
 		double minArea = DEFAULT_MIN_AREA;
 		double maxArea = DEFAULT_MAX_AREA;
-		if (parameters.containsKey("amount"))
+		if (parameters.containsKey("amount")) {
 			maxPolys = ((Numeral) parameters.get("amount").getFirst()).getValue().intValue();
+		}
 		if (parameters.containsKey("area")) {
 			minArea = ((Numeral) parameters.get("area").getFirst()).getValue().doubleValue();
 			maxArea = ((Numeral) parameters.get("area").getLast()).getValue().doubleValue();
 		}
-		if (minArea >= maxArea)
+		if (minArea >= maxArea) {
 			throw new IllegalArgumentException("min area must be smaller than max area");
+		}
 		// Calculate polygons
 		final int bufferUp = 5, bufferDown = -10;
 		int numPolys = 0;
@@ -118,19 +120,20 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 		Integer connectionID = caller.getSlotConnection().getConnectionID();
 		// Get the stakeholder form the parameters or default to caller
 		Integer stakeholderID = caller.getStakeholder().getID();
-		if (parameters.containsKey("stakeholder"))
+		if (parameters.containsKey("stakeholder")) {
 			stakeholderID = ((Numeral) parameters.get("stakeholder").getFirst()).getValue().intValue();
+		}
 		// Calculate multipolygon
 		MultiPolygon constructableLand = MapUtils.getStakeholderLands(connectionID, stakeholderID);
 		// Intersect with zones if there is a zone parameter
 		if (parameters.containsKey("zones")) {
-			Iterator<Parameter> ZoneParam = parameters.get("zones").iterator();
-			List<Integer> Zones = new LinkedList<Integer>();
-			while (ZoneParam.hasNext()) {
-				Zones.add((int) ((Numeral) ZoneParam.next()).getValue());
+			Iterator<Parameter> zoneParam = parameters.get("zones").iterator();
+			List<Integer> zones = new LinkedList<Integer>();
+			while (zoneParam.hasNext()) {
+				zones.add((int) ((Numeral) zoneParam.next()).getValue());
 			}
 			constructableLand = (MultiPolygon) constructableLand
-					.intersection(MapUtils.getZonesCombined(connectionID, Zones));
+					.intersection(MapUtils.getZonesCombined(connectionID, zones));
 		}
 		// Remove all pieces of land that cannot be build on (water).
 		constructableLand = MapUtils.removeWater(connectionID, constructableLand);

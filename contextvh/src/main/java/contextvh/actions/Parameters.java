@@ -22,7 +22,7 @@ public class Parameters extends HashMap<String, LinkedList<Parameter>> {
 	public Parameters() {
 		super();
 	}
-	
+
 	/**
 	 * Create a Parameters object by parsing the ParameterList as a list of
 	 * Function parameters, whose name-params pairs are used as key-value pairs.
