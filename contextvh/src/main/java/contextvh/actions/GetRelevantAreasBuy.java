@@ -11,8 +11,6 @@ import eis.iilang.Numeral;
 import eis.iilang.Parameter;
 import eis.iilang.ParameterList;
 import eis.iilang.Percept;
-import nl.tytech.core.client.event.EventManager;
-import nl.tytech.core.event.Event;
 import nl.tytech.util.JTSUtils;
 import nl.tytech.util.logger.TLogger;
 
@@ -30,7 +28,6 @@ import java.util.stream.Collectors;
 public class GetRelevantAreasBuy implements RelevantAreasAction {
 
 	private static final int MIN_AREA = 200, MAX_AREA = 2000;
-	private static final String NAME = "buy";
 	private GetRelevantAreas parent;
 
 	/**
@@ -96,11 +93,11 @@ public class GetRelevantAreasBuy implements RelevantAreasAction {
 
 	@Override
 	public String getName() {
-		return String.format("get_%sable_areas", NAME);
+		return "get_buyable_areas";
 	}
 
 	@Override
 	public String getInternalName() {
-		return NAME;
+		return "buy";
 	}
 }
