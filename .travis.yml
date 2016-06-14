@@ -1,6 +1,9 @@
 language: java
 jdk:
 - oraclejdk8
+cache:
+  directories:
+  - $HOME/.m2
 before_install:
 # add eishub/tygron to remote as upstream
 - git remote add upstream https://github.com/eishub/tygron.git
@@ -10,9 +13,9 @@ install:
 script:
 # add login credentials in registry
 - java -cp contextvh/target/contextvh-*-jar-with-dependencies.jar login.Login $email $password
-# test the code run cobertura only in context environment build fails when coverage is too low
+# test the code 
 - cd contextvh
-- mvn cobertura:check
+- mvn test
 # check pmd and checkstyle only for context environment
 # checkstyle check is configured with these arguments -Dcheckstyle.config.location="$TRAVIS_BUILD_DIR/sun_checks_custom.xml"
 - mvn checkstyle:check 
@@ -22,5 +25,7 @@ script:
 - echo "*PMD-Results*" && cat "java-basic.xml" && cat "java-imports.xml" && cat "java-unusedcode.xml" && echo "PMD-Results END"
 - echo "*FINDBUGS-Results*" && cat "findbugsXml.xml" && echo "FINDBUGS-Results END"
 - cd ..
+# run cobertura only in context environment build fails when coverage is too low
+- mvn cobertura:check
 notifications:
   slack: $slack_token
