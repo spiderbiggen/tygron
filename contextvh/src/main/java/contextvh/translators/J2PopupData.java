@@ -64,10 +64,11 @@ public class J2PopupData implements Java2Parameter<PopupData> {
 			typeOfPopup = optionType.name();
 		} else if (popup.getContentMapLink() == MapLink.BUILDINGS) {
 			Building building = popup.getItem(MapLink.BUILDINGS, popup.getContentLinkID());
-			typeOfPopup = (building.getTimeState() == TimeState.REQUEST_ZONING_APPROVAL) 
-					? "ZONING_PERMIT" : "PERMIT";
-			actionLogIds = getActionLogIds(popup);
-			
+			if (building != null && building.getTimeState() == TimeState.REQUEST_ZONING_APPROVAL) {
+				typeOfPopup = "ZONING_PERMIT";
+			} else {
+				typeOfPopup = "PERMIT";
+			}
 		} else {
 			typeOfPopup = "POPUP";
 		}
