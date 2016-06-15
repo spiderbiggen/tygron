@@ -1,5 +1,7 @@
 package contextvh.actions;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 import contextvh.ContextEnv;
 import eis.exceptions.ManagementException;
 import eis.iilang.Function;
@@ -7,11 +9,12 @@ import eis.iilang.Identifier;
 import eis.iilang.Numeral;
 import eis.iilang.Parameter;
 import eis.iilang.ParameterList;
+import nl.tytech.util.JTSUtils;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import tygronenv.MyEnvListener;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,8 +42,7 @@ public class GetRelevantAreasBuyTest {
 	 * @throws ManagementException {@link ManagementException}
 	 * @throws InterruptedException {@link InterruptedException}
 	 */
-	@Before
-	public void init() throws ManagementException, InterruptedException {
+	public void connect() throws ManagementException, InterruptedException {
 		env = new ContextEnv();
 		final MyEnvListener listener = new MyEnvListener();
 		env.attachEnvironmentListener(listener);
@@ -53,33 +55,76 @@ public class GetRelevantAreasBuyTest {
 	}
 
 	/**
-	 * Shuts down the test environment.
+	 * shuts down any remaining environments.
 	 * @throws ManagementException {@link ManagementException}
 	 */
 	@After
 	public void tearDown() throws ManagementException {
+		if (env != null) {
+			env.kill();
+		}
+		env = null;
+	}
+
+	/**
+	 * Test the getUsableLand function.
+	 * @throws ManagementException {@link ManagementException}
+	 * @throws InterruptedException {@link InterruptedException}
+	 */
+	@Test
+	public void testGetUsableLand() throws ManagementException, InterruptedException {
+		connect();
+		final GetRelevantAreasBuy action = new GetRelevantAreasBuy(null);
+		final double area = action.getUsableArea(env.getEntity(MUNICIPALITY), null).getArea();
+		assertEquals(AREA_MUNICIPALITY, area, MAX_DEVIATION);
 		env.kill();
 	}
 
 	/**
 	 * Test the getUsableLand function.
+	 * @throws ManagementException {@link ManagementException}
+	 * @throws InterruptedException {@link InterruptedException}
 	 */
 	@Test
-	public void testGetUsableLand() {
-		final GetRelevantAreasBuy action = new GetRelevantAreasBuy(null);
-		final double area = action.getUsableArea(env.getEntity(MUNICIPALITY), null).getArea();
-		assertEquals(AREA_MUNICIPALITY, area, MAX_DEVIATION);
-	}
-
-	/**
-	 * Test the getUsableLand function.
-	 */
-	@Test
-	public void testGetUsableLandWithZones() {
+	public void testGetUsableLandWithZones() throws ManagementException, InterruptedException {
+		connect();
 		final ParameterList zones = new ParameterList(new Numeral(0), new Numeral(1), new Numeral(2));
 		final Parameters parameters = new Parameters(new ParameterList(new Function("zones", zones)));
 		final GetRelevantAreasBuy action = new GetRelevantAreasBuy(null);
 		final double area = action.getUsableArea(env.getEntity(MUNICIPALITY), parameters).getArea();
 		assertEquals(AREA_MUNICIPALITY, area, MAX_DEVIATION);
+		env.kill();
+	}
+
+	/**
+	 * Placeholder test for the internal call.
+	 */
+	@Test
+	public void internalCall() {
+		assert true;
+	}
+
+
+	/**
+	 *
+	 */
+	@Test
+	public void geometryToRectangle() {
+		final Geometry shape = JTSUtils.createPolygon(Arrays.asList(
+				new Coordinate(0, 50),
+				new Coordinate(-50, 30),
+				new Coordinate(3, 500),
+				new Coordinate(2, -50)
+		));
+		final Geometry rectangle = JTSUtils.createPolygon(Arrays.asList(
+				new Coordinate(-50, -50),
+				new Coordinate(3, -50),
+				new Coordinate(3, 500),
+				new Coordinate(-50, 500),
+				new Coordinate(-50, -50)
+		));
+		final GetRelevantAreasBuy action = new GetRelevantAreasBuy(null);
+		final Geometry result = action.geometryToRectangle(shape);
+		assertEquals(rectangle, result);
 	}
 }
