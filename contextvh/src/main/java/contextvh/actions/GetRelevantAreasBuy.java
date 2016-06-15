@@ -31,7 +31,8 @@ import java.util.stream.Collectors;
  */
 public class GetRelevantAreasBuy implements RelevantAreasAction {
 
-	private static final int MIN_AREA = 200, MAX_AREA = 2000;
+	private static final int DEFAULT_MAX_POLYGONS = 10;
+	private static final int DEFAULT_MIN_AREA = 200, DEFAULT_MAX_AREA = 2000;
 	private GetRelevantAreas parent;
 
 	/**
@@ -53,29 +54,44 @@ public class GetRelevantAreasBuy implements RelevantAreasAction {
 	@Override
 	public void internalCall(final Percept createdPercept, final ContextEntity caller,
 							 final Parameters parameters) {
-		final int maxPolys = 15;
+		int maxPolygons = DEFAULT_MAX_POLYGONS;
+		double minArea = DEFAULT_MIN_AREA;
+		double maxArea = DEFAULT_MAX_AREA;
 		final int bufferUp = 5;
 		final int bufferDown = -10;
-		int numPolys = 0;
-		List<Integer> zoneFilter = new ArrayList<>();
-		if (parameters != null && parameters.containsKey("zones")) {
-			zoneFilter = parameters.get("zones").parallelStream()
-					.filter(par -> par instanceof Numeral).collect(Collectors.toList())
-					.stream().map(parameter -> ((Numeral) parameter).getValue().intValue())
-					.collect(Collectors.toList());
-		}
 		final Integer connectionID = caller.getSlotConnection().getConnectionID();
 		final ParameterList parameterList = new ParameterList();
 
+		List<Integer> zoneFilter = new ArrayList<>();
+		if (parameters != null) {
+			if (parameters.containsKey("zones")) {
+				zoneFilter = parameters.get("zones").parallelStream()
+						.filter(par -> par instanceof Numeral).collect(Collectors.toList())
+						.stream().map(parameter -> ((Numeral) parameter).getValue().intValue())
+						.collect(Collectors.toList());
+			}
+			if (parameters.containsKey("amount")) {
+				maxPolygons = ((Numeral) parameters.get("amount").getFirst()).getValue().intValue();
+			}
+			if (parameters.containsKey("area")) {
+				minArea = ((Numeral) parameters.get("area").getFirst()).getValue().doubleValue();
+				maxArea = ((Numeral) parameters.get("area").getLast()).getValue().doubleValue();
+			}
+			if (minArea >= maxArea) {
+				throw new IllegalArgumentException("min area must be smaller than max area");
+			}
+		}
+
 		ItemMap<Zone> zones = EventManager.getItemMap(connectionID, MapLink.ZONES);
+		int numPolys = 0;
 		for (Zone zone : zones) {
 			if (zoneFilter.isEmpty() || zoneFilter.contains(zone.getID())) {
 				MultiPolygon usableArea = getUsableArea(caller, zone.getID());
 
 				for (Polygon polygon : JTSUtils.getPolygons(usableArea)) {
-					final List<Polygon> polygonList = JTSUtils.getTriangles(polygon, MIN_AREA);
+					final List<Polygon> polygonList = JTSUtils.getTriangles(polygon, minArea);
 					for (Geometry geometry : polygonList) {
-						if (numPolys > maxPolys) {
+						if (numPolys > maxPolygons) {
 							break;
 						}
 						Geometry geom = geometry.buffer(bufferDown).buffer(bufferUp);
