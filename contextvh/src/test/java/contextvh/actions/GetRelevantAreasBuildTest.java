@@ -77,13 +77,14 @@ public class GetRelevantAreasBuildTest {
 		double area = action.getUsableArea(env.getEntity(MUNICIPALITY), new Parameters()).getArea();
 		assertEquals(AREA_MUNICIPALITY - reservedArea, area, 0);
 	}
-	
+
 	/**
-	 * Test the getUsaubleLand function with zones
+	 * Test the getUsaubleLand function with zones.
 	 * @throws ManagementException {@link MangementExption}
 	 * @throws InterruptedException {@link InterruptedException}
 	 */
 	@Test
+	@SuppressWarnings("checkstyle:magicnumber")
 	public void testGetUsableLandWithZones() throws ManagementException, InterruptedException {
 		ContextEnv env = new ContextEnv();
 		joinAsInhabitants(env);
@@ -96,7 +97,7 @@ public class GetRelevantAreasBuildTest {
 		Parameters params = new Parameters();
 		params.put("zones", zones);
 		double area = action.getUsableArea(env.getEntity(MUNICIPALITY), params).getArea();
-		assertEquals(AREA_MUNICIPALITY/2 - reservedArea, area, 0);
+		assertEquals(AREA_MUNICIPALITY / 2 - reservedArea, area, 0);
 	}
 
 	/**
