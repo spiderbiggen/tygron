@@ -23,8 +23,13 @@ import eis.iilang.Percept;
  */
 public class FilterPerceptsTest {
 
-	private FilterPercepts mockFilterPercepts = mock(FilterPercepts.class);
+
 	private ContextEntity mockEntity = mock(ContextEntity.class);
+
+	private static final String STAKEHOLDERS = "stakeholders";
+	private static final String BUILDINGS = "buildings";
+	private static final String INDICATORS = "indicators";
+	private static final String FUNCTIONS = "functions";
 	/**
 	 * Tests the call function.
 	 * @throws TranslationException  When an invalid internal action parameter is provided.
@@ -34,12 +39,12 @@ public class FilterPerceptsTest {
 		FilterPercepts action = new FilterPercepts();
 		LinkedList<Parameter> parameters = new LinkedList<Parameter>();
 		ParameterList percepts = new ParameterList();
-		Parameter percept = new Identifier("stakeholders");
+		Parameter percept = new Identifier(STAKEHOLDERS);
 		percepts.add(percept);
 		parameters.add(percepts);
 		action.call(mockEntity, parameters);
 		ArrayList<String> disabledPercepts = Whitebox.getInternalState(action, "disabledPercepts");
-		assertTrue(disabledPercepts.contains("stakeholders"));
+		assertTrue(disabledPercepts.contains(STAKEHOLDERS));
 	}
 
 	/**
@@ -61,17 +66,17 @@ public class FilterPerceptsTest {
 		FilterPercepts action = new FilterPercepts();
 		LinkedList<Parameter> parameters = new LinkedList<Parameter>();
 		ParameterList filter = new ParameterList();
-		Parameter perceptParameter1 = new Identifier("stakeholders");
-		Parameter perceptParameter2 = new Identifier("indicators");
-		Parameter perceptParameter3 = new Identifier("buildings");
+		Parameter perceptParameter1 = new Identifier(STAKEHOLDERS);
+		Parameter perceptParameter2 = new Identifier(INDICATORS);
+		Parameter perceptParameter3 = new Identifier(BUILDINGS);
 		filter.add(perceptParameter1);
 		filter.add(perceptParameter2);
 		filter.add(perceptParameter3);
 		parameters.add(filter);
 		LinkedList<Percept> percepts = new LinkedList<Percept>();
-		Percept percept1 = new Percept("functions");
-		Percept percept2 = new Percept("stakeholders");
-		Percept percept3 = new Percept("buildings");
+		Percept percept1 = new Percept(FUNCTIONS);
+		Percept percept2 = new Percept(STAKEHOLDERS);
+		Percept percept3 = new Percept(BUILDINGS);
 		percepts.add(percept1);
 		percepts.add(percept2);
 		percepts.add(percept3);
@@ -81,9 +86,9 @@ public class FilterPerceptsTest {
 		LinkedList<Percept> filteredPercepts = action.filterPercepts(percepts);
 		LinkedList<String> filteredPerceptNames = getPerceptNames(filteredPercepts);
 
-		assertTrue(filteredPerceptNames.contains("functions")
-				&& !(filteredPerceptNames.contains("stakeholders")));
-		filteredPerceptNames.remove("functions");
+		assertTrue(filteredPerceptNames.contains(FUNCTIONS)
+				&& !(filteredPerceptNames.contains(STAKEHOLDERS)));
+		filteredPerceptNames.remove(FUNCTIONS);
 		assertTrue(filteredPerceptNames.isEmpty());
 
 	}
