@@ -93,7 +93,8 @@ public class GetRelevantAreasBuildTest {
 		final double reservedArea = 9 + 4;
 		LinkedList<Parameter> zones = new LinkedList<Parameter>();
 		zones.add(new Numeral(2));
-		zones.add(new Numeral(3));
+		final int zoneb = 3;
+		zones.add(new Numeral(zoneb));
 		Parameters params = new Parameters();
 		params.put("zones", zones);
 		double area = action.getUsableArea(env.getEntity(MUNICIPALITY), params).getArea();
