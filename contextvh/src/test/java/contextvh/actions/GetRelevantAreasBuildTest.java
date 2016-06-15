@@ -16,6 +16,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import contextvh.ContextEnv;
 import eis.exceptions.ManagementException;
 import eis.iilang.Identifier;
+import eis.iilang.Numeral;
 import eis.iilang.Parameter;
 import eis.iilang.ParameterList;
 import nl.tytech.util.JTSUtils;
@@ -75,6 +76,27 @@ public class GetRelevantAreasBuildTest {
 		final double reservedArea = 9 + 4 + 1;
 		double area = action.getUsableArea(env.getEntity(MUNICIPALITY), new Parameters()).getArea();
 		assertEquals(AREA_MUNICIPALITY - reservedArea, area, 0);
+	}
+	
+	/**
+	 * Test the getUsaubleLand function with zones
+	 * @throws ManagementException {@link MangementExption}
+	 * @throws InterruptedException {@link InterruptedException}
+	 */
+	@Test
+	public void testGetUsableLandWithZones() throws ManagementException, InterruptedException {
+		ContextEnv env = new ContextEnv();
+		joinAsInhabitants(env);
+		GetRelevantAreasBuild action = new GetRelevantAreasBuild(null);
+		//9m2 + 4m2 building
+		final double reservedArea = 9 + 4;
+		LinkedList<Parameter> zones = new LinkedList<Parameter>();
+		zones.add(new Numeral(2));
+		zones.add(new Numeral(3));
+		Parameters params = new Parameters();
+		params.put("zones", zones);
+		double area = action.getUsableArea(env.getEntity(MUNICIPALITY), params).getArea();
+		assertEquals(AREA_MUNICIPALITY/2 - reservedArea, area, 0);
 	}
 
 	/**

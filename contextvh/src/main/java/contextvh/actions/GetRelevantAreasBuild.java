@@ -131,8 +131,8 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 			while (zoneParam.hasNext()) {
 				zones.add((int) ((Numeral) zoneParam.next()).getValue());
 			}
-			constructableLand = (MultiPolygon) constructableLand
-					.intersection(MapUtils.getZonesCombined(connectionID, zones));
+			constructableLand = JTSUtils.createMP(constructableLand
+					.intersection(MapUtils.getZonesCombined(connectionID, zones)));
 		}
 		// Remove all pieces of land that cannot be build on (water).
 		constructableLand = MapUtils.removeWater(connectionID, constructableLand);
