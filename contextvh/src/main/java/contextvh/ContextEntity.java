@@ -1,7 +1,10 @@
 package contextvh;
 
+import java.util.LinkedList;
+
 import contextvh.actions.ActionContainer;
 import contextvh.actions.CustomAction;
+import contextvh.actions.FilterPercepts;
 import eis.eis2java.exception.TranslationException;
 import eis.iilang.Action;
 import eis.iilang.Percept;
@@ -19,6 +22,9 @@ public class ContextEntity extends tygronenv.TygronEntityImpl {
 
 	private ActionContainer customActions = new ActionContainer();
 
+	private FilterPercepts perceptsFilter = new FilterPercepts();
+
+
 	/**
 	 * Create new Tygron entity. It will report to env when the entity is ready
 	 * to run. This happens when initial percepts have been prepared and the
@@ -30,6 +36,7 @@ public class ContextEntity extends tygronenv.TygronEntityImpl {
 	 */
 	public ContextEntity(final EntityListener env, final String intendedStakeholder, final Integer slotID) {
 		super(env, intendedStakeholder, slotID);
+		customActions.addAction(perceptsFilter);
 	}
 
 	@Override
@@ -47,6 +54,15 @@ public class ContextEntity extends tygronenv.TygronEntityImpl {
 		this.slotConnection = slotCon;
 		return new ContextEntityEventHandler(this, slotCon.getConnectionID(), this);
 	}
+
+	@Override
+	public LinkedList<Percept> getPercepts() {
+		LinkedList<Percept> allPercepts = super.getPercepts();
+		LinkedList<Percept> result =  perceptsFilter.filterPercepts(allPercepts);
+		return result;
+	}
+
+
 
 	/**
 	 * Returns the saved TSlotConnection.
