@@ -22,6 +22,7 @@ import nl.tytech.data.engine.item.PopupData;
 import nl.tytech.data.engine.item.Setting;
 import nl.tytech.data.engine.item.SpecialOption;
 import nl.tytech.data.engine.item.SpecialOption.Type;
+import nl.tytech.data.engine.serializable.TimeState;
 import nl.tytech.locale.TCurrency;
 import nl.tytech.locale.unit.UnitSystem;
 import nl.tytech.locale.unit.UnitSystemType;
@@ -62,9 +63,11 @@ public class J2PopupData implements Java2Parameter<PopupData> {
 			Type optionType = specialOption.getType();
 			typeOfPopup = optionType.name();
 		} else if (popup.getContentMapLink() == MapLink.BUILDINGS) {
-			typeOfPopup = "PERMIT";
+			Building building = popup.getItem(MapLink.BUILDINGS, popup.getContentLinkID());
+			typeOfPopup = (building.getTimeState() == TimeState.REQUEST_ZONING_APPROVAL) 
+					? "ZONING_PERMIT" : "PERMIT";
 			actionLogIds = getActionLogIds(popup);
-
+			
 		} else {
 			typeOfPopup = "POPUP";
 		}
