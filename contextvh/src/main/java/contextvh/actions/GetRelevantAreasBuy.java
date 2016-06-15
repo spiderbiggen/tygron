@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 public class GetRelevantAreasBuy implements RelevantAreasAction {
 
 	private static final int DEFAULT_MAX_POLYGONS = 10;
-	private static final int DEFAULT_MIN_AREA = 200, DEFAULT_MAX_AREA = 2000;
+	private static final int DEFAULT_MIN_AREA = 200, DEFAULT_MAX_AREA = 30000;
 	private GetRelevantAreas parent;
 
 	/**
@@ -95,6 +95,9 @@ public class GetRelevantAreasBuy implements RelevantAreasAction {
 							break;
 						}
 						Geometry geom = geometry.buffer(bufferDown).buffer(bufferUp);
+						if (geometry.getArea() > maxArea) {
+							continue;
+						}
 						MultiPolygon multiPolygon = JTSUtils.createMP(geom);
 						try {
 							parameterList.add(GetRelevantAreas.convertMPtoPL(multiPolygon));
