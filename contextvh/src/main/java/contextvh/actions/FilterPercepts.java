@@ -29,6 +29,8 @@ public class FilterPercepts implements CustomAction {
 
 	private ArrayList<String> disabledPercepts;
 
+	private static final String NAME = "filter_percepts";
+
 	/**
 	 * Creates a FilterPercepts actions.
 	 */
@@ -80,7 +82,16 @@ public class FilterPercepts implements CustomAction {
 
 	@Override
 	public String getName() {
-		return "filter_percepts";
+		return NAME;
+	}
+
+	/**
+	 * This method provides the name of the action, which the agent
+	 * will have to call.
+	 * @return The name of the action.
+	 */
+	public static String staticGetName() {
+		return NAME;
 	}
 
 	/**
