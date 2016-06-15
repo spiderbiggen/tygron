@@ -7,6 +7,7 @@ import eis.iilang.Identifier;
 import eis.iilang.Numeral;
 import eis.iilang.Parameter;
 import eis.iilang.ParameterList;
+import eis.iilang.Percept;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +17,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test the GetRelevantAreasBuy class.
@@ -25,11 +28,10 @@ import static org.junit.Assert.assertEquals;
 public class GetRelevantAreasBuyTest {
 
 	private static final String STAKEHOLDERS = "stakeholders";
-	private static final String MUNICIPALITY = "MUNICIPALITY";
+	private static final String MUNICIPALITY = "GEMEENTE";
 	private static final String PROJECT = "project";
-	private static final Identifier PROJECT_NAME = new Identifier("testutilsmap");
+	private static final Identifier PROJECT_NAME = new Identifier("testbuymap");
 
-	private static final double AREA_MUNICIPALITY = 0;
 	private static final double MAX_DEVIATION = 0.0001;
 
 	private ContextEnv env;
@@ -62,24 +64,51 @@ public class GetRelevantAreasBuyTest {
 	}
 
 	/**
-	 * Test the getUsableLand function.
+	 *
 	 */
 	@Test
-	public void testGetUsableLand() {
+	public void testInternalCall() {
+		final int zoneNum = 5;
 		final GetRelevantAreasBuy action = new GetRelevantAreasBuy(null);
-		final double area = action.getUsableArea(env.getEntity(MUNICIPALITY), null).getArea();
-		assertEquals(AREA_MUNICIPALITY, area, MAX_DEVIATION);
+		final Percept result = new Percept("relevant_areas");
+		action.internalCall(result, env.getEntity(MUNICIPALITY), null);
+		assertFalse(result.getParameters().isEmpty());
+		assertTrue(((ParameterList) result.getParameters().get(0)).size() >= zoneNum);
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	public void testInternalCallWithZones() {
+		final int zoneNum = 2;
+		final GetRelevantAreasBuy action = new GetRelevantAreasBuy(null);
+		final Percept result = new Percept("relevant_areas");
+		final Parameters parameters = new Parameters(new ParameterList(
+				new Function("zones", new Numeral(0), new Numeral(1))));
+		action.internalCall(result, env.getEntity(MUNICIPALITY), parameters);
+		assertFalse(result.getParameters().isEmpty());
+		System.out.println(((ParameterList) result.getParameters().get(0)).size());
+		assertTrue(((ParameterList) result.getParameters().get(0)).size() >= zoneNum);
+	}
+
+	/**
+	 * Test the getUsableLand function.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetUsableLandBadWeather() {
+		final GetRelevantAreasBuy action = new GetRelevantAreasBuy(null);
+		action.getUsableArea(env.getEntity(MUNICIPALITY), null);
 	}
 
 	/**
 	 * Test the getUsableLand function.
 	 */
 	@Test
-	public void testGetUsableLandWithZones() {
-		final ParameterList zones = new ParameterList(new Numeral(0), new Numeral(1), new Numeral(2));
-		final Parameters parameters = new Parameters(new ParameterList(new Function("zones", zones)));
+	public void testGetUsableLandWithZone() {
 		final GetRelevantAreasBuy action = new GetRelevantAreasBuy(null);
-		final double area = action.getUsableArea(env.getEntity(MUNICIPALITY), parameters).getArea();
-		assertEquals(AREA_MUNICIPALITY, area, MAX_DEVIATION);
+		final double area = action.getUsableArea(env.getEntity(MUNICIPALITY), 0).getArea();
+		final double expectedArea = 241_900;
+		assertEquals(expectedArea, area, MAX_DEVIATION);
 	}
 }

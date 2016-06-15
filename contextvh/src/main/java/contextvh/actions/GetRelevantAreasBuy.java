@@ -11,6 +11,10 @@ import eis.iilang.Numeral;
 import eis.iilang.Parameter;
 import eis.iilang.ParameterList;
 import eis.iilang.Percept;
+import nl.tytech.core.client.event.EventManager;
+import nl.tytech.core.net.serializable.MapLink;
+import nl.tytech.core.structure.ItemMap;
+import nl.tytech.data.engine.item.Zone;
 import nl.tytech.util.JTSUtils;
 import nl.tytech.util.logger.TLogger;
 
@@ -53,49 +57,56 @@ public class GetRelevantAreasBuy implements RelevantAreasAction {
 		final int bufferUp = 5;
 		final int bufferDown = -10;
 		int numPolys = 0;
-		MultiPolygon usableArea = getUsableArea(caller, parameters);
+		List<Integer> zoneFilter = new ArrayList<>();
+		if (parameters != null && parameters.containsKey("zones")) {
+			zoneFilter = parameters.get("zones").parallelStream()
+					.filter(par -> par instanceof Numeral).collect(Collectors.toList())
+					.stream().map(parameter -> ((Numeral) parameter).getValue().intValue())
+					.collect(Collectors.toList());
+		}
+		final Integer connectionID = caller.getSlotConnection().getConnectionID();
 		final ParameterList parameterList = new ParameterList();
-		for (Polygon polygon : JTSUtils.getPolygons(usableArea)) {
-			final List<Polygon> polygonList = JTSUtils.getTriangles(polygon, MIN_AREA);
-			for (Geometry geometry : polygonList) {
-				if (numPolys > maxPolys) {
-					break;
+
+		ItemMap<Zone> zones = EventManager.getItemMap(connectionID, MapLink.ZONES);
+		for (Zone zone : zones) {
+			if (zoneFilter.isEmpty() || zoneFilter.contains(zone.getID())) {
+				MultiPolygon usableArea = getUsableArea(caller, zone.getID());
+
+				for (Polygon polygon : JTSUtils.getPolygons(usableArea)) {
+					final List<Polygon> polygonList = JTSUtils.getTriangles(polygon, MIN_AREA);
+					for (Geometry geometry : polygonList) {
+						if (numPolys > maxPolys) {
+							break;
+						}
+						Geometry geom = geometry.buffer(bufferDown).buffer(bufferUp);
+						MultiPolygon multiPolygon = JTSUtils.createMP(geom);
+						try {
+							parameterList.add(GetRelevantAreas.convertMPtoPL(multiPolygon));
+						} catch (TranslationException exception) {
+							TLogger.exception(exception);
+						}
+						numPolys++;
+					}
 				}
-				Geometry geom = geometry.buffer(bufferDown).buffer(bufferUp);
-				if (geom.getArea() > MAX_AREA) {
-					continue;
-				}
-				MultiPolygon multiPolygon = JTSUtils.createMP(geom);
-				try {
-					parameterList.add(GetRelevantAreas.convertMPtoPL(multiPolygon));
-				} catch (TranslationException exception) {
-					TLogger.exception(exception);
-				}
-				numPolys++;
 			}
 		}
 		createdPercept.addParameter(parameterList);
 	}
 
 	/**
-	 * Returns all area that can be bought in the specified zone, or if no zones are specified
-	 * return areas in all zones.
+	 * Returns all area that can be bought in the specified zone.
 	 * @param caller The caller of the action.
-	 * @param parameters The parameters provided to the action.
+	 * @param zone The zone provided to the action.
 	 * @return The multiPolygon that can be built on.
 	 */
-	protected MultiPolygon getUsableArea(final ContextEntity caller, final Parameters parameters) {
+	protected MultiPolygon getUsableArea(final ContextEntity caller, final Integer zone) {
+		if (zone == null) {
+			throw new IllegalArgumentException("Zone can't be null");
+		}
 		// Get a MultiPolygon of all lands combined.
 		final Integer connectionID = caller.getSlotConnection().getConnectionID();
 		final Integer stakeholderID = caller.getStakeholder().getID();
-		List<Integer> zoneFilter = new ArrayList<>();
-		if (!parameters.isEmpty()) {
-			zoneFilter = parameters.get("zones").parallelStream()
-					.filter(par -> par instanceof Numeral).collect(Collectors.toList())
-					.stream().map(parameter -> ((Numeral) parameter).getValue().intValue())
-					.collect(Collectors.toList());
-		}
-		MultiPolygon land = JTSUtils.createMP(MapUtils.getZonesCombined(connectionID, zoneFilter));
+		MultiPolygon land = MapUtils.getZone(connectionID, zone);
 		// Remove all pieces of reserved land.
 		land = MapUtils.removeReservedLand(connectionID, land);
 		land = JTSUtils.createMP(land.difference(MapUtils.getStakeholderLands(connectionID, stakeholderID)));

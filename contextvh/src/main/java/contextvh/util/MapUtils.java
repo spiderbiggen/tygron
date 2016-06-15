@@ -58,6 +58,20 @@ public final class MapUtils {
 	}
 
 	/**
+	 * Returns a Geometry of the zones with the the given ID.
+	 *
+	 * @param connectionID
+	 *            The id of the connection.
+	 * @param id
+	 *            the zone ID to retrieve.
+	 * @return The resulting Geometry.
+	 */
+	public static MultiPolygon getZone(final Integer connectionID, final int id) {
+		final ItemMap<Zone> zones = EventManager.getItemMap(connectionID, MapLink.ZONES);
+		return zones.get(id).getMultiPolygon();
+	}
+
+	/**
 	 * Returns a Geometry of all zones with its ID in ids combined, if an empty
 	 * list or no ids are given, a Geometry containing all zones will be
 	 * returned.
