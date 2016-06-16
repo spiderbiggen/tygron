@@ -94,11 +94,10 @@ public class GetRelevantAreasBuy implements RelevantAreasAction {
 						if (numPolys > maxPolygons) {
 							break;
 						}
-						Geometry geom = geometry.buffer(bufferDown).buffer(bufferUp);
 						if (geometry.getArea() > maxArea) {
 							continue;
 						}
-						MultiPolygon multiPolygon = JTSUtils.createMP(geom);
+						MultiPolygon multiPolygon = JTSUtils.createMP(geometry);
 						try {
 							parameterList.add(GetRelevantAreas.convertMPtoPL(multiPolygon));
 						} catch (TranslationException exception) {
