@@ -17,6 +17,13 @@ public class Parameters extends HashMap<String, LinkedList<Parameter>> {
 	private static final long serialVersionUID = 6054823572206388545L;
 
 	/**
+	 * Create a Empty Parameters object b.
+	 */
+	public Parameters() {
+		super();
+	}
+
+	/**
 	 * Create a Parameters object by parsing the ParameterList as a list of
 	 * Function parameters, whose name-params pairs are used as key-value pairs.
 	 * @param parameters
