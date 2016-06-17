@@ -12,7 +12,6 @@ import eis.iilang.Numeral;
 import eis.iilang.Parameter;
 import eis.iilang.ParameterList;
 import eis.iilang.Percept;
-import eis.iilang.TruthValue;
 import nl.tytech.core.client.event.EventManager;
 import nl.tytech.core.net.serializable.MapLink;
 import nl.tytech.core.structure.ItemMap;
@@ -91,8 +90,8 @@ public class GetRelevantAreasBuy implements RelevantAreasAction {
 				stakeholderFilter = createFilterList(parameters, "stakeholders");
 			}
 			if (parameters.containsKey("buildings")) {
-				emptyland = !((Identifier) parameters.get("buildings").getFirst())
-						.getValue().equalsIgnoreCase("False");
+				emptyland = ((Identifier) parameters.get("buildings").getFirst())
+						.getValue().equalsIgnoreCase("false");
 			}
 		}
 
@@ -100,38 +99,40 @@ public class GetRelevantAreasBuy implements RelevantAreasAction {
 		ItemMap<Stakeholder> stakeholders = EventManager.getItemMap(connectionID, MapLink.STAKEHOLDERS);
 		int numPolys = 0;
 		for (Stakeholder stakeholder : stakeholders) {
-			if (stakeholderFilter.isEmpty() || stakeholderFilter.contains(stakeholder.getID())) {
+			if (!stakeholderFilter.isEmpty() && !stakeholderFilter.contains(stakeholder.getID())) {
+				continue;
+			}
 			MultiPolygon stakeholderLands = MapUtils.getStakeholderLands(connectionID, stakeholder.getID());
-				for (Zone zone : zones) {
-					if (zoneFilter.isEmpty() || zoneFilter.contains(zone.getID())) {
-						MultiPolygon usableArea = getUsableArea(caller, zone.getID(), emptyland);
-						try {
-							MultiPolygon landPerStakeholder = JTSUtils
-									.createMP(stakeholderLands.intersection(usableArea));
-							for (Polygon polygon : JTSUtils.getPolygons(landPerStakeholder)) {
-								final List<Polygon> polygonList = JTSUtils
-										.getTriangles(polygon, minArea);
-								for (Geometry geometry : polygonList) {
-									if (numPolys > maxPolygons) {
-										break;
-									}
-									if (geometry.getArea() > maxArea) {
-										continue;
-									}
-									MultiPolygon multiPolygon = JTSUtils.createMP(geometry);
-									try {
-										parameterList.add(GetRelevantAreas
-												 .convertMPtoPL(multiPolygon));
-									} catch (TranslationException exception) {
-										TLogger.exception(exception);
-									}
-									numPolys++;
-								}
+			for (Zone zone : zones) {
+				if (!zoneFilter.isEmpty() && !zoneFilter.contains(zone.getID())) {
+					continue;
+				}
+				MultiPolygon usableArea = getUsableArea(caller, zone.getID(), emptyland);
+				try {
+					MultiPolygon landPerStakeholder = JTSUtils
+							.createMP(stakeholderLands.intersection(usableArea));
+					for (Polygon polygon : JTSUtils.getPolygons(landPerStakeholder)) {
+						final List<Polygon> polygonList = JTSUtils
+								.getTriangles(polygon, minArea);
+						for (Geometry geometry : polygonList) {
+							if (numPolys > maxPolygons) {
+								break;
 							}
-						} catch (TopologyException e) {
-							TLogger.exception(e);
+							if (geometry.getArea() > maxArea) {
+								continue;
+							}
+							MultiPolygon multiPolygon = JTSUtils.createMP(geometry);
+							try {
+								parameterList.add(GetRelevantAreas
+										.convertMPtoPL(multiPolygon));
+							} catch (TranslationException exception) {
+								TLogger.exception(exception);
+							}
+							numPolys++;
 						}
 					}
+				} catch (TopologyException e) {
+					TLogger.exception(e);
 				}
 			}
 		}
@@ -171,7 +172,10 @@ public class GetRelevantAreasBuy implements RelevantAreasAction {
 		land = MapUtils.removeReservedLand(connectionID, land);
 		land = JTSUtils.difference(land, MapUtils.getStakeholderLands(connectionID, stakeholderID));
 		if (emptyLand) {
-			land = MapUtils.removeBuildings(connectionID, null, land);
+			ItemMap<Stakeholder> stakeholders = EventManager.getItemMap(connectionID, MapLink.STAKEHOLDERS);
+			for (Stakeholder stakeholder : stakeholders) {
+				land = MapUtils.removeBuildings(connectionID, stakeholder.getID(), land);
+			}
 		}
 		return land;
 	}
