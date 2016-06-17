@@ -30,7 +30,7 @@ public class GetRelevantAreasBuild implements RelevantAreasAction {
 
 	private static final int DEFAULT_MAX_POLYS = 10;
 	private static final double DEFAULT_MIN_AREA = 200;
-	private static final double DEFAULT_MAX_AREA = 200;
+	private static final double DEFAULT_MAX_AREA = 2000;
 
 	private GetRelevantAreas parent;
 

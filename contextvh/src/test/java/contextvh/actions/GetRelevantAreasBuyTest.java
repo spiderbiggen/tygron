@@ -98,7 +98,7 @@ public class GetRelevantAreasBuyTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testGetUsableLandBadWeather() {
 		final GetRelevantAreasBuy action = new GetRelevantAreasBuy(null);
-		action.getUsableArea(env.getEntity(MUNICIPALITY), null);
+		action.getUsableArea(env.getEntity(MUNICIPALITY), null, false);
 	}
 
 	/**
@@ -107,7 +107,7 @@ public class GetRelevantAreasBuyTest {
 	@Test
 	public void testGetUsableLandWithZone() {
 		final GetRelevantAreasBuy action = new GetRelevantAreasBuy(null);
-		final double area = action.getUsableArea(env.getEntity(MUNICIPALITY), 0).getArea();
+		final double area = action.getUsableArea(env.getEntity(MUNICIPALITY), 0, false).getArea();
 		final double expectedArea = 241_900;
 		assertEquals(expectedArea, area, MAX_DEVIATION);
 	}
