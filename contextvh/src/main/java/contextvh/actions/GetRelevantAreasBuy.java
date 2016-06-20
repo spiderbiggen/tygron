@@ -98,15 +98,16 @@ public class GetRelevantAreasBuy implements RelevantAreasAction {
 		ItemMap<Zone> zones = EventManager.getItemMap(connectionID, MapLink.ZONES);
 		ItemMap<Stakeholder> stakeholders = EventManager.getItemMap(connectionID, MapLink.STAKEHOLDERS);
 		int numPolys = 0;
-		for (Stakeholder stakeholder : stakeholders) {
-			if (!stakeholderFilter.isEmpty() && !stakeholderFilter.contains(stakeholder.getID())) {
+
+		for (Zone zone : zones) {
+			if (!zoneFilter.isEmpty() && !zoneFilter.contains(zone.getID())) {
 				continue;
 			}
-			MultiPolygon stakeholderLands = MapUtils.getStakeholderLands(connectionID, stakeholder.getID());
-			for (Zone zone : zones) {
-				if (!zoneFilter.isEmpty() && !zoneFilter.contains(zone.getID())) {
+			for (Stakeholder stakeholder : stakeholders) {
+				if (!stakeholderFilter.isEmpty() && !stakeholderFilter.contains(stakeholder.getID())) {
 					continue;
 				}
+				MultiPolygon stakeholderLands = MapUtils.getStakeholderLands(connectionID, stakeholder.getID());
 				MultiPolygon usableArea = getUsableArea(caller, zone.getID(), emptyland);
 				try {
 					MultiPolygon landPerStakeholder = JTSUtils
@@ -116,7 +117,8 @@ public class GetRelevantAreasBuy implements RelevantAreasAction {
 								.getTriangles(polygon, minArea);
 						for (Geometry geometry : polygonList) {
 							if (numPolys > maxPolygons) {
-								break;
+								createdPercept.addParameter(parameterList);
+								return;
 							}
 							if (geometry.getArea() > maxArea) {
 								continue;
@@ -177,6 +179,7 @@ public class GetRelevantAreasBuy implements RelevantAreasAction {
 				land = MapUtils.removeBuildings(connectionID, stakeholder.getID(), land);
 			}
 		}
+		land = MapUtils.removeWater(connectionID, land);
 		return land;
 	}
 
