@@ -107,7 +107,8 @@ public class GetRelevantAreasBuy implements RelevantAreasAction {
 				if (!stakeholderFilter.isEmpty() && !stakeholderFilter.contains(stakeholder.getID())) {
 					continue;
 				}
-				MultiPolygon stakeholderLands = MapUtils.getStakeholderLands(connectionID, stakeholder.getID());
+				MultiPolygon stakeholderLands = MapUtils
+						.getStakeholderLands(connectionID, stakeholder.getID());
 				MultiPolygon usableArea = getUsableArea(caller, zone.getID(), emptyland);
 				try {
 					MultiPolygon landPerStakeholder = JTSUtils
